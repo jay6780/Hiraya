@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "141443324146",
+    "firebase_url": "https://elearning-fa528-default-rtdb.firebaseio.com",
+    "project_id": "elearning-fa528",
+    "storage_bucket": "elearning-fa528.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141443324146:android:a80cfc9fa9272b54f7186b",
+        "android_client_info": {
+          "package_name": "com.shs.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAZ90saI2hyF0Dhb36voBB4kzp4q-rJbZI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
