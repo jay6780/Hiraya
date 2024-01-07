@@ -2,4 +2,15 @@
     <string name="app_name">Hiraya</string>
     <string name="open">Open Navigation Drawer</string>
     <string name="close">Close Navigation Drawer</string>
+
+    <string-array name="checklist_items">
+        <item>Select Subject</item>
+        <item>General Physics2</item>
+        <item>General Chemistry2</item>
+        <item>Practical Research2</item>
+        <item>Research Project</item>
+        <item>MIL</item>
+        <item>Physical Education</item>
+    </string-array>
+
 </resources>

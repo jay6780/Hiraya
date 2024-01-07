@@ -1,13 +1,15 @@
-package com.shs.app.Activity.Student;
+package com.shs.app.Activity.Admin;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -27,6 +29,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -39,24 +42,28 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
-import com.shs.app.Adapter.ImageAdapter;
+import com.shs.app.Adapter.UserAdapte2;
+import com.shs.app.Class.User3;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
-import com.youth.banner.Banner;
-import com.youth.banner.indicator.CircleIndicator;
-import com.youth.banner.listener.OnBannerListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Student extends AppCompatActivity {
-    ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText;
-    Banner pagebanner;
+public class Studentinfo extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    RecyclerView userview;
+    ImageView studentImg;
+    TextView fullnameText,userEmail,usernameText,phoneText;
+
+    DatabaseReference databaseReference;
+    List<User3> userList;
+    List<User3> originalUserList; // Store the original data here
+    UserAdapte2 userAdapter;
+    SearchView searchView;
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -64,16 +71,13 @@ public class Student extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_student);
+        setContentView(R.layout.activity_studentinfo);
+
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        pagebanner = findViewById(R.id.banner);
-
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
@@ -89,45 +93,34 @@ public class Student extends AppCompatActivity {
         drawerToggle.syncState();
         DrawerArrowDrawable toggleDrawable = drawerToggle.getDrawerArrowDrawable();
         toggleDrawable.setColor(Color.YELLOW);
-
+        
         View headerView = navigationView.getHeaderView(0);
         studentImg = headerView.findViewById(R.id.students);
         fullnameText = headerView.findViewById(R.id.fullname);
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
+        userview = findViewById(R.id.userView);
+        searchView = findViewById(R.id.search);
+
+        userList = new ArrayList<>();
+        originalUserList = new ArrayList<>();
+        userAdapter = new UserAdapte2(userList, this);
+
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Student");
+
+        userview.setLayoutManager(new LinearLayoutManager(this));
+        userview.setAdapter(userAdapter);
+
+
         retrieveStudentDetails();
-
-        final List<Integer> images = new ArrayList<>();
-        images.add(R.mipmap.page1);
-        images.add(R.mipmap.page2);
-        images.add(R.mipmap.page3);
-
-//        final Intent[] intents = new Intent[images.size()];
-        pagebanner.setAdapter(new ImageAdapter(images))
-                .setIndicator(new CircleIndicator(this))
-                .setOnBannerListener(new OnBannerListener() {
-                    @Override
-                    public void OnBannerClick(Object data, int position) {
-//                        // Handle banner item click events here
-//                        if (position < intents.length && intents[position] != null) {
-////                            startActivity(intents[position]);
-////                            overridePendingTransition(0,0);
-////                            finish();
-//                        }
-                    }
-                })
-                .start();
-//
-//        intents[0] = new Intent(this, student_java.class);
-//        intents[1] = new Intent(this, python_student.class);
 
 
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Show confirmation dialog before proceeding to profile update
-                DialogPlus dialog = DialogPlus.newDialog(Student.this)
+                DialogPlus dialog = DialogPlus.newDialog(Studentinfo.this)
                         .setContentHolder(new ViewHolder(R.layout.cofirm))
                         .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -142,7 +135,7 @@ public class Student extends AppCompatActivity {
                 proceedButton.setOnClickListener(v -> {
                     dialog.dismiss();
                     // Proceed to profile update activity
-                    Intent intent = new Intent(getApplicationContext(), profile_update.class);
+                    Intent intent = new Intent(getApplicationContext(), profile_update2.class);
                     intent.putExtra("name", fullnameText.getText().toString());
                     intent.putExtra("username", usernameText.getText().toString());
                     intent.putExtra("email", userEmail.getText().toString());
@@ -161,38 +154,126 @@ public class Student extends AppCompatActivity {
             }
         });
 
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                userList.clear();
+                originalUserList.clear(); // Clear the original data list
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    User3 user = snapshot.getValue(User3.class);
+                    userList.add(user);
+                    originalUserList.add(user); // Add data to the original list
+                }
+
+                userAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database error
+            }
+        });
+
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter the list by username when the user types in the SearchView
+                filterUserListByUsername(newText);
+                return true;
+            }
+        });
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(Student.this);
+                    dialog.logout(Studentinfo.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
-                    Intent home = new Intent(getApplicationContext(),Student.class);
+                    Intent home = new Intent(getApplicationContext(), Admin.class);
                     startActivity(home);
-                    overridePendingTransition(0,0);
+                    overridePendingTransition(0, 0);
                     finish();
+                    return true;
+                }
+
+                if (item.getItemId() == R.id.Admin) {
+                    Intent home = new Intent(getApplicationContext(), AdminRegister.class);
+                    startActivity(home);
+                    overridePendingTransition(0, 0);
+                    finish();
+                    return true;
+                }
+
+                if (item.getItemId() == R.id.About) {
+                    Toast.makeText(getApplicationContext(),"About Us", Toast.LENGTH_SHORT).show();
+                    overridePendingTransition(0, 0);
+                    return true;
+
+
 
                 }
+
+                if (item.getItemId() == R.id.info) {
+                    Intent student = new Intent(getApplicationContext(), Studentinfo.class);
+                    startActivity(student);
+                    overridePendingTransition(0, 0);
+                    finish();
+                    return true;
+
+
+                }
+
+                if (item.getItemId() == R.id.checklist) {
+                    showChecklistDialog();
+                    return true;
+                }
+
                 return false;
-
-
             }
         });
-
     }
 
-    private void changeStatusBarColor(int color) {
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(color);
+
+    private void filterUserListByUsername(String searchText) {
+        if (searchText.isEmpty()) {
+            // If the search text is empty, restore the original data
+            userAdapter.updateList(originalUserList);
+        } else {
+            String searchQuery = searchText.toLowerCase();
+
+            List<User3> filteredList = new ArrayList<>();
+            for (User3 user : userList) {
+                String username = user.getName() != null ? user.getName().toLowerCase() : "";
+
+                if (username.contains(searchQuery)) {
+                    filteredList.add(user);
+                }
+            }
+
+            userAdapter.updateList(filteredList);
+        }
+    }
+
+    private void showChecklistDialog() {
+        Dialog dialog = new Dialog();
+        dialog.showChecklistDialog(Studentinfo.this);
+
     }
 
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("Student").child(userId);
+        DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);
         studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -202,10 +283,10 @@ public class Student extends AppCompatActivity {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
+                    phoneText.setText(String.valueOf(phone));
                     userEmail.setText(email);
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
-                    phoneText.setText(String.valueOf(phone));
 
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         // Load image with CircleCrop transformation
@@ -229,15 +310,10 @@ public class Student extends AppCompatActivity {
         });
 
     }
-
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+    private void changeStatusBarColor(int color) {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(color);
     }
-
+    
 }

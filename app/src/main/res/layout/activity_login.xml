@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.login"
+    tools:context=".Activity.login.login"
     android:background="@color/beige"
     android:layout_gravity="center">
     <LinearLayout
@@ -46,8 +46,8 @@
                     android:layout_width="350dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp">
+                    android:layout_margin="10dp"
+                    android:layout_gravity="center">
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="280dp"
                         android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                             android:textStyle="bold" />
                     </com.google.android.material.textfield.TextInputLayout>
                     <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="280dp"
+                        android:layout_width="285dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         android:layout_gravity="center"
@@ -89,7 +89,7 @@
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btn_login"
-                        android:layout_width="230dp"
+                        android:layout_width="280dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
                         app:fontFamily="@font/century_gothic"
@@ -138,6 +138,7 @@
                             android:layout_centerHorizontal="true"
                             android:layout_below="@+id/or"
                             android:layout_marginTop="5dp"
+                            android:layout_marginBottom="10dp"
                             app:fontFamily="@font/century_gothic"
                             android:background="@android:color/transparent"
                             android:textColor="@color/black"

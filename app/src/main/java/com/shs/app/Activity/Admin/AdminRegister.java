@@ -1,5 +1,4 @@
-package com.shs.app.Activity.Student;
-
+package com.shs.app.Activity.Admin;
 
 
 import androidx.annotation.NonNull;
@@ -28,17 +27,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.shs.app.Activity.login.login;
 import com.shs.app.R;
 
-public class signup extends AppCompatActivity {
+public class AdminRegister extends AppCompatActivity {
     AppCompatButton back;
     private EditText nameEditText, emailEditText, usernameEditText, passwordEditText, confirmPasswordEditText;
-    private EditText phoneEditText;
     private AppCompatButton registerButton;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_signup);
+        setContentView(R.layout.activity_admin_register);
         back = findViewById(R.id.back);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -46,32 +44,32 @@ public class signup extends AppCompatActivity {
         }
 
         changeStatusBarColor(getResources().getColor(R.color.beige));
-            nameEditText = findViewById(R.id.name);
-            emailEditText = findViewById(R.id.email);
-            usernameEditText = findViewById(R.id.username);
-            passwordEditText = findViewById(R.id.password);
-            phoneEditText = findViewById(R.id.Phone);
-            confirmPasswordEditText = findViewById(R.id.confirm_password);
-            registerButton = findViewById(R.id.registered);
-            mAuth = FirebaseAuth.getInstance();
-            mDatabase = FirebaseDatabase.getInstance().getReference("Student");
+        nameEditText = findViewById(R.id.name);
+        emailEditText = findViewById(R.id.email);
+        usernameEditText = findViewById(R.id.username);
+        passwordEditText = findViewById(R.id.password);
+        confirmPasswordEditText = findViewById(R.id.confirm_password);
+        registerButton = findViewById(R.id.registered);
+        mAuth = FirebaseAuth.getInstance();
+        mDatabase = FirebaseDatabase.getInstance().getReference("ADMIN");
 
-            back.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), login.class);
-                    startActivity(intent);
-                    finish();
-                }
-            });
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), login.class);
+                FirebaseAuth.getInstance().signOut();
+                startActivity(intent);
+                finish();
+            }
+        });
 
-            registerButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    registerUser();
-                }
-            });
-        }
+        registerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerUser();
+            }
+        });
+    }
 
     private void changeStatusBarColor(int color) {
         Window window = getWindow();
@@ -81,18 +79,10 @@ public class signup extends AppCompatActivity {
 
     private void registerUser() {
         final String name = nameEditText.getText().toString().trim();
-        final String phone = phoneEditText.getText().toString().trim();
         final String email = emailEditText.getText().toString().trim();
         final String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
-
-        if (TextUtils.isEmpty(phone)) {
-            phoneEditText.setError("Please enter your phone number");
-            phoneEditText.requestFocus();
-            return;
-        }
-
         // Validate the input fields
         if (TextUtils.isEmpty(name)) {
             nameEditText.setError("Please enter your full name");
@@ -147,9 +137,11 @@ public class signup extends AppCompatActivity {
                             sendEmailVerification(user);
 
                             // Save user details to Realtime Database
-                            saveUserDetailsToDatabase(user.getUid(), name, email, username,phone);
+                            saveUserDetailsToDatabase(user.getUid(), name, email, username);
 
                             Toast.makeText(getApplicationContext(), "Registration successful. Please check your email for verification. "+email, Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(AdminRegister.this, login.class));
+                            finish();
                         } else {
                             Toast.makeText(getApplicationContext(), "Registration failed", Toast.LENGTH_SHORT).show();
 
@@ -158,14 +150,12 @@ public class signup extends AppCompatActivity {
                 });
     }
 
-    private void saveUserDetailsToDatabase(String uid, String name, String email, String username, String phone) {
+    private void saveUserDetailsToDatabase(String uid, String name, String email, String username) {
         DatabaseReference userRef = mDatabase.child(uid);
         userRef.child("name").setValue(name);
         userRef.child("email").setValue(email);
         userRef.child("username").setValue(username);
-        userRef.child("phone").setValue(phone); // Save phone number
     }
-
     private void sendEmailVerification(final FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -28,7 +28,7 @@
                     android:layout_marginTop="15dp"
                     app:fontFamily="@font/century_gothic"
                     android:textStyle="bold"
-                    android:text="Create Account"
+                    android:text="Create Student Account"
                     android:layout_width="wrap_content"/>
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_marginTop="20dp"
@@ -84,6 +84,28 @@
                         android:hint="User Name"
                         android:textStyle="bold" />
                 </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_marginTop="20dp"
+                    app:fontFamily="@font/century_gothic"
+                    android:background="@drawable/borderbackground"
+                    android:layout_width="280dp"
+                    android:textColorHint="@color/black"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/Phone"
+                        app:fontFamily="@font/century_gothic"
+                        android:background="@android:color/transparent"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Phone#"
+                        android:inputType="phone"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="280dp"
                     android:textColorHint="@color/black"

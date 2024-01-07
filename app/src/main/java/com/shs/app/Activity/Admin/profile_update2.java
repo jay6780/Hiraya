@@ -1,10 +1,8 @@
-package com.shs.app.Activity.Student;
-
+package com.shs.app.Activity.Admin;
 
 
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -27,7 +25,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -47,6 +44,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.shs.app.Activity.Student.Student;
 import com.shs.app.R;
 import com.squareup.picasso.Picasso;
 
@@ -54,9 +52,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Calendar;
 
-public class profile_update extends AppCompatActivity {
+public class profile_update2 extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -68,7 +65,7 @@ public class profile_update extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getApplicationContext(), Student.class);
+                        Intent intent = new Intent(getApplicationContext(), Admin.class);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         finish();
@@ -91,14 +88,14 @@ public class profile_update extends AppCompatActivity {
     private StorageReference storageReference;
     TextView emailEditText;
 
-    private EditText phoneNumberEditText,birthdays;
+    private EditText phoneNumberEditText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile_update);
+        setContentView(R.layout.activity_profile_update2);
 
         // Set the title of the action bar
-        getSupportActionBar().setTitle("Student Update");
+        getSupportActionBar().setTitle("Admin Update");
         Drawable homeButton = getResources().getDrawable(R.drawable.ic_home);
         homeButton.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
         getSupportActionBar().setHomeAsUpIndicator(homeButton);
@@ -119,9 +116,8 @@ public class profile_update extends AppCompatActivity {
         updateButton = findViewById(R.id.btn23);
         profileImageView = findViewById(R.id.upload_img);
         phoneNumberEditText = findViewById(R.id.Phone);
-        birthdays = findViewById(R.id.birthday);
         // Initialize Firebase Database and Storage references
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Student");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("ADMIN");
         storageReference = FirebaseStorage.getInstance().getReference().child("images");
 
 
@@ -152,12 +148,6 @@ public class profile_update extends AppCompatActivity {
             }
         }
 
-        birthdays.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog();
-            }
-        });
 
 
         profileImageView.setOnClickListener(new View.OnClickListener() {
@@ -177,12 +167,6 @@ public class profile_update extends AppCompatActivity {
                 String username = usernameEditText.getText().toString().trim();
                 String email = emailEditText.getText().toString().trim();
                 String phoneNumber = phoneNumberEditText.getText().toString().trim();
-                String selectedBirthday = birthdays.getText().toString().trim();
-
-                if (TextUtils.isEmpty(selectedBirthday)) {
-                    Toast.makeText(profile_update.this, "Please select your birthday", Toast.LENGTH_SHORT).show();
-                    return;
-                }
 
                 if (TextUtils.isEmpty(phoneNumber)) {
                     phoneNumberEditText.setError("Please enter your phone number");
@@ -190,6 +174,7 @@ public class profile_update extends AppCompatActivity {
                 } else {
                     phoneNumberEditText.setError(null); // Clear the error
                 }
+
 
                 // Check if all fields are filled
                 if (TextUtils.isEmpty(fullname)) {
@@ -207,7 +192,9 @@ public class profile_update extends AppCompatActivity {
                 }
 
 
-        // Update the profile data in the database
+
+
+                // Update the profile data in the database
                 String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                 DatabaseReference userRef = databaseReference.child(userId); // Use the user ID as the child key
                 userRef.child("name").setValue(fullname);
@@ -218,7 +205,7 @@ public class profile_update extends AppCompatActivity {
                 // Upload the image to storage
                 Uri imageUri = getImageUri();
                 if (imageUri != null) {
-                    progressDialog = new ProgressDialog(profile_update.this);
+                    progressDialog = new ProgressDialog(profile_update2.this);
                     progressDialog.setMessage("Updating profile...");
                     progressDialog.setCancelable(false);
                     progressDialog.show();
@@ -242,8 +229,8 @@ public class profile_update extends AppCompatActivity {
                                                             if (progressDialog != null) {
                                                                 progressDialog.dismiss();
                                                             }
-                                                            Toast.makeText(profile_update.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-                                                            Intent intent = new Intent(profile_update.this, Student.class);
+                                                            Toast.makeText(profile_update2.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                                                            Intent intent = new Intent(profile_update2.this, Admin.class);
                                                             startActivity(intent);
                                                             overridePendingTransition(0,0);
                                                             finish();
@@ -256,7 +243,7 @@ public class profile_update extends AppCompatActivity {
                                                             if (progressDialog != null) {
                                                                 progressDialog.dismiss();
                                                             }
-                                                            Toast.makeText(profile_update.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(profile_update2.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
                                                         }
                                                     });
                                         }
@@ -270,46 +257,17 @@ public class profile_update extends AppCompatActivity {
                                     if (progressDialog != null) {
                                         progressDialog.dismiss();
                                     }
-                                    Toast.makeText(profile_update.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(profile_update2.this, "Failed to upload image", Toast.LENGTH_SHORT).show();
                                 }
                             });
                 } else {
                     // No image selected
-                    Toast.makeText(profile_update.this, "Please select an image", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(profile_update2.this, "Please select an image", Toast.LENGTH_SHORT).show();
                 }
             }
         });
 
     }
-
-    private void showDatePickerDialog() {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker view, int selectedYear, int selectedMonth, int selectedDayOfMonth) {
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.YEAR, selectedYear);
-                calendar.set(Calendar.MONTH, selectedMonth);
-                calendar.set(Calendar.DAY_OF_MONTH, selectedDayOfMonth);
-
-                String formattedDate = android.text.format.DateFormat.format("MMMM d, yyyy", calendar).toString();
-                birthdays.setText(formattedDate);
-
-                String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference userRef = databaseReference.child(userId); // Use the user ID as the child key
-                userRef.child("birthday").setValue(formattedDate);
-            }
-        };
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(profile_update.this,
-                dateSetListener, year, month, day);
-        datePickerDialog.show();
-    }
-
 
     private void changeStatusBarColor(int color) {
         Window window = getWindow();
@@ -373,7 +331,7 @@ public class profile_update extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent intent = new Intent(profile_update.this, Student.class);
+        Intent intent = new Intent(profile_update2.this, Admin.class);
         startActivity(intent);
         overridePendingTransition(0,0);
         super.onBackPressed();

@@ -1,4 +1,4 @@
-package com.shs.app.Class;
+package com.shs.app.Adapter;
 
 
 import android.view.LayoutInflater;

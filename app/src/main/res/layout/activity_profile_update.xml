@@ -17,9 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="30dp"/>
-
-
+        android:layout_marginTop="10dp"/>
 
 
     <TextView
@@ -36,8 +34,8 @@
 
     <ImageView
         android:id="@+id/upload_img"
-        android:layout_width="170dp"
-        android:layout_height="150dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:layout_gravity="center"
         app:srcCompat="@drawable/baseline_person_24" />
 
@@ -45,96 +43,117 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="50dp"
-        android:layout_margin="30dp"
+        android:layout_margin="10dp"
         android:layout_gravity="center">
 
-      <TextView
-          android:text="FULLNAME"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:drawableLeft="@drawable/baseline_person_24"
-          android:textStyle="bold"
+      <com.google.android.material.textfield.TextInputLayout
+          android:layout_marginTop="10dp"
+          android:textColorHint="@color/black"
           app:fontFamily="@font/century_gothic"
-          android:textColor="@color/black"
-          android:textSize="18dp"
-          android:drawablePadding="10dp"/>
+          android:layout_gravity="center"
+          android:background="@drawable/borderbackground"
+          android:layout_width="280dp"
+          android:layout_height="wrap_content">
 
-      <EditText
-          android:id="@+id/fullname"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="51dp"
-          app:fontFamily="@font/century_gothic"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/fullname"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/baseline_person_24"
+            android:background="@android:color/transparent"
+            android:hint="Full name"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:fontFamily="@font/century_gothic" />
+      </com.google.android.material.textfield.TextInputLayout>
+
+      <com.google.android.material.textfield.TextInputLayout
           android:layout_marginTop="15dp"
-          android:background="@android:color/transparent"
-          android:textColor="@color/black"
-          android:textSize="22dp" />
-
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@color/black"
-          android:layout_marginTop="20dp"/>
-
-      <TextView
-          android:text="USERNAME"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:drawableLeft="@drawable/ic_baseline_email_24"
-          android:textStyle="bold"
+          android:textColorHint="@color/black"
           app:fontFamily="@font/century_gothic"
-          android:textColor="@color/black"
-          android:layout_marginTop="30dp"
-          android:textSize="18dp"
-          android:drawablePadding="10dp"/>
+          android:layout_gravity="center"
+          android:background="@drawable/borderbackground"
+          android:layout_width="280dp"
+          android:layout_height="wrap_content">
 
-      <EditText
-          android:id="@+id/username"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:layout_marginStart="51dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="UserName"
+            android:drawableStart="@drawable/baseline_person_24"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:fontFamily="@font/century_gothic" />
+      </com.google.android.material.textfield.TextInputLayout>
+
+      <com.google.android.material.textfield.TextInputLayout
           android:layout_marginTop="15dp"
+          android:textColorHint="@color/black"
           app:fontFamily="@font/century_gothic"
-          android:background="@android:color/transparent"
-          android:textColor="@color/black"
-          android:textSize="22dp" />
+          android:layout_gravity="center"
+          android:background="@drawable/borderbackground"
+          android:layout_width="280dp"
+          android:layout_height="wrap_content">
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@color/black"
-          android:layout_marginTop="20dp"/>
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/Phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="Phone"
+            android:drawableStart="@drawable/baseline_phone_24"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:inputType="phone"
+            app:fontFamily="@font/century_gothic" />
+      </com.google.android.material.textfield.TextInputLayout>
 
-      <TextView
-          android:text="EMAIL"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:drawableLeft="@drawable/ic_baseline_email_24"
-          android:textStyle="bold"
-          app:fontFamily="@font/century_gothic"
-          android:textColor="@color/black"
-          android:layout_marginTop="30dp"
-          android:textSize="18dp"
-          android:drawablePadding="10dp"/>
-
-      <TextView
-          android:id="@+id/email"
-          android:layout_width="wrap_content"
-          android:layout_height="wrap_content"
-          android:textColor="@color/black"
-          app:fontFamily="@font/century_gothic"
-          android:layout_marginStart="51dp"
+      <com.google.android.material.textfield.TextInputLayout
           android:layout_marginTop="15dp"
-          android:background="@android:color/transparent"
-          android:textSize="22dp" />
+          android:textColorHint="@color/black"
+          app:fontFamily="@font/century_gothic"
+          android:layout_gravity="center"
+          android:background="@drawable/borderbackground"
+          android:layout_width="280dp"
+          android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="Email"
+            android:drawableStart="@drawable/ic_baseline_email_24"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:fontFamily="@font/century_gothic" />
+      </com.google.android.material.textfield.TextInputLayout>
+
+      <com.google.android.material.textfield.TextInputLayout
+          android:layout_marginTop="15dp"
+          android:textColorHint="@color/black"
+          app:fontFamily="@font/century_gothic"
+          android:layout_gravity="center"
+          android:background="@drawable/borderbackground"
+          android:layout_width="280dp"
+          android:layout_height="wrap_content">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/birthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:hint="Select birthday"
+            android:drawableStart="@drawable/baseline_edit_calendar_24"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:fontFamily="@font/century_gothic"
+            android:inputType="none" /> <!-- Set inputType to none to make it non-editable -->
+      </com.google.android.material.textfield.TextInputLayout>
 
 
-      <View
-          android:layout_width="match_parent"
-          android:layout_height="1dp"
-          android:background="@color/black"
-          android:layout_marginTop="20dp"/>
 
     </LinearLayout>
 
@@ -143,6 +162,7 @@
         android:layout_width="270dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="25dp"
+        android:layout_marginTop="15dp"
         android:background="@drawable/borderbackground"
         app:fontFamily="@font/century_gothic"
         android:text="Update"
