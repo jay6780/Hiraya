@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/beige">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/profileImageView"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/baseline_person_24"/>
+
+
+        <TextView
+            android:id="@+id/text7"
+            android:layout_width="wrap_content"
+            app:fontFamily="@font/century_gothic"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/profileImageView"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:textColor="@color/black"
+            android:text="Name"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tex1"
+            android:layout_below="@+id/text7"
+            app:fontFamily="@font/century_gothic"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/black"
+            android:layout_marginTop="20dp"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/titleTextView"
+                app:fontFamily="@font/century_gothic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Title of Task"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_below="@+id/tex1"
+            android:id="@+id/tex2"
+            app:fontFamily="@font/century_gothic"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:layout_width="280dp"
+            android:layout_centerHorizontal="true"
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/contentEditText"
+                app:fontFamily="@font/century_gothic"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Task Instruction"
+                android:textStyle="bold" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/text4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tex2"
+            android:layout_marginTop="20dp"
+
+            android:layout_marginStart="75dp"
+            android:textColor="@color/black"
+            android:text="Upload using?"
+            android:textStyle="bold"
+            app:fontFamily="@font/century_gothic" />
+
+            <LinearLayout
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="10dp"
+                android:layout_below="@+id/text4"
+                android:layout_marginStart="75dp"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:id="@+id/folder"
+                android:background="@drawable/borderbackground">
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:src="@mipmap/task"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/century_gothic"
+                    android:textColor="@color/black"
+                    android:text="Task"/>
+
+            </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/text4"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/folder"
+            android:orientation="vertical"
+            android:id="@+id/Image"
+            android:background="@drawable/borderbackground">
+            <ImageView
+                android:id="@+id/imagepick"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/picture"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:fontFamily="@font/century_gothic"
+                android:textColor="@color/black"
+                android:text="Image"/>
+
+        </LinearLayout>
+
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_below="@+id/folder"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="35dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:fontFamily="@font/century_gothic"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/borderbackground"
+            android:text="Upload" />
+
+    </RelativeLayout>
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>

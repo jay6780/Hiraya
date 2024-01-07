@@ -42,11 +42,32 @@ public class UserAdapte2 extends RecyclerView.Adapter<UserAdapte2.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         User3 user = userList.get(position);
 
-        // Bind user data to ViewHolder views
-        holder.fullname.setText(user.getName());
-        holder.email.setText(user.getEmail());
-        holder.phone.setText(String.valueOf(user.getPhone()));
-        holder.birthday.setText(user.getBirthday());
+        // Check if user data is not null before setting to TextViews
+        if (user.getName() != null) {
+            holder.fullname.setText("Name: " + user.getName());
+        } else {
+            holder.fullname.setText("Name: N/A");
+        }
+
+        if (user.getEmail() != null) {
+            holder.email.setText("Email: " + user.getEmail());
+        } else {
+            holder.email.setText("Email: N/A");
+        }
+
+        // Check and set other fields similarly
+        if (user.getPhone() != null) {
+            holder.phone.setText("Phone#: " + String.valueOf(user.getPhone()));
+        } else {
+            holder.phone.setText("Phone#: N/A");
+        }
+
+        if (user.getBirthday() != null) {
+            holder.birthday.setText("Birthday: " + user.getBirthday());
+        } else {
+            holder.birthday.setText("Birthday: N/A");
+        }
+
         holder.cardView.startAnimation(AnimationUtils.loadAnimation(holder.itemView.getContext(), R.anim.recycler_animation3));
 
         // Load image with Glide and apply CircleCrop transformation

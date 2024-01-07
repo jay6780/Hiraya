@@ -132,11 +132,13 @@ public class profile_update extends AppCompatActivity {
             String email = intent.getStringExtra("email");
             String imageUrl = intent.getStringExtra("image"); // Retrieve the image URL
             String phoneNumber = intent.getStringExtra("phone");
+            String birthday = intent.getStringExtra("birthday");
 
             // Set the retrieved data to the corresponding views
             fullnameEditText.setText(fullName);
             usernameEditText.setText(username);
             emailEditText.setText(email);
+            birthdays.setText(birthday);
             phoneNumberEditText.setText(String.valueOf(phoneNumber));
 
             // Load the image into the ImageView using Glide with CircleTransformation

@@ -114,6 +114,7 @@
           android:layout_marginTop="15dp"
           android:textColorHint="@color/black"
           app:fontFamily="@font/century_gothic"
+          android:visibility="gone"
           android:layout_gravity="center"
           android:background="@drawable/borderbackground"
           android:layout_width="280dp"

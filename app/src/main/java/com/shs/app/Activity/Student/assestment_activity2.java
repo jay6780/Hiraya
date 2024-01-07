@@ -1,5 +1,7 @@
 package com.shs.app.Activity.Student;
 
+
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -18,19 +20,19 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -38,34 +40,30 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.dialogplus.ViewHolder;
+import com.shs.app.Activity.Admin.Admin;
+import com.shs.app.Activity.Admin.AdminRegister;
+import com.shs.app.Activity.Admin.Studentinfo;
+import com.shs.app.Activity.Admin.addtastk;
 import com.shs.app.Adapter.AnnouncementAdapter;
-import com.shs.app.Adapter.AnnouncementAdapter2;
-import com.shs.app.Adapter.ImageAdapter;
 import com.shs.app.Class.Announcement;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
-import com.youth.banner.Banner;
-import com.youth.banner.indicator.CircleIndicator;
-import com.youth.banner.listener.OnBannerListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Student extends AppCompatActivity {
-    ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText,birthdayText;
-    Banner pagebanner;
+public class assestment_activity2 extends AppCompatActivity {
+    ListView memberListView;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    ImageView studentImg;
+    TextView fullnameText,userEmail,usernameText,phoneText;
 
     DatabaseReference databaseReference;
-    AnnouncementAdapter2 adapter;
+    AnnouncementAdapter adapter;
     List<Announcement> announcementList;
-    ListView memberListView;
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -74,21 +72,18 @@ public class Student extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    FloatingActionButton uploadTask;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_student);
+        setContentView(R.layout.activity_assestment2);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        pagebanner = findViewById(R.id.banner);
-
-
-        changeStatusBarColor(getResources().getColor(R.color.maroon));
+        uploadTask = findViewById(R.id.fab23);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         getSupportActionBar().setTitle("HIRAYA");
-// Set the color of the title to black
+        changeStatusBarColor(getResources().getColor(R.color.maroon));
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         getSupportActionBar().setTitle(text);
@@ -106,39 +101,13 @@ public class Student extends AppCompatActivity {
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
-        birthdayText = headerView.findViewById(R.id.birthday);
         retrieveStudentDetails();
 
 
         memberListView = findViewById(R.id.memberListView);
         announcementList = new ArrayList<>();
-        adapter = new AnnouncementAdapter2(this, announcementList);
+        adapter = new AnnouncementAdapter(this, announcementList);
         memberListView.setAdapter(adapter);
-
-
-        final List<Integer> images = new ArrayList<>();
-        images.add(R.mipmap.page1);
-        images.add(R.mipmap.page2);
-        images.add(R.mipmap.page3);
-
-//        final Intent[] intents = new Intent[images.size()];
-        pagebanner.setAdapter(new ImageAdapter(images))
-                .setIndicator(new CircleIndicator(this))
-                .setOnBannerListener(new OnBannerListener() {
-                    @Override
-                    public void OnBannerClick(Object data, int position) {
-//                        // Handle banner item click events here
-//                        if (position < intents.length && intents[position] != null) {
-////                            startActivity(intents[position]);
-////                            overridePendingTransition(0,0);
-////                            finish();
-//                        }
-                    }
-                })
-                .start();
-//
-//        intents[0] = new Intent(this, student_java.class);
-//        intents[1] = new Intent(this, python_student.class);
 
 
 
@@ -165,51 +134,13 @@ public class Student extends AppCompatActivity {
             }
         });
 
-        studentImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Show confirmation dialog before proceeding to profile update
-                DialogPlus dialog = DialogPlus.newDialog(Student.this)
-                        .setContentHolder(new ViewHolder(R.layout.cofirm))
-                        .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
-                        .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
-                        .setGravity(Gravity.BOTTOM)
-                        .setCancelable(false)
-                        .create();
-
-                View dialogView = dialog.getHolderView();
-                Button proceedButton = dialogView.findViewById(R.id.Yes);
-                Button cancelButton = dialogView.findViewById(R.id.no);
-
-                proceedButton.setOnClickListener(v -> {
-                    dialog.dismiss();
-                    // Proceed to profile update activity
-                    Intent intent = new Intent(getApplicationContext(), profile_update.class);
-                    intent.putExtra("name", fullnameText.getText().toString());
-                    intent.putExtra("username", usernameText.getText().toString());
-                    intent.putExtra("email", userEmail.getText().toString());
-                    intent.putExtra("imageUrl", (String) studentImg.getTag());
-                    intent.putExtra("phone", phoneText.getText().toString());
-                    intent.putExtra("birthday", birthdayText.getText().toString());
-                    startActivity(intent);
-                    overridePendingTransition(0, 0);
-                    finish();
-                });
-
-                cancelButton.setOnClickListener(v -> {
-                    dialog.dismiss();
-                });
-
-                dialog.show();
-            }
-        });
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(Student.this);
+                    dialog.logout(assestment_activity2.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
@@ -225,6 +156,17 @@ public class Student extends AppCompatActivity {
             }
         });
 
+
+
+        uploadTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent upload = new Intent(getApplicationContext(), addtastk.class);
+                startActivity(upload);
+                overridePendingTransition(0,0);
+                finish();
+            }
+        });
     }
 
     private void changeStatusBarColor(int color) {
@@ -233,6 +175,11 @@ public class Student extends AppCompatActivity {
         window.setStatusBarColor(color);
     }
 
+    private void showChecklistDialog() {
+        Dialog dialog = new Dialog();
+        dialog.showChecklistDialog(assestment_activity2.this);
+
+    }
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("Student").child(userId);
@@ -245,12 +192,10 @@ public class Student extends AppCompatActivity {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
-                    String birthday = dataSnapshot.child("birthday").getValue(String.class);
+                    phoneText.setText(String.valueOf(phone));
                     userEmail.setText(email);
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
-                    phoneText.setText(String.valueOf(phone));
-                    birthdayText.setText(birthday);
 
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         // Load image with CircleCrop transformation
@@ -274,7 +219,6 @@ public class Student extends AppCompatActivity {
         });
 
     }
-
 
     @Override
     public void onBackPressed() {

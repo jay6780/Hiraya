@@ -6,6 +6,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -59,6 +60,7 @@ public class Admin extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    CardView assestment;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -97,12 +99,28 @@ public class Admin extends AppCompatActivity {
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
+
+
+        // home buttons
+        assestment = findViewById(R.id.assessment_btn);
+
         retrieveStudentDetails();
 
         final List<Integer> images = new ArrayList<>();
         images.add(R.mipmap.page1);
         images.add(R.mipmap.page2);
         images.add(R.mipmap.page3);
+
+
+        assestment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+             Intent go = new Intent(getApplicationContext(),assestment_activity.class);
+             startActivity(go);
+             overridePendingTransition(0,0);
+             finish();
+            }
+        });
 
 //        final Intent[] intents = new Intent[images.size()];
         pagebanner.setAdapter(new ImageAdapter(images))
