@@ -98,6 +98,7 @@
                 android:id="@+id/folder"
                 android:background="@drawable/borderbackground">
                 <ImageView
+                    android:id="@+id/addtask"
                     android:layout_width="35dp"
                     android:layout_height="35dp"
                     android:layout_marginTop="10dp"

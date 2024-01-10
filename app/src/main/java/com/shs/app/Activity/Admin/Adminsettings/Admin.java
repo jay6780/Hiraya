@@ -1,10 +1,12 @@
-package com.shs.app.Activity.Admin;
+package com.shs.app.Activity.Admin.Adminsettings;
+
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -26,14 +28,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -43,26 +42,25 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
-import com.shs.app.Adapter.AnnouncementAdapter;
-import com.shs.app.Class.Announcement;
+import com.shs.app.Adapter.ImageAdapter;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
+import com.youth.banner.Banner;
+import com.youth.banner.indicator.CircleIndicator;
+import com.youth.banner.listener.OnBannerListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class assestment_activity extends AppCompatActivity {
-    ListView memberListView;
+
+public class Admin extends AppCompatActivity {
+    ImageView studentImg;
+    TextView fullnameText,userEmail,usernameText,phoneText;
+    Banner pagebanner;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText;
-
-    DatabaseReference databaseReference;
-    AnnouncementAdapter adapter;
-    List<Announcement> announcementList;
-
+    CardView assestment;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -71,18 +69,19 @@ public class assestment_activity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    FloatingActionButton uploadTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_assestment);
+        setContentView(R.layout.activity_admin);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
-        uploadTask = findViewById(R.id.fab23);
+        pagebanner = findViewById(R.id.banner);
+        changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         getSupportActionBar().setTitle("HIRAYA");
-        changeStatusBarColor(getResources().getColor(R.color.maroon));
+// Set the color of the title to black
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         getSupportActionBar().setTitle(text);
@@ -100,20 +99,54 @@ public class assestment_activity extends AppCompatActivity {
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
+
+
+        // home buttons
+        assestment = findViewById(R.id.assessment_btn);
+
         retrieveStudentDetails();
 
+        final List<Integer> images = new ArrayList<>();
+        images.add(R.mipmap.page1);
+        images.add(R.mipmap.page2);
+        images.add(R.mipmap.page3);
 
-        memberListView = findViewById(R.id.memberListView);
-        announcementList = new ArrayList<>();
-        adapter = new AnnouncementAdapter(this, announcementList);
-        memberListView.setAdapter(adapter);
+
+        assestment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+             Intent go = new Intent(getApplicationContext(),assestment_activity.class);
+             startActivity(go);
+             overridePendingTransition(0,0);
+             finish();
+            }
+        });
+
+//        final Intent[] intents = new Intent[images.size()];
+        pagebanner.setAdapter(new ImageAdapter(images))
+                .setIndicator(new CircleIndicator(this))
+                .setOnBannerListener(new OnBannerListener() {
+                    @Override
+                    public void OnBannerClick(Object data, int position) {
+//                        // Handle banner item click events here
+//                        if (position < intents.length && intents[position] != null) {
+////                            startActivity(intents[position]);
+////                            overridePendingTransition(0,0);
+////                            finish();
+//                        }
+                    }
+                })
+                .start();
+//
+//        intents[0] = new Intent(this, student_java.class);
+//        intents[1] = new Intent(this, python_student.class);
 
 
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Show confirmation dialog before proceeding to profile update
-                DialogPlus dialog = DialogPlus.newDialog(assestment_activity.this)
+                DialogPlus dialog = DialogPlus.newDialog(Admin.this)
                         .setContentHolder(new ViewHolder(R.layout.cofirm))
                         .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -147,37 +180,12 @@ public class assestment_activity extends AppCompatActivity {
             }
         });
 
-
-        databaseReference = FirebaseDatabase.getInstance().getReference("Task");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                announcementList.clear();
-                for (DataSnapshot announcementSnapshot : snapshot.getChildren()) {
-                    Announcement announcement = announcementSnapshot.getValue(Announcement.class);
-                    if (announcement != null) {
-                        announcementList.add(announcement);
-                    }
-                }
-                adapter.notifyDataSetChanged();
-
-                if (announcementList.isEmpty()) {
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(assestment_activity.this);
+                    dialog.logout(Admin.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
@@ -222,17 +230,12 @@ public class assestment_activity extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
+    private void showChecklistDialog() {
+        Dialog dialog = new Dialog();
+        dialog.showChecklistDialog(Admin.this);
 
-        uploadTask.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent upload = new Intent(getApplicationContext(), addtastk.class);
-                startActivity(upload);
-                overridePendingTransition(0,0);
-                finish();
-            }
-        });
     }
 
     private void changeStatusBarColor(int color) {
@@ -241,11 +244,6 @@ public class assestment_activity extends AppCompatActivity {
         window.setStatusBarColor(color);
     }
 
-    private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(assestment_activity.this);
-
-    }
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);
@@ -285,6 +283,7 @@ public class assestment_activity extends AppCompatActivity {
         });
 
     }
+
 
     @Override
     public void onBackPressed() {

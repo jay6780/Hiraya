@@ -1,4 +1,4 @@
-package com.shs.app.Activity.Admin;
+package com.shs.app.Activity.Admin.Adminsettings;
 
 
 import android.app.AlertDialog;
@@ -46,8 +46,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.shs.app.Class.Announcement;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
-import com.squareup.picasso.Picasso;
 
 
 import java.io.ByteArrayOutputStream;
@@ -66,7 +66,7 @@ public class addtastk extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private StorageReference storageReference;
     private Uri imageUri;
-    private ImageView imagePick;
+    private ImageView imagePick,task;
     TextView fullname;
     ImageView imageView2;
     @Override
@@ -114,6 +114,7 @@ public class addtastk extends AppCompatActivity {
         fullname = findViewById(R.id.text7);
         imageView2 = findViewById(R.id.profileImageView);
         title = findViewById(R.id.titleTextView);
+        task = findViewById(R.id.addtask);
         announce_content = findViewById(R.id.contentEditText);
         saveBtn = findViewById(R.id.saveButton);
         progressDialog = new ProgressDialog(this);
@@ -184,6 +185,13 @@ public class addtastk extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveAnnouncement();
+            }
+        });
+        task.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Dialog_task task = new Dialog_task();
+                task.showtaskDialog(addtastk.this);
             }
         });
     }

@@ -1,4 +1,4 @@
-package com.shs.app.Activity.Student;
+package com.shs.app.Activity.Student.StudentSettings;
 
 
 
@@ -27,8 +27,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -40,10 +38,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.shs.app.Activity.Admin.Admin;
-import com.shs.app.Activity.Admin.AdminRegister;
-import com.shs.app.Activity.Admin.Studentinfo;
-import com.shs.app.Activity.Admin.addtastk;
+import com.shs.app.Activity.Admin.Adminsettings.addtastk;
 import com.shs.app.Adapter.AnnouncementAdapter;
 import com.shs.app.Class.Announcement;
 import com.shs.app.DialogUtils.Dialog;

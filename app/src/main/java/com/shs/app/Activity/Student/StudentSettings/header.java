@@ -1,4 +1,4 @@
-package com.shs.app.Activity.Student;
+package com.shs.app.Activity.Student.StudentSettings;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;

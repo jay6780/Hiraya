@@ -1,12 +1,10 @@
-package com.shs.app.Activity.Admin;
-
+package com.shs.app.Activity.Student.StudentSettings;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
-import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,8 +26,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -42,7 +40,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+import com.shs.app.Adapter.AnnouncementAdapter2;
 import com.shs.app.Adapter.ImageAdapter;
+import com.shs.app.Class.Announcement;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 import com.youth.banner.Banner;
@@ -53,14 +53,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Admin extends AppCompatActivity {
+public class Student extends AppCompatActivity {
     ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText;
+    TextView fullnameText,userEmail,usernameText,phoneText,birthdayText;
     Banner pagebanner;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    CardView assestment;
+
+    DatabaseReference databaseReference;
+    AnnouncementAdapter2 adapter;
+    List<Announcement> announcementList;
+    ListView memberListView;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -73,10 +77,12 @@ public class Admin extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin);
+        setContentView(R.layout.activity_student);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         pagebanner = findViewById(R.id.banner);
+
+
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
@@ -99,28 +105,20 @@ public class Admin extends AppCompatActivity {
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
-
-
-        // home buttons
-        assestment = findViewById(R.id.assessment_btn);
-
+        birthdayText = headerView.findViewById(R.id.birthday);
         retrieveStudentDetails();
+
+
+        memberListView = findViewById(R.id.memberListView);
+        announcementList = new ArrayList<>();
+        adapter = new AnnouncementAdapter2(this, announcementList);
+        memberListView.setAdapter(adapter);
+
 
         final List<Integer> images = new ArrayList<>();
         images.add(R.mipmap.page1);
         images.add(R.mipmap.page2);
         images.add(R.mipmap.page3);
-
-
-        assestment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-             Intent go = new Intent(getApplicationContext(),assestment_activity.class);
-             startActivity(go);
-             overridePendingTransition(0,0);
-             finish();
-            }
-        });
 
 //        final Intent[] intents = new Intent[images.size()];
         pagebanner.setAdapter(new ImageAdapter(images))
@@ -142,11 +140,35 @@ public class Admin extends AppCompatActivity {
 //        intents[1] = new Intent(this, python_student.class);
 
 
+
+        databaseReference = FirebaseDatabase.getInstance().getReference("Task");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                announcementList.clear();
+                for (DataSnapshot announcementSnapshot : snapshot.getChildren()) {
+                    Announcement announcement = announcementSnapshot.getValue(Announcement.class);
+                    if (announcement != null) {
+                        announcementList.add(announcement);
+                    }
+                }
+                adapter.notifyDataSetChanged();
+
+                if (announcementList.isEmpty()) {
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Show confirmation dialog before proceeding to profile update
-                DialogPlus dialog = DialogPlus.newDialog(Admin.this)
+                DialogPlus dialog = DialogPlus.newDialog(Student.this)
                         .setContentHolder(new ViewHolder(R.layout.cofirm))
                         .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -161,12 +183,13 @@ public class Admin extends AppCompatActivity {
                 proceedButton.setOnClickListener(v -> {
                     dialog.dismiss();
                     // Proceed to profile update activity
-                    Intent intent = new Intent(getApplicationContext(), profile_update2.class);
+                    Intent intent = new Intent(getApplicationContext(), profile_update.class);
                     intent.putExtra("name", fullnameText.getText().toString());
                     intent.putExtra("username", usernameText.getText().toString());
                     intent.putExtra("email", userEmail.getText().toString());
                     intent.putExtra("imageUrl", (String) studentImg.getTag());
                     intent.putExtra("phone", phoneText.getText().toString());
+                    intent.putExtra("birthday", birthdayText.getText().toString());
                     startActivity(intent);
                     overridePendingTransition(0, 0);
                     finish();
@@ -185,56 +208,21 @@ public class Admin extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(Admin.this);
+                    dialog.logout(Student.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
-                    Intent home = new Intent(getApplicationContext(), Admin.class);
+                    Intent home = new Intent(getApplicationContext(),Student.class);
                     startActivity(home);
-                    overridePendingTransition(0, 0);
+                    overridePendingTransition(0,0);
                     finish();
-                    return true;
-                }
-
-                if (item.getItemId() == R.id.Admin) {
-                    Intent home = new Intent(getApplicationContext(), AdminRegister.class);
-                    startActivity(home);
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-                }
-
-                if (item.getItemId() == R.id.About) {
-                    Toast.makeText(getApplicationContext(),"About Us", Toast.LENGTH_SHORT).show();
-                    overridePendingTransition(0, 0);
-                    return true;
-
 
                 }
-
-                if (item.getItemId() == R.id.info) {
-                    Intent student = new Intent(getApplicationContext(), Studentinfo.class);
-                    startActivity(student);
-                    overridePendingTransition(0, 0);
-                    finish();
-                    return true;
-
-
-                }
-
-                if (item.getItemId() == R.id.checklist) {
-                    showChecklistDialog();
-                    return true;
-                }
-
                 return false;
+
+
             }
         });
-    }
-
-    private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(Admin.this);
 
     }
 
@@ -246,7 +234,7 @@ public class Admin extends AppCompatActivity {
 
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);
+        DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("Student").child(userId);
         studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -256,10 +244,12 @@ public class Admin extends AppCompatActivity {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
-                    phoneText.setText(String.valueOf(phone));
+                    String birthday = dataSnapshot.child("birthday").getValue(String.class);
                     userEmail.setText(email);
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
+                    phoneText.setText(String.valueOf(phone));
+                    birthdayText.setText(birthday);
 
                     if (imageUrl != null && !imageUrl.isEmpty()) {
                         // Load image with CircleCrop transformation

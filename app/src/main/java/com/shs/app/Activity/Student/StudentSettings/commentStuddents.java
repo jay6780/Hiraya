@@ -1,6 +1,4 @@
-package com.shs.app.Activity.Admin;
-
-
+package com.shs.app.Activity.Student.StudentSettings;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -46,7 +44,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.shs.app.Activity.Student.Students;
 import com.shs.app.Adapter.CommentAdapter;
 import com.shs.app.Class.Comment;
 import com.shs.app.R;
@@ -62,7 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class adminComment extends AppCompatActivity {
+public class commentStuddents extends AppCompatActivity {
     ImageButton picture, sendBtn;
     EditText commentEditText;
     RecyclerView commentsRecyclerView;
@@ -84,7 +81,7 @@ public class adminComment extends AppCompatActivity {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent intent = new Intent(getApplicationContext(), assestment_activity.class);
+                        Intent intent = new Intent(getApplicationContext(), Student.class);
                         startActivity(intent);
                         overridePendingTransition(0,0);
                         finish();
@@ -109,7 +106,7 @@ public class adminComment extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_comment);
+        setContentView(R.layout.activity_comment_studdents);
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         Drawable homeButton = getResources().getDrawable(R.drawable.ic_home);
 // Set its color to black
@@ -186,7 +183,7 @@ public class adminComment extends AppCompatActivity {
         picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(adminComment.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(commentStuddents.this);
                 builder.setMessage("Are you sure you want to select picture to upload?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -283,7 +280,7 @@ public class adminComment extends AppCompatActivity {
             StorageReference storageRef = FirebaseStorage.getInstance().getReference();
             StorageReference imageRef = storageRef.child("images3/" + UUID.randomUUID().toString());
 
-            ProgressDialog progressDialog = new ProgressDialog(adminComment.this);
+            ProgressDialog progressDialog = new ProgressDialog(commentStuddents.this);
             progressDialog.setMessage("Uploading image...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setMax(100);
@@ -473,14 +470,14 @@ public class adminComment extends AppCompatActivity {
                         // Comment successfully added
                         commentEditText.setText(""); // Clear the input field
                         // Display a success toast message
-                        Toast.makeText(adminComment.this, "Message sent successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(commentStuddents.this, "Message sent successfully", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Handle the error
-                        Toast.makeText(adminComment.this, "Failed to add comment: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(commentStuddents.this, "Failed to add comment: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -489,7 +486,7 @@ public class adminComment extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        Intent i = new Intent(getApplicationContext(), assestment_activity.class);
+        Intent i = new Intent(getApplicationContext(), Student.class);
         startActivity(i);
         overridePendingTransition(0, 0);
         finish();

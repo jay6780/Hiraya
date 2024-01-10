@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/beige"
     android:id="@+id/drawer_layout"
-    tools:context=".Activity.Student.Student">
+    tools:context=".Activity.Student.StudentSettings.Student">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">

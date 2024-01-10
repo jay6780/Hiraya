@@ -30,9 +30,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.shs.app.Activity.Admin.Admin;
-import com.shs.app.Activity.Student.Student;
-import com.shs.app.Activity.Student.signup;
+import com.shs.app.Activity.Admin.Adminsettings.Admin;
+import com.shs.app.Activity.Student.StudentSettings.Student;
+import com.shs.app.Activity.Student.StudentSettings.signup;
 import com.shs.app.R;
 
 public class login extends AppCompatActivity {
