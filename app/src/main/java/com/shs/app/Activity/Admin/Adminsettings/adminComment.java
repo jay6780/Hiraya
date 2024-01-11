@@ -171,6 +171,7 @@ public class adminComment extends AppCompatActivity {
                     .into(imageView);
         } else {
             imageView.setImageResource(R.drawable.baseline_person_24);
+            imageView.setVisibility(View.GONE);
         }
 
 

@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -134,6 +135,21 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             viewHolder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_24);
         }
 
+
+        viewHolder.titleTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String fileUrl = announcement.getFileUrl();
+                if (fileUrl != null && !fileUrl.isEmpty()) {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                    getContext().startActivity(browserIntent);
+                } else {
+                    Toast.makeText(getContext(), "File URL not available", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+
         if (announcement != null) {
             viewHolder.titleTextView.setText(announcement.getTitle());
             viewHolder.likeCountTextView.setText(String.valueOf(announcement.getLikesCount()));
@@ -146,8 +162,10 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                 Picasso.get()
                         .load(announcement.getImageUrl())
                         .into(viewHolder.imageView);
+                viewHolder.imageView.setVisibility(View.VISIBLE);
             } else {
-                viewHolder.imageView.setImageResource(R.drawable.baseline_person_24);;
+                viewHolder.imageView.setImageResource(R.drawable.baseline_person_24);
+                viewHolder.imageView.setVisibility(View.GONE);
             }
 
             if (announcement.getImage() != null) {

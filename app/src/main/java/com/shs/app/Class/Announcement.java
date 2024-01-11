@@ -12,9 +12,11 @@ public class Announcement {
     private String date;
     private String name;
     private String imageUrl;
+    private String fileUrl; // Added fileUrl
 
     private Map<String, Boolean> likes;
     private int likesCount;
+
     public Announcement() {
         // Default constructor required for Firebase Realtime Database
     }
@@ -75,6 +77,14 @@ public class Announcement {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public void setLiked(boolean liked) {

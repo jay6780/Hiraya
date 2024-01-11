@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextPaint;
@@ -143,13 +144,31 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             viewHolder.dateTextView.setText(announcement.getDate());
             viewHolder.fullNameTextView.setText(announcement.getName());
 
+
+            viewHolder.titleTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String fileUrl = announcement.getFileUrl();
+                    if (fileUrl != null && !fileUrl.isEmpty()) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                        getContext().startActivity(browserIntent);
+                    } else {
+                        Toast.makeText(getContext(), "File URL not available", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+
+
             // Load and display the image using Picasso
             if (announcement.getImageUrl() != null) {
                 Picasso.get()
                         .load(announcement.getImageUrl())
                         .into(viewHolder.imageView);
+                viewHolder.imageView.setVisibility(View.VISIBLE);
             } else {
-                viewHolder.imageView.setImageResource(R.drawable.baseline_person_24);;
+                viewHolder.imageView.setImageResource(R.drawable.baseline_person_24);
+                viewHolder.imageView.setVisibility(View.GONE);
             }
 
             if (announcement.getImage() != null) {
@@ -172,6 +191,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                         .apply(requestOptions)
                         .into(viewHolder.userImage);
             }
+
 
             SpannableString spannableString = new SpannableString(announcement.getContent());
 

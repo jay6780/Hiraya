@@ -1,10 +1,12 @@
 package com.shs.app.Activity.Admin.Adminsettings;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -14,6 +16,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -69,6 +72,8 @@ public class addtastk extends AppCompatActivity {
     private ImageView imagePick,task;
     TextView fullname;
     ImageView imageView2;
+    private static final int FILE_SELECT_CODE = 0;
+    private Uri fileUri;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -190,11 +195,19 @@ public class addtastk extends AppCompatActivity {
         task.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Dialog_task task = new Dialog_task();
-                task.showtaskDialog(addtastk.this);
+                selectFile();
             }
         });
     }
+
+    private void selectFile() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+
+        startActivityForResult(Intent.createChooser(intent, "Select a file"), FILE_SELECT_CODE);
+    }
+
 
     private void changeStatusBarColor(int color) {
         Window window = getWindow();
@@ -234,23 +247,46 @@ public class addtastk extends AppCompatActivity {
         // Check if an image is selected
         if (imageUri != null) {
             uploadImage(announcementId, announcement);
+        } else if (fileUri != null) {
+            uploadFile(announcementId, announcement);
         } else {
-            // Show an error message if no image is selected
-            Toast.makeText(this, "Please upload an image", Toast.LENGTH_SHORT).show();
+            // Show an error message if neither image nor file is selected
+            Toast.makeText(this, "Please upload an image or select a file", Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
         }
     }
 
+    // Add this method to handle file upload
+    private void uploadFile(String announcementId, Announcement announcement) {
+        progressDialog.setMessage("Uploading File...");
 
+        // Create a reference to the location where the file will be stored in Firebase Storage
+        StorageReference fileRef = FirebaseStorage.getInstance().getReference("TaskFiles").child(announcementId);
 
+        // Upload the file to Firebase Storage
+        UploadTask uploadTask = fileRef.putFile(fileUri);
+        uploadTask.continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
 
+            // Retrieve the URL of the uploaded file
+            return fileRef.getDownloadUrl();
+        }).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Uri downloadUri = task.getResult();
 
+                // Set the file URL in the announcement object
+                announcement.setFileUrl(downloadUri.toString());
 
-
-
-
-
-
+                // Save the announcement to the database
+                saveAnnouncementToDatabase(announcementId, announcement);
+            } else {
+                progressDialog.dismiss();
+                showErrorDialog();
+            }
+        });
+    }
 
     private void uploadImage(String announcementId, Announcement announcement) {
         progressDialog.setMessage("Uploading Image...");
@@ -367,7 +403,37 @@ public class addtastk extends AppCompatActivity {
 
             // Set the selected image to an ImageView if needed
             imagePick.setImageURI(imageUri);
+        } else if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            fileUri = data.getData();
+            String fileName = getFileName(fileUri);
+            if (title != null) {
+                title.setText(fileName);
+            }
         }
+    }
+    @SuppressLint("Range")
+    private String getFileName(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                if (cursor != null) {
+                    cursor.close();
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
     }
 
     private String getCurrentTime() {
