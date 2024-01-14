@@ -1,4 +1,4 @@
-package com.shs.app.Class;
+package com.shs.app.Class.Announce;
 
 import java.util.Map;
 

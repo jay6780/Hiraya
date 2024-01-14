@@ -42,8 +42,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
-import com.shs.app.Adapter.AnnouncementAdapter;
-import com.shs.app.Class.Announcement;
+import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter;
+import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 

@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -17,7 +17,73 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ShsThesis"
         tools:targetApi="31">
+        <activity
+            android:name=".Activity.Admin.quizManager.archiving.archive"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.PeScores.Pescore2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.PeScores.PEscore1"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Quiz.PEquiz"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.PE.pe_multiple_update"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.PE.pe_multiple"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.PE.peUpdateFill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.PE.peFillIntheblanks"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.PE.pe_fill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores1"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Quiz.Gen_Physics2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_multiple_update"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_fill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_multiple"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_fill_update"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.QuizSubjects.GenPhysics.quiz_general_physics"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.QuizCount.QuizSubjects"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.PE.p_eSubject"
+            android:exported="false" />
 
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
 
         <activity
             android:name=".Activity.Admin.Uploadtask.PhysicalEducationActivity"

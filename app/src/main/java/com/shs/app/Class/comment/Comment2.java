@@ -1,6 +1,5 @@
-package com.shs.app.Class;
-
-public class Comment {
+package com.shs.app.Class.comment;
+public class Comment2 {
     private String name;
     private String messageText;
     private String image;
@@ -9,10 +8,10 @@ public class Comment {
     private String imageContent;
 
     // Empty constructor (required for Firebase)
-    public Comment() {
+    public Comment2() {
     }
 
-    public Comment(String name, String messageText, String image, String profession, String email,String imageContent) {
+    public Comment2(String name, String messageText, String image, String profession, String email,String imageContent) {
         this.name = name;
         this.messageText = messageText;
         this.image = image;

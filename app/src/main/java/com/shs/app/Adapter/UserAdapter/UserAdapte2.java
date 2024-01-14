@@ -1,4 +1,4 @@
-package com.shs.app.Adapter;
+package com.shs.app.Adapter.UserAdapter;
 
 
 import android.content.Context;
@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CenterCrop;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import com.shs.app.Class.User3;
+import com.shs.app.Class.User.User3;
 import com.shs.app.R;
 
 import java.util.List;

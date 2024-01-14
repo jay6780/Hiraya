@@ -31,7 +31,15 @@
             android:text="User Name"
             android:textSize="16sp"
             android:textStyle="bold" />
-
+        <TextView
+            android:id="@+id/finameText"
+            app:fontFamily="@font/century_gothic"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comment text goes here"
+            android:textSize="14sp" />
         <TextView
             android:id="@+id/commentTextView"
             app:fontFamily="@font/century_gothic"

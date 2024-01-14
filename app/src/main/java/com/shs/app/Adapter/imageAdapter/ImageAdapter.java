@@ -1,4 +1,4 @@
-package com.shs.app.Adapter;
+package com.shs.app.Adapter.imageAdapter;
 
 
 import android.view.LayoutInflater;

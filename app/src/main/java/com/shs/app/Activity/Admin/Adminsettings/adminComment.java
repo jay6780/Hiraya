@@ -1,11 +1,13 @@
 package com.shs.app.Activity.Admin.Adminsettings;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -14,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -47,8 +50,8 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.shs.app.Activity.Student.StudentSettings.Students;
-import com.shs.app.Adapter.CommentAdapter;
-import com.shs.app.Class.Comment;
+import com.shs.app.Adapter.CommentAdapter.CommentAdapter;
+import com.shs.app.Class.comment.Comment;
 import com.shs.app.R;
 import com.squareup.picasso.Picasso;
 
@@ -73,6 +76,8 @@ public class adminComment extends AppCompatActivity {
     private FirebaseUser currentUser;
     private CommentAdapter commentAdapter;
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int FILE_SELECT_CODE = 0;
+    private Uri fileUri;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -116,7 +121,7 @@ public class adminComment extends AppCompatActivity {
         homeButton.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
 // Set the modified drawable as the home button icon
         getSupportActionBar().setHomeAsUpIndicator(homeButton);
-        getSupportActionBar().setTitle("Hiraya");
+        getSupportActionBar().setTitle("HIRAYA");
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         getSupportActionBar().setTitle(text);
@@ -187,21 +192,9 @@ public class adminComment extends AppCompatActivity {
         picture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(adminComment.this);
-                builder.setMessage("Are you sure you want to select picture to upload?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                openImagePicker();
-                            }
-                        })
-                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+                openImagePicker();
             }
+
         });
 
         // Set an OnClickListener for the send button to add a new comment
@@ -210,22 +203,22 @@ public class adminComment extends AppCompatActivity {
             public void onClick(View v) {
                 // Get the text from the EditText
                 String messageText = commentEditText.getText().toString().trim();
-
-                // Check if the message is not empty
-                if (!messageText.isEmpty()) {
-                    // Generate a unique comment ID
+                if (selectedImageUri != null) {
+                    uploadImageToFirebaseStorage();
+                } else if (fileUri != null) {
+                    String fileName = getFileName(fileUri);
+                    uploadFileToFirebaseStorage(fileUri, fileName);
+                } else if (!messageText.isEmpty()) {
                     String commentId = commentsRef.push().getKey();
-
-                    // Get the current user's UID (assuming you are using Firebase Authentication)
                     String userId = currentUser.getUid();
-
-                    // Call a method to get user details and save the comment
-                    getUserDetailsAndSaveComment(userId, messageText, commentId,null);
+                    getUserDetailsAndSaveComment(userId, messageText, commentId, null, "", "");
                 } else {
-                    // Handle empty message input
+                    // Handle empty message input or no file selected
+                    Toast.makeText(adminComment.this, "Please enter a message or select a file", Toast.LENGTH_SHORT).show();
                 }
             }
         });
+
 
 
         // Listen for changes in the database and update the RecyclerView
@@ -253,11 +246,35 @@ public class adminComment extends AppCompatActivity {
         window.setStatusBarColor(color);
     }
 
+
     private void openImagePicker() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+        AlertDialog.Builder builder = new AlertDialog.Builder(adminComment.this);
+        builder.setTitle("Choose from?");
+        CharSequence[] options = {"Gallery", "File", "Cancel"};
+
+        builder.setItems(options, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (options[which].equals("Gallery")) {
+                    // Choose from Gallery
+                    Intent intent = new Intent();
+                    intent.setType("image/*");
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
+                } else if (options[which].equals("File")) {
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("*/*");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    String[] mimeTypes = {"application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                    startActivityForResult(Intent.createChooser(intent, "Select a file"), FILE_SELECT_CODE);
+                } else if (options[which].equals("Cancel")) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        builder.show();
     }
 
     @Override
@@ -265,19 +282,99 @@ public class adminComment extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            // Handle image upload
             Uri imageUri = data.getData();
-            // Set the selected image to the ImageView
             picture.setImageURI(imageUri);
-
-            // Compress and get the compressed image URI
             Uri compressedImageUri = compressImage(imageUri);
-            // Use the compressedImageUri as needed
             selectedImageUri = compressedImageUri;
-
-            // Upload the compressed image to Firebase Storage
             uploadImageToFirebaseStorage();
+        } else if (requestCode == FILE_SELECT_CODE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            // Handle file upload
+            fileUri = data.getData();
+
+            // Get the file name from the Uri
+            String fileName = getFileName(fileUri);
+
+            // Pass the file name when calling uploadFileToFirebaseStorage
+            uploadFileToFirebaseStorage(fileUri, fileName);
         }
     }
+
+    private void uploadFileToFirebaseStorage(Uri fileUri, String fileName) {
+        if (fileUri != null) {
+            StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+            StorageReference fileRef = storageRef.child("files/" + fileName);
+
+            ProgressDialog progressDialog = new ProgressDialog(adminComment.this);
+            progressDialog.setMessage("Uploading file...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog.setMax(100);
+            progressDialog.setProgress(0);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
+            UploadTask uploadTask = fileRef.putFile(fileUri);
+            uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+                    progressDialog.setProgress((int) progress);
+                }
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
+
+                    fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri downloadUrl) {
+                            String fileUrl = downloadUrl.toString();
+                            String commentId = commentsRef.push().getKey();
+
+                            // Pass the file name when calling getUserDetailsAndSaveComment
+                            getUserDetailsAndSaveComment(currentUser.getUid(), null, commentId, null, fileName,fileUrl);
+
+
+                            // Clear the selected file URI
+                            adminComment.this.fileUri = null; // Use the class-level field here
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(getApplicationContext(), "Failed to retrieve file URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), "Failed to upload file: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+
+    @SuppressLint("Range")
+    private String getFileName(Uri fileUri) {
+        String fileName = null;
+        String scheme = fileUri.getScheme();
+        if (scheme != null && scheme.equals("content")) {
+            Cursor cursor = getContentResolver().query(fileUri, null, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                fileName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                cursor.close();
+            }
+        } else if (scheme != null && scheme.equals("file")) {
+            fileName = new File(fileUri.getPath()).getName();
+        }
+        return fileName != null ? fileName : "unknown_file";
+    }
+
+
+
+    // Inside uploadImageToFirebaseStorage method
 
     private void uploadImageToFirebaseStorage() {
         if (selectedImageUri != null) {
@@ -296,10 +393,7 @@ public class adminComment extends AppCompatActivity {
             uploadTask.addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                    // Calculate the upload progress in percentage
                     double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-
-                    // Update the ProgressDialog with the current progress
                     progressDialog.setProgress((int) progress);
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -312,7 +406,10 @@ public class adminComment extends AppCompatActivity {
                         public void onSuccess(Uri downloadUrl) {
                             String imageContent = downloadUrl.toString();
                             String commentId = commentsRef.push().getKey();
-                            getUserDetailsAndSaveComment(currentUser.getUid(), " ", commentId, imageContent);
+                            getUserDetailsAndSaveComment(currentUser.getUid(), null, commentId, imageContent, null, null);
+
+                            // Reset the selectedImageUri to null after successful upload
+                            selectedImageUri = null;
 
                             // Show the image drawable again
                             picture.setImageResource(R.drawable.ic_baseline_image_24);
@@ -333,6 +430,7 @@ public class adminComment extends AppCompatActivity {
             });
         }
     }
+
 
     private Uri compressImage(Uri imageUri) {
         try {
@@ -409,7 +507,7 @@ public class adminComment extends AppCompatActivity {
         dialog.show();
     }
 
-    private void getUserDetailsAndSaveComment(String userId, String messageText, String commentId,String imageContent) {
+    private void getUserDetailsAndSaveComment(String userId, String messageText, String commentId, String imageContent, String fileName, String fileUrl) {
         DatabaseReference userRef = studentsRef.child(userId);
         userRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -424,7 +522,7 @@ public class adminComment extends AppCompatActivity {
                         String email = student.getEmail();
 
                         // Pass the user details to the saveMessage method
-                        saveMessage(fullName, messageText, imageUrl, profession, email, commentId,imageContent);
+                        saveMessage(fullName, messageText, imageUrl, profession, email, commentId, imageContent, fileName, fileUrl, userId);
                     }
                 } else {
                     // If not found in Students, check in Admin3
@@ -442,7 +540,7 @@ public class adminComment extends AppCompatActivity {
                                     String email = admin.getEmail();
 
                                     // Pass the user details to the saveMessage method
-                                    saveMessage(fullName, messageText, imageUrl, profession, email, commentId,imageContent);
+                                    saveMessage(fullName, messageText, imageUrl, profession, email, commentId, imageContent, fileName, fileUrl, userId);
                                 }
                             }
                         }
@@ -462,9 +560,8 @@ public class adminComment extends AppCompatActivity {
         });
     }
 
-    private void saveMessage(String fullName, String messageText, String imageUrl, String profession, String email, String commentId,String imageContent) {
-        // Create a new Comment object
-        Comment comment = new Comment(fullName, messageText, imageUrl, profession, email,imageContent);
+    private void saveMessage(String fullName, String messageText, String imageUrl, String profession, String email, String commentId, String imageContent, String fileName, String fileUrl, String uid) {
+        Comment comment = new Comment(fullName, messageText, imageUrl, profession, email, imageContent, fileName, fileUrl, uid);
 
         // Save the comment to the "comments" database reference with the generated commentId
         commentsRef.child(commentId).setValue(comment)
@@ -485,7 +582,6 @@ public class adminComment extends AppCompatActivity {
                     }
                 });
     }
-
 
 
     @Override

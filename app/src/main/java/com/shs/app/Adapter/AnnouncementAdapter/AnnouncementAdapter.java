@@ -1,4 +1,5 @@
-package com.shs.app.Adapter;
+package com.shs.app.Adapter.AnnouncementAdapter;
+
 
 
 import android.app.Activity;
@@ -15,6 +16,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,8 +47,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
-import com.shs.app.Class.Announcement;
+import com.shs.app.Activity.Admin.Adminsettings.adminComment;
+import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.R;
 import com.squareup.picasso.Picasso;
 
@@ -54,12 +56,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
+public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
     private ViewHolder currentViewHolder;
     private static class ViewHolder {
         TextView titleTextView;
-        TextView contentTextView,commentCounts;
-        TextView timeTextView,likeCountTextView;
+        TextView contentTextView;
+        TextView timeTextView,likeCountTextView,commentCounts;
         TextView dateTextView;
         TextView fullNameTextView;
         ImageView imageView,userImage;
@@ -70,9 +72,10 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
 
     private Dialog webViewDialog;
 
-    public AnnouncementAdapter2(Context context, List<Announcement> announcements) {
+    public AnnouncementAdapter(Context context, List<Announcement> announcements) {
         super(context, 0, announcements);
         fetchLikedStatusForAnnouncements(announcements);
+
     }
 
     private void fetchLikedStatusForAnnouncements(List<Announcement> announcements) {
@@ -107,11 +110,11 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
 
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_announcement2, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_announcement, parent, false);
             viewHolder.titleTextView = convertView.findViewById(R.id.titleTextView);
+            viewHolder.commentCounts = convertView.findViewById(R.id.commentCount);
             viewHolder.likeCountTextView = convertView.findViewById(R.id.likecount);
             viewHolder.likeThumb = convertView.findViewById(R.id.likeThumb);
-            viewHolder.commentCounts = convertView.findViewById(R.id.commentCount);
             viewHolder.userImage = convertView.findViewById(R.id.imageUser);
             viewHolder.contentTextView = convertView.findViewById(R.id.contentTextView);
             viewHolder.timeTextView = convertView.findViewById(R.id.timeTextView);
@@ -125,9 +128,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         currentViewHolder = viewHolder;
-
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("LikedAnnouncements", Context.MODE_PRIVATE);
-        boolean isLiked = getLikeStatus(announcement.getId(), sharedPreferences);
+        boolean isLiked = getLikeStatus(announcement.getId(), getCurrentUserUID(),viewHolder);
 
         if (isLiked) {
             viewHolder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_25);
@@ -135,27 +136,32 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             viewHolder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_24);
         }
 
-
-        viewHolder.titleTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String fileUrl = announcement.getFileUrl();
-                if (fileUrl != null && !fileUrl.isEmpty()) {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
-                    getContext().startActivity(browserIntent);
-                } else {
-                    Toast.makeText(getContext(), "File URL not available", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
         if (announcement != null) {
             viewHolder.titleTextView.setText(announcement.getTitle());
             viewHolder.likeCountTextView.setText(String.valueOf(announcement.getLikesCount()));
             viewHolder.timeTextView.setText(announcement.getTime());
             viewHolder.dateTextView.setText(announcement.getDate());
             viewHolder.fullNameTextView.setText(announcement.getName());
+
+            SpannableString spannableTitle = new SpannableString(announcement.getTitle());
+
+            spannableTitle.setSpan(new android.text.style.ForegroundColorSpan(Color.RED), 0, spannableTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableTitle.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, spannableTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            viewHolder.titleTextView.setText(spannableTitle);
+
+            viewHolder.titleTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String fileUrl = announcement.getFileUrl();
+                    if (fileUrl != null && !fileUrl.isEmpty()) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
+                        getContext().startActivity(browserIntent);
+                    } else {
+                        Toast.makeText(getContext(), "File URL not available", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
             // Load and display the image using Picasso
             if (announcement.getImageUrl() != null) {
@@ -188,6 +194,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                         .apply(requestOptions)
                         .into(viewHolder.userImage);
             }
+
 
             SpannableString spannableString = new SpannableString(announcement.getContent());
 
@@ -235,9 +242,10 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                     } else {
                         likeFood(announcement, announcement.getId());
                     }
-                    updateLikeUI(viewHolder, announcement); // Update like UI
+                    updateLikeUI(viewHolder,announcement.isLiked()); // Update like UI
                 }
             });
+
 
 
             Query commentsRef = FirebaseDatabase.getInstance().getReference()
@@ -256,7 +264,6 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                     // Handle errors
                 }
             });
-
 
             viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -326,7 +333,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                 @Override
                 public void onClick(View v) {
                     // Create an Intent to open the CommentActivity
-                    Intent intent = new Intent(getContext(), commentStuddents.class);
+                    Intent intent = new Intent(getContext(), adminComment.class);
                     // Pass the announcement details as extras
                     intent.putExtra("announcementId", announcement.getId()); // Pass the announcement ID
                     intent.putExtra("title", announcement.getTitle());
@@ -346,34 +353,35 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
         return convertView;
     }
 
-    private void updateLikeUI(ViewHolder holder, Announcement announcement) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("LikedAnnouncements", Context.MODE_PRIVATE);
-
-        if (announcement.isLiked()) {
+    private void updateLikeUI(ViewHolder holder, boolean isLiked) {
+        if (isLiked) {
             holder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_25);
-            // Save liked status in SharedPreferences
-            saveLikeStatus(announcement.getId(), true, sharedPreferences);
         } else {
             holder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_24);
-            // Save unliked status in SharedPreferences
-            saveLikeStatus(announcement.getId(), false, sharedPreferences);
         }
     }
+    private boolean getLikeStatus(String announcementId, String currentUserUID, ViewHolder viewHolder) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Task").child(announcementId).child("likes");
 
-    private void saveLikeStatus(String announcementId, boolean isLiked, SharedPreferences sharedPreferences) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(announcementId, isLiked);
-        editor.apply();
-    }
+        // Check if the user has liked the announcement
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isLiked = dataSnapshot.hasChild(currentUserUID);
+                updateLikeUI(viewHolder, isLiked);
+                Log.d("LikeStatus", "Announcement ID: " + announcementId + ", User ID: " + currentUserUID + ", Liked: " + isLiked);
+            }
 
-    private boolean getLikeStatus(String announcementId, SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(announcementId, false); // Default value is false
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("LikeStatus", "Error retrieving like status", databaseError.toException());
+            }
+        });
+        return false;
     }
 
     private void likeFood(Announcement announcement, String announcementId) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Task").child(announcementId);
-
-        // Check if the user has already liked the announcement
         databaseReference.child("likes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -386,7 +394,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                     databaseReference.child("likesCount").setValue(likes + 1);
                     announcement.setLiked(true);
                     notifyDataSetChanged();
-                    updateLikeUI(currentViewHolder, announcement);
+                    updateLikeUI(currentViewHolder, announcement.isLiked());
                 }
             }
 
@@ -409,7 +417,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                     databaseReference.child("likesCount").setValue(likes - 1);
                     announcement.setLiked(false);
                     notifyDataSetChanged();
-                    updateLikeUI(currentViewHolder, announcement);
+                    updateLikeUI(currentViewHolder, announcement.isLiked());
                 }
             }
 

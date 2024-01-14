@@ -39,8 +39,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.shs.app.Activity.Admin.Adminsettings.addtastk;
-import com.shs.app.Adapter.AnnouncementAdapter;
-import com.shs.app.Class.Announcement;
+import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter;
+import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 

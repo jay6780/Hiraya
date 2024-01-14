@@ -48,7 +48,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.shs.app.Class.Announcement;
+import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
@@ -69,7 +69,7 @@ public class addtastk extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private StorageReference storageReference;
     private Uri imageUri;
-    private ImageView imagePick,task;
+    private ImageView imagePick,task,addQuiz;
     TextView fullname;
     ImageView imageView2;
     private static final int FILE_SELECT_CODE = 0;
@@ -126,6 +126,13 @@ public class addtastk extends AppCompatActivity {
         progressDialog.setMessage("Saving Announcement...");
         progressDialog.setCancelable(false);
         imagePick = findViewById(R.id.imagepick);
+        addQuiz = findViewById(R.id.selectQuiz);
+
+        String databaseReferenceName = getIntent().getStringExtra("databaseReferenceName");
+
+        // Set the databaseReferenceName to the appropriate TextView
+
+        title.setText(databaseReferenceName);
 
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -179,6 +186,13 @@ public class addtastk extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference("TaskImage");
         databaseReference = FirebaseDatabase.getInstance().getReference("Task");
 
+        addQuiz.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selectQuizUpload();
+            }
+        });
+
         imagePick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -200,11 +214,18 @@ public class addtastk extends AppCompatActivity {
         });
     }
 
+    private void selectQuizUpload() {
+        Dialog_task dialog = new Dialog_task();
+        dialog.showtaskDialog(addtastk.this);
+
+    }
+
     private void selectFile() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-
+        String[] mimeTypes = {"application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
         startActivityForResult(Intent.createChooser(intent, "Select a file"), FILE_SELECT_CODE);
     }
 

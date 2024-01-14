@@ -1,8 +1,15 @@
 <resources>
     <string name="app_name">Hiraya</string>
+
+    <!--    //drawer-->
     <string name="open">Open Navigation Drawer</string>
     <string name="close">Close Navigation Drawer</string>
 
+    <!--    confirmation-->
+    <string name="Confirmation">Confirmation</string>
+
+
+    <!--string list-->
     <string-array name="checklist_items">
         <item>Select Subject</item>
         <item>General Physics2</item>

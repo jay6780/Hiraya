@@ -154,6 +154,42 @@
         </LinearLayout>
 
 
+
+        <LinearLayout
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/text4"
+            android:layout_marginStart="10dp"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/Image"
+            android:orientation="vertical"
+            android:id="@+id/quiz"
+            android:background="@drawable/borderbackground">
+            <ImageView
+                android:id="@+id/selectQuiz"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:src="@mipmap/quiz"
+                android:scaleType="centerCrop"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                android:fontFamily="@font/century_gothic"
+                android:textColor="@color/black"
+                android:text="Quiz"/>
+
+        </LinearLayout>
+
+
         <Button
             android:id="@+id/saveButton"
             android:layout_below="@+id/folder"

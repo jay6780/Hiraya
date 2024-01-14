@@ -1,9 +1,8 @@
-package com.shs.app.Adapter;
+package com.shs.app.Adapter.AnnouncementAdapter;
 
 
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,6 +15,7 @@ import android.text.Spanned;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,13 +31,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatButton;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -46,8 +43,12 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.shs.app.Activity.Admin.Adminsettings.adminComment;
-import com.shs.app.Class.Announcement;
+import com.shs.app.Activity.Admin.Adminsettings.Admin;
+import com.shs.app.Activity.Student.StudentSettings.Quiz.Gen_Physics2;
+import com.shs.app.Activity.Student.StudentSettings.Quiz.PEquiz;
+import com.shs.app.Activity.Student.StudentSettings.Student;
+import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
+import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.R;
 import com.squareup.picasso.Picasso;
 
@@ -55,7 +56,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
+public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
     private ViewHolder currentViewHolder;
     private static class ViewHolder {
         TextView titleTextView;
@@ -64,14 +65,14 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
         TextView dateTextView;
         TextView fullNameTextView;
         ImageView imageView,userImage;
-        AppCompatButton deleteButton;
+
         ImageButton commentBtn;
         ImageButton likeThumb;
     }
 
     private Dialog webViewDialog;
 
-    public AnnouncementAdapter(Context context, List<Announcement> announcements) {
+    public AnnouncementAdapter2(Context context, List<Announcement> announcements) {
         super(context, 0, announcements);
         fetchLikedStatusForAnnouncements(announcements);
 
@@ -109,7 +110,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
 
         if (convertView == null) {
             viewHolder = new ViewHolder();
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_announcement, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_announcement2, parent, false);
             viewHolder.titleTextView = convertView.findViewById(R.id.titleTextView);
             viewHolder.commentCounts = convertView.findViewById(R.id.commentCount);
             viewHolder.likeCountTextView = convertView.findViewById(R.id.likecount);
@@ -120,7 +121,6 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             viewHolder.dateTextView = convertView.findViewById(R.id.dateTextView);
             viewHolder.fullNameTextView = convertView.findViewById(R.id.fullNameTextView);
             viewHolder.imageView = convertView.findViewById(R.id.imageView);
-            viewHolder.deleteButton = convertView.findViewById(R.id.deleteButton);
             viewHolder.commentBtn = convertView.findViewById(R.id.commentBtn);
             convertView.setTag(viewHolder);
         } else {
@@ -128,8 +128,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
         }
         currentViewHolder = viewHolder;
 
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("LikedAnnouncements", Context.MODE_PRIVATE);
-        boolean isLiked = getLikeStatus(announcement.getId(), sharedPreferences);
+        boolean isLiked = getLikeStatus(announcement.getId(), getCurrentUserUID(),viewHolder);
 
         if (isLiked) {
             viewHolder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_25);
@@ -144,21 +143,42 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             viewHolder.dateTextView.setText(announcement.getDate());
             viewHolder.fullNameTextView.setText(announcement.getName());
 
+            SpannableString spannableTitle = new SpannableString(announcement.getTitle());
 
+            spannableTitle.setSpan(new android.text.style.ForegroundColorSpan(Color.RED), 0, spannableTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            spannableTitle.setSpan(new android.text.style.StyleSpan(android.graphics.Typeface.BOLD), 0, spannableTitle.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            viewHolder.titleTextView.setText(spannableTitle);
+
+            // Inside getView method
             viewHolder.titleTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String title = announcement.getTitle();
                     String fileUrl = announcement.getFileUrl();
-                    if (fileUrl != null && !fileUrl.isEmpty()) {
+
+                    if (title.contains("Gen_Physics2")) {
+                        Intent intent = new Intent(getContext(), Gen_Physics2.class);
+                        intent.putExtra("title", title);
+                        getContext().startActivity(intent);
+                        ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
+                        ((Activity) getContext()).finish();
+                    } else if (title.contains("PE")) {
+                        // Add code to launch another activity for PE title
+                        Intent peIntent = new Intent(getContext(), PEquiz.class);
+                        peIntent.putExtra("title", title);
+                        getContext().startActivity(peIntent);
+                        ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
+                        ((Activity) getContext()).finish();
+                    } else if (fileUrl != null && !fileUrl.isEmpty() && isValidUrl(fileUrl)) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
                         getContext().startActivity(browserIntent);
                     } else {
-                        Toast.makeText(getContext(), "File URL not available", Toast.LENGTH_SHORT).show();
+                        // Handle other cases or show a toast
+                        Toast.makeText(getContext(), "Invalid title or file URL not found", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
-
-
 
             // Load and display the image using Picasso
             if (announcement.getImageUrl() != null) {
@@ -239,11 +259,9 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                     } else {
                         likeFood(announcement, announcement.getId());
                     }
-                    updateLikeUI(viewHolder, announcement); // Update like UI
+                    updateLikeUI(viewHolder,announcement.isLiked()); // Update like UI
                 }
             });
-
-
 
             Query commentsRef = FirebaseDatabase.getInstance().getReference()
                     .child("comments")
@@ -261,76 +279,11 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                     // Handle errors
                 }
             });
-
-            viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("Confirm Delete");
-                    builder.setMessage("Are you sure you want to delete this announcement?");
-
-                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Remove the announcement from the list
-                            remove(announcement);
-                            notifyDataSetChanged();
-
-                            // Delete the announcement from the database
-                            DatabaseReference announcementReference = FirebaseDatabase.getInstance().getReference("Task");
-
-                            announcementReference.child(announcement.getId()).removeValue()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            Toast.makeText(getContext(), "Announcement deleted successfully", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(getContext(), "Failed to delete announcement", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
-
-                            // Delete the associated comments
-                            DatabaseReference commentReference = FirebaseDatabase.getInstance().getReference("comments");
-                            Query commentsQuery = commentReference.orderByChild("announcementId").equalTo(announcement.getId());
-
-                            commentsQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        snapshot.getRef().removeValue();
-                                    }
-                                    Toast.makeText(getContext(), "Comments deleted successfully", Toast.LENGTH_SHORT).show();
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    Toast.makeText(getContext(), "Failed to delete comments", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    });
-
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-
-                    AlertDialog alertDialog = builder.create();
-                    alertDialog.show();
-                }
-            });
-
             viewHolder.commentBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Create an Intent to open the CommentActivity
-                    Intent intent = new Intent(getContext(), adminComment.class);
+                    Intent intent = new Intent(getContext(), commentStuddents.class);
                     // Pass the announcement details as extras
                     intent.putExtra("announcementId", announcement.getId()); // Pass the announcement ID
                     intent.putExtra("title", announcement.getTitle());
@@ -350,34 +303,42 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
         return convertView;
     }
 
-    private void updateLikeUI(ViewHolder holder, Announcement announcement) {
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("LikedAnnouncements", Context.MODE_PRIVATE);
 
-        if (announcement.isLiked()) {
+    private boolean isValidUrl(String url) {
+        Pattern pattern = Patterns.WEB_URL;
+        Matcher matcher = pattern.matcher(url);
+        return matcher.matches();
+    }
+
+    private void updateLikeUI(AnnouncementAdapter2.ViewHolder holder, boolean isLiked) {
+        if (isLiked) {
             holder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_25);
-            // Save liked status in SharedPreferences
-            saveLikeStatus(announcement.getId(), true, sharedPreferences);
         } else {
             holder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_24);
-            // Save unliked status in SharedPreferences
-            saveLikeStatus(announcement.getId(), false, sharedPreferences);
         }
     }
+    private boolean getLikeStatus(String announcementId, String currentUserUID, AnnouncementAdapter2.ViewHolder viewHolder) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Task").child(announcementId).child("likes");
 
-    private void saveLikeStatus(String announcementId, boolean isLiked, SharedPreferences sharedPreferences) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(announcementId, isLiked);
-        editor.apply();
-    }
+        // Check if the user has liked the announcement
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isLiked = dataSnapshot.hasChild(currentUserUID);
+                updateLikeUI(viewHolder, isLiked);
+                Log.d("LikeStatus", "Announcement ID: " + announcementId + ", User ID: " + currentUserUID + ", Liked: " + isLiked);
+            }
 
-    private boolean getLikeStatus(String announcementId, SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(announcementId, false); // Default value is false
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("LikeStatus", "Error retrieving like status", databaseError.toException());
+            }
+        });
+        return false;
     }
 
     private void likeFood(Announcement announcement, String announcementId) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Task").child(announcementId);
-
-        // Check if the user has already liked the announcement
         databaseReference.child("likes").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -390,7 +351,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                     databaseReference.child("likesCount").setValue(likes + 1);
                     announcement.setLiked(true);
                     notifyDataSetChanged();
-                    updateLikeUI(currentViewHolder, announcement);
+                    updateLikeUI(currentViewHolder, announcement.isLiked());
                 }
             }
 
@@ -413,7 +374,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                     databaseReference.child("likesCount").setValue(likes - 1);
                     announcement.setLiked(false);
                     notifyDataSetChanged();
-                    updateLikeUI(currentViewHolder, announcement);
+                    updateLikeUI(currentViewHolder, announcement.isLiked());
                 }
             }
 

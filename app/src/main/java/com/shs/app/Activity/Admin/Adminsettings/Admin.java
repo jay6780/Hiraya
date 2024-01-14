@@ -42,7 +42,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
-import com.shs.app.Adapter.ImageAdapter;
+import com.shs.app.Activity.Admin.quizManager.QuizCount.QuizSubjects;
+import com.shs.app.Activity.Admin.quizManager.archiving.archive;
+import com.shs.app.Adapter.imageAdapter.ImageAdapter;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 import com.youth.banner.Banner;
@@ -60,7 +62,7 @@ public class Admin extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    CardView assestment;
+    CardView assestment ,quizzes,studentInformation,check,archive;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -76,6 +78,7 @@ public class Admin extends AppCompatActivity {
         setContentView(R.layout.activity_admin);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
+        archive = findViewById(R.id.Archive);
         pagebanner = findViewById(R.id.banner);
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
@@ -100,6 +103,12 @@ public class Admin extends AppCompatActivity {
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
 
+        //dashboard
+        check = findViewById(R.id.checklist1);
+        studentInformation = findViewById(R.id.studentInfo);
+
+        //quizBtn
+        quizzes = findViewById(R.id.quizManagement);
 
         // home buttons
         assestment = findViewById(R.id.assessment_btn);
@@ -111,6 +120,45 @@ public class Admin extends AppCompatActivity {
         images.add(R.mipmap.page2);
         images.add(R.mipmap.page3);
 
+
+        archive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent archive = new Intent(getApplicationContext(),com.shs.app.Activity.Admin.quizManager.archiving.archive.class);
+                startActivity(archive);
+                overridePendingTransition(0,0);
+                finish();
+
+            }
+        });
+
+        check.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showChecklistDialog();
+            }
+        });
+
+
+        studentInformation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent student = new Intent(getApplicationContext(), Studentinfo.class);
+                startActivity(student);
+                overridePendingTransition(0, 0);
+                finish();
+            }
+        });
+
+        quizzes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent go = new Intent(getApplicationContext(), QuizSubjects.class);
+                startActivity(go);
+                overridePendingTransition(0,0);
+                finish();
+            }
+        });
 
         assestment.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -13,11 +13,12 @@ import android.widget.Toast;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.shs.app.Activity.Admin.Uploadtask.GeneralChemistryActivity;
-import com.shs.app.Activity.Admin.Uploadtask.GeneralPhysicsActivity;
 import com.shs.app.Activity.Admin.Uploadtask.MILActivity;
 import com.shs.app.Activity.Admin.Uploadtask.PhysicalEducationActivity;
 import com.shs.app.Activity.Admin.Uploadtask.PracticalResearchActivity;
 import com.shs.app.Activity.Admin.Uploadtask.ResearchProjectActivity;
+import com.shs.app.Activity.Admin.quizManager.PE.p_eSubject;
+import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.quiz_general_physics;
 import com.shs.app.R;
 
 import java.util.HashMap;
@@ -45,12 +46,12 @@ public class Dialog_task {
         // Map to store intents/actions for each item
         Map<String, Class<?>> itemIntentMap = new HashMap<>();
         itemIntentMap.put("Select Subject", null);
-        itemIntentMap.put("General Physics2", GeneralPhysicsActivity.class);
+        itemIntentMap.put("General Physics2", quiz_general_physics.class);
         itemIntentMap.put("General Chemistry2", GeneralChemistryActivity.class);
         itemIntentMap.put("Practical Research2", PracticalResearchActivity.class);
         itemIntentMap.put("Research Project", ResearchProjectActivity.class);
         itemIntentMap.put("MIL", MILActivity.class);
-        itemIntentMap.put("Physical Education", PhysicalEducationActivity.class);
+        itemIntentMap.put("Physical Education", p_eSubject.class);
 
         Button okButton = dialogView.findViewById(R.id.ok_button);
         Button cancelButton = dialogView.findViewById(R.id.cancel_button);

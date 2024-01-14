@@ -43,8 +43,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
-import com.shs.app.Adapter.UserAdapte2;
-import com.shs.app.Class.User3;
+import com.shs.app.Adapter.UserAdapter.UserAdapte2;
+import com.shs.app.Class.User.User3;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 

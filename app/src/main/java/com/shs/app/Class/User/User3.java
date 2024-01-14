@@ -1,4 +1,4 @@
-package com.shs.app.Class;
+package com.shs.app.Class.User;
 
 public class User3 {
     private Long age; // Change the data type to Long
