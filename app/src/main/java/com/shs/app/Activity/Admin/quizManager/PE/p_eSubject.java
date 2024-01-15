@@ -80,7 +80,7 @@ public class p_eSubject extends AppCompatActivity {
         navigationView = findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        getSupportActionBar().setTitle("HIRAYA");
+        getSupportActionBar().setTitle("PE");
 // Set the color of the title to black
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);

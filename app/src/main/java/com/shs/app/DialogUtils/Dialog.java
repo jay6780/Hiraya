@@ -19,6 +19,8 @@ import com.shs.app.Activity.Admin.quizManager.PE.pe_multiple;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_fill;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_fill_update;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_multiple;
+import com.shs.app.Activity.Admin.quizManager.generalChemistryQuiz.generalchemistry2_addfill;
+import com.shs.app.Activity.Admin.quizManager.generalChemistryQuiz.generalchemistry2_choiceadd;
 import com.shs.app.Activity.login.login;
 import com.shs.app.R;
 
@@ -79,9 +81,6 @@ public class Dialog {
     }
 
 
-
-
-
     public void PedialogFill(Activity activity) {
         DialogPlus dialog = DialogPlus.newDialog(activity)
                 .setContentHolder(new ViewHolder(R.layout.fill_layout))
@@ -121,7 +120,7 @@ public class Dialog {
         Button logout = dialogView.findViewById(R.id.Yes);
         Button cancel = dialogView.findViewById(R.id.no);
         logout.setOnClickListener(v -> {
-            Toast.makeText(activity, "Fill in the blanks", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Multiple choice", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(activity.getApplicationContext(), pe_multiple.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
@@ -136,7 +135,58 @@ public class Dialog {
     }
 
 
+    public void genChemistry2fill(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.fill_layout))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button logout = dialogView.findViewById(R.id.Yes);
+        Button cancel = dialogView.findViewById(R.id.no);
+        logout.setOnClickListener(v -> {
+            Toast.makeText(activity, "Fill in the blanks", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity.getApplicationContext(), generalchemistry2_addfill.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+            activity.finish();
 
+        });
+        cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+
+    public void genChemistry2choice(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.choice_layout))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button logout = dialogView.findViewById(R.id.Yes);
+        Button cancel = dialogView.findViewById(R.id.no);
+        logout.setOnClickListener(v -> {
+            Toast.makeText(activity, "Multiple choice", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity.getApplicationContext(), generalchemistry2_choiceadd.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+            activity.finish();
+
+        });
+        cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
 
 
     public void logout(Activity activity) {
@@ -184,7 +234,6 @@ public class Dialog {
     }
 
 
-
     public void showChecklistDialog(Activity activity) {
         DialogPlus dialog = DialogPlus.newDialog(activity)
                 .setContentHolder(new ViewHolder(R.layout.spinner_dialog)) // Replace R.layout.spinner_dialog with your custom layout for the spinner dialog
@@ -219,4 +268,23 @@ public class Dialog {
 
         dialog.show();
     }
+
+
+    public void rulesDialog(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.rules))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.CENTER)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button ok = dialogView.findViewById(R.id.ok);
+        ok.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
 }

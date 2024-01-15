@@ -10,6 +10,9 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -19,6 +22,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +53,17 @@ import com.youth.banner.Banner;
 import com.youth.banner.indicator.CircleIndicator;
 import com.youth.banner.listener.OnBannerListener;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 
 public class Student extends AppCompatActivity {
     ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText,birthdayText;
+    TextView fullnameText, userEmail, usernameText, phoneText, birthdayText;
     Banner pagebanner;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -65,14 +73,25 @@ public class Student extends AppCompatActivity {
     AnnouncementAdapter2 adapter;
     List<Announcement> announcementList;
     ListView memberListView;
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if (item.getItemId() == R.id.logo) {
+            Dialog dialog = new Dialog();
+            dialog.rulesDialog(Student.this);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.side_logo, menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,8 +100,6 @@ public class Student extends AppCompatActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         pagebanner = findViewById(R.id.banner);
-
-
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
@@ -140,7 +157,6 @@ public class Student extends AppCompatActivity {
 //        intents[1] = new Intent(this, python_student.class);
 
 
-
         databaseReference = FirebaseDatabase.getInstance().getReference("Task");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -152,17 +168,33 @@ public class Student extends AppCompatActivity {
                         announcementList.add(announcement);
                     }
                 }
+
+                // Sort announcementList from newest to oldest based on time and date
+                Collections.sort(announcementList, new Comparator<Announcement>() {
+                    @Override
+                    public int compare(Announcement announcement1, Announcement announcement2) {
+                        // Assuming time and date are in a format that allows lexicographical comparison
+                        String dateTime1 = announcement1.getDate() + " " + announcement1.getTime();
+                        String dateTime2 = announcement2.getDate() + " " + announcement2.getTime();
+
+                        // Reverse the order for newest to oldest
+                        return dateTime2.compareTo(dateTime1);
+                    }
+                });
+
                 adapter.notifyDataSetChanged();
 
                 if (announcementList.isEmpty()) {
+                    // Handle the case when the list is empty
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle onCancelled
             }
         });
+
 
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -225,6 +257,7 @@ public class Student extends AppCompatActivity {
         });
 
     }
+
 
     private void changeStatusBarColor(int color) {
         Window window = getWindow();

@@ -106,7 +106,6 @@ public class Admin extends AppCompatActivity {
         //dashboard
         check = findViewById(R.id.checklist1);
         studentInformation = findViewById(R.id.studentInfo);
-
         //quizBtn
         quizzes = findViewById(R.id.quizManagement);
 
@@ -279,6 +278,8 @@ public class Admin extends AppCompatActivity {
             }
         });
     }
+
+
 
     private void showChecklistDialog() {
         Dialog dialog = new Dialog();

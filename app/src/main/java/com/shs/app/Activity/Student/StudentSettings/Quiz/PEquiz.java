@@ -110,7 +110,8 @@ public class PEquiz extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pequiz);
-        getSupportActionBar().setTitle("Gen Physics Quiz");
+
+        getSupportActionBar().setTitle("PE");
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         Drawable homeButton = getResources().getDrawable(R.drawable.ic_home);
@@ -126,7 +127,7 @@ public class PEquiz extends AppCompatActivity {
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#7D0A0A")));
         mQuestionView = findViewById(R.id.question_view);
         mQuestionNumberView = findViewById(R.id.outof);
-        mScoreView = findViewById(R.id.score_view);
+//        mScoreView = findViewById(R.id.score_view);
         mRadioGroup = findViewById(R.id.radio_group);
         mRadioButton1 = findViewById(R.id.radio_button1);
         mRadioButton2 = findViewById(R.id.radio_button2);
@@ -544,9 +545,9 @@ public class PEquiz extends AppCompatActivity {
 
     }
 
-    private void updateScore() {
-        mScoreView.setText("Score: " + mScore);
-    }
+//    private void updateScore() {
+//        mScoreView.setText("Score: " + mScore);
+//    }
 
 
     private void finishQuiz() {

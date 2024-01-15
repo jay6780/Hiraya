@@ -1,4 +1,4 @@
-package com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics;
+package com.shs.app.Activity.Admin.quizManager.generalChemistryQuiz;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -42,20 +42,23 @@ import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Admin.Adminsettings.AdminRegister;
 import com.shs.app.Activity.Admin.Adminsettings.Studentinfo;
 import com.shs.app.Activity.Admin.Adminsettings.addtastk;
+import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.quiz_general_physics;
 import com.shs.app.Adapter.quizAdapter.QuizAdapter6;
+import com.shs.app.Adapter.quizAdapter.generalchemistryAdapter;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class quiz_general_physics extends AppCompatActivity {
+public class generalchemistry2_quiz extends AppCompatActivity {
+
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
     FloatingActionButton uploadQuiz;
     private RecyclerView quizRecycler;
-    private QuizAdapter6 quizAdapter;
+    private generalchemistryAdapter quizAdapter;
     private List<DataSnapshot> quizDataSnapshots;
 
     ImageView studentImg;
@@ -72,13 +75,13 @@ public class quiz_general_physics extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_quiz_general_physics);
+        setContentView(R.layout.activity_generalchemistry2_quiz);
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        getSupportActionBar().setTitle("General physics 2");
+        getSupportActionBar().setTitle("Gen Chemistry 2");
 // Set the color of the title to black
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -105,7 +108,7 @@ public class quiz_general_physics extends AppCompatActivity {
         quizRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         quizDataSnapshots = new ArrayList<>();
-        quizAdapter = new QuizAdapter6(this, quizDataSnapshots);
+        quizAdapter = new generalchemistryAdapter(this, quizDataSnapshots);
         quizRecycler.setAdapter(quizAdapter);
 
 
@@ -116,7 +119,7 @@ public class quiz_general_physics extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
-                intent.putExtra("databaseReferenceName", "Gen_Physics2");
+                intent.putExtra("databaseReferenceName", "generalchemistry2");
                 startActivity(intent);
             }
         });
@@ -125,7 +128,7 @@ public class quiz_general_physics extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Dialog fill = new Dialog();
-                fill.fillDialog(quiz_general_physics.this);
+                fill.genChemistry2fill(generalchemistry2_quiz.this);
 
             }
 
@@ -135,13 +138,13 @@ public class quiz_general_physics extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Dialog choice = new Dialog();
-                choice.choiceDialog(quiz_general_physics.this);
+                choice.genChemistry2choice(generalchemistry2_quiz.this);
             }
 
         });
 
         // Initialize Firebase Database
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("generalchemistry2");
 
         // Add a ValueEventListener to fetch data
         databaseReference.addValueEventListener(new ValueEventListener() {
@@ -168,7 +171,7 @@ public class quiz_general_physics extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(quiz_general_physics.this);
+                    dialog.logout(generalchemistry2_quiz.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
@@ -260,11 +263,11 @@ public class quiz_general_physics extends AppCompatActivity {
     }
     private void showChecklistDialog() {
         Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(quiz_general_physics.this);
+        dialog.showChecklistDialog(generalchemistry2_quiz.this);
 
 
 
-}
+    }
 
 
 

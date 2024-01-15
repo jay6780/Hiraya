@@ -200,6 +200,7 @@ public class QuizSubjects extends AppCompatActivity {
 
         DatabaseReference Gen_Physics2 = FirebaseDatabase.getInstance().getReference("Gen_Physics2");
         DatabaseReference PE  = FirebaseDatabase.getInstance().getReference("PE");
+        DatabaseReference GenChemistry2  = FirebaseDatabase.getInstance().getReference("generalchemistry2");
 //        DatabaseReference normalRef = FirebaseDatabase.getInstance().getReference("Java_normal");
 
         // Add a ValueEventListener for each node separately to retrieve data from Firebase
@@ -233,12 +234,12 @@ public class QuizSubjects extends AppCompatActivity {
             }
         };
 
-        ValueEventListener hard_java = new ValueEventListener() {
+        ValueEventListener genche = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 int count = (int) dataSnapshot.getChildrenCount();
                 nodeCounts.add(count);
-                nodeNames.add("Java_hard");
+                nodeNames.add("generalchemistry2");
                 updateAdapterData();
             }
 
@@ -251,13 +252,14 @@ public class QuizSubjects extends AppCompatActivity {
 
 
         // Add the listeners to the database references
+        GenChemistry2.addValueEventListener(genche);
         Gen_Physics2.addValueEventListener(Gen_Physics2Listener);
         PE.addValueEventListener(PEListener);
     }
 
     private void updateAdapterData() {
         // Check if all data is retrieved for all nodes
-        if (nodeCounts.size() == 2) { // Assuming you have four nodes: Easy_mode, Normal_mode, Hard_mode, and 4pics
+        if (nodeCounts.size() == 3) { // Assuming you have four nodes: Easy_mode, Normal_mode, Hard_mode, and 4pics
             // Clear the list before adding new items
             quizItemList.clear();
             // Add a dummy QuizItem for each node (you can modify this according to your actual data structure)

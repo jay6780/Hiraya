@@ -26,6 +26,7 @@ import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.Gen_Physics2;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.PEquiz;
+import com.shs.app.Activity.Student.StudentSettings.Quiz.generalchemistry2_quiz;
 import com.shs.app.Activity.Student.StudentSettings.Student;
 import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
 import com.shs.app.Class.Announce.Announcement;
@@ -156,7 +158,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                 public void onClick(View v) {
                     String title = announcement.getTitle();
                     String fileUrl = announcement.getFileUrl();
-
+                    //intentPutExtra check if has quiz
                     if (title.contains("Gen_Physics2")) {
                         Intent intent = new Intent(getContext(), Gen_Physics2.class);
                         intent.putExtra("title", title);
@@ -164,12 +166,19 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                         ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                         ((Activity) getContext()).finish();
                     } else if (title.contains("PE")) {
-                        // Add code to launch another activity for PE title
                         Intent peIntent = new Intent(getContext(), PEquiz.class);
                         peIntent.putExtra("title", title);
                         getContext().startActivity(peIntent);
                         ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                         ((Activity) getContext()).finish();
+
+                    } else if (title.contains("generalchemistry2")) {
+                        Intent peIntent = new Intent(getContext(), generalchemistry2_quiz.class);
+                        peIntent.putExtra("title", title);
+                        getContext().startActivity(peIntent);
+                        ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
+                        ((Activity) getContext()).finish();
+
                     } else if (fileUrl != null && !fileUrl.isEmpty() && isValidUrl(fileUrl)) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(fileUrl));
                         getContext().startActivity(browserIntent);
@@ -400,6 +409,9 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             webViewDialog.setCancelable(true);
 
             final WebView webView = webViewDialog.findViewById(R.id.webView);
+            final RelativeLayout webViewContainer = webViewDialog.findViewById(R.id.webViewContainer);
+            final ImageButton fullscreenButton = webViewDialog.findViewById(R.id.fullscreenButton);
+
             webView.setWebViewClient(new WebViewClient());
             webView.loadUrl(url);
 
@@ -410,6 +422,14 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             webSettings.setLoadWithOverviewMode(true);
             webView.getSettings().setBuiltInZoomControls(true);
             webView.getSettings().setDisplayZoomControls(false);
+
+            fullscreenButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleFullscreen(webView, webViewContainer, fullscreenButton);
+                }
+            });
+
 
             // Handle dialog close event
             webViewDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -433,5 +453,29 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
         }
 
         webViewDialog.show();
+    }
+
+    private void toggleFullscreen(WebView webView, RelativeLayout webViewContainer, ImageButton fullscreenButton) {
+        if (webViewContainer.getSystemUiVisibility() == View.SYSTEM_UI_FLAG_VISIBLE) {
+            // Switch to fullscreen
+            webViewContainer.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+            webView.getSettings().setLoadWithOverviewMode(true);
+            webView.getSettings().setUseWideViewPort(true);
+            webViewDialog.setCancelable(false);
+            fullscreenButton.setVisibility(View.GONE);
+        } else {
+            // Switch to normal mode
+            webViewContainer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            webView.getSettings().setLoadWithOverviewMode(false);
+            webView.getSettings().setUseWideViewPort(false);
+            webViewDialog.setCancelable(true);
+            fullscreenButton.setVisibility(View.VISIBLE);
+        }
     }
 }

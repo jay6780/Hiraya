@@ -48,6 +48,8 @@ import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class assestment_activity extends AppCompatActivity {
@@ -158,15 +160,30 @@ public class assestment_activity extends AppCompatActivity {
                         announcementList.add(announcement);
                     }
                 }
+
+                // Sort announcementList from newest to oldest based on time and date
+                Collections.sort(announcementList, new Comparator<Announcement>() {
+                    @Override
+                    public int compare(Announcement announcement1, Announcement announcement2) {
+                        // Assuming time and date are in a format that allows lexicographical comparison
+                        String dateTime1 = announcement1.getDate() + " " + announcement1.getTime();
+                        String dateTime2 = announcement2.getDate() + " " + announcement2.getTime();
+
+                        // Reverse the order for newest to oldest
+                        return dateTime2.compareTo(dateTime1);
+                    }
+                });
+
                 adapter.notifyDataSetChanged();
 
                 if (announcementList.isEmpty()) {
+                    // Handle the case when the list is empty
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                // Handle onCancelled
             }
         });
 

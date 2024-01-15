@@ -8,7 +8,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.text.SpannableString;
@@ -25,8 +24,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,13 +59,14 @@ import java.util.regex.Pattern;
 
 public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
     private ViewHolder currentViewHolder;
+
     private static class ViewHolder {
         TextView titleTextView;
         TextView contentTextView;
-        TextView timeTextView,likeCountTextView,commentCounts;
+        TextView timeTextView, likeCountTextView, commentCounts;
         TextView dateTextView;
         TextView fullNameTextView;
-        ImageView imageView,userImage;
+        ImageView imageView, userImage;
         AppCompatButton deleteButton;
         ImageButton commentBtn;
         ImageButton likeThumb;
@@ -102,6 +104,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             }
         }
     }
+
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
@@ -128,7 +131,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         currentViewHolder = viewHolder;
-        boolean isLiked = getLikeStatus(announcement.getId(), getCurrentUserUID(),viewHolder);
+        boolean isLiked = getLikeStatus(announcement.getId(), getCurrentUserUID(), viewHolder);
 
         if (isLiked) {
             viewHolder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_25);
@@ -242,10 +245,9 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                     } else {
                         likeFood(announcement, announcement.getId());
                     }
-                    updateLikeUI(viewHolder,announcement.isLiked()); // Update like UI
+                    updateLikeUI(viewHolder, announcement.isLiked()); // Update like UI
                 }
             });
-
 
 
             Query commentsRef = FirebaseDatabase.getInstance().getReference()
@@ -343,7 +345,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
                     intent.putExtra("name", announcement.getName());
                     intent.putExtra("imageUrl", announcement.getImageUrl());
                     getContext().startActivity(intent);
-                    ((Activity)getContext()).overridePendingTransition(0, 0); // Disable animation
+                    ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                     ((Activity) getContext()).finish();
                 }
             });
@@ -360,6 +362,7 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             holder.likeThumb.setImageResource(R.drawable.baseline_thumb_up_24);
         }
     }
+
     private boolean getLikeStatus(String announcementId, String currentUserUID, ViewHolder viewHolder) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Task").child(announcementId).child("likes");
 
@@ -440,9 +443,12 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
         if (webViewDialog == null) {
             webViewDialog = new Dialog(getContext());
             webViewDialog.setContentView(R.layout.dialog_webview);
-            webViewDialog.setCancelable(true);
+            webViewDialog.setCancelable(false);
 
             final WebView webView = webViewDialog.findViewById(R.id.webView);
+            final RelativeLayout webViewContainer = webViewDialog.findViewById(R.id.webViewContainer);
+            final ImageButton fullscreenButton = webViewDialog.findViewById(R.id.fullscreenButton);
+
             webView.setWebViewClient(new WebViewClient());
             webView.loadUrl(url);
 
@@ -453,6 +459,14 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
             webSettings.setLoadWithOverviewMode(true);
             webView.getSettings().setBuiltInZoomControls(true);
             webView.getSettings().setDisplayZoomControls(false);
+
+            fullscreenButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleFullscreen(webView, webViewContainer, fullscreenButton);
+                }
+            });
+
 
             // Handle dialog close event
             webViewDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
@@ -476,5 +490,29 @@ public class AnnouncementAdapter extends ArrayAdapter<Announcement> {
         }
 
         webViewDialog.show();
+    }
+
+    private void toggleFullscreen(WebView webView, RelativeLayout webViewContainer, ImageButton fullscreenButton) {
+        if (webViewContainer.getSystemUiVisibility() == View.SYSTEM_UI_FLAG_VISIBLE) {
+            // Switch to fullscreen
+            webViewContainer.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION |
+                            View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+            webView.getSettings().setLoadWithOverviewMode(true);
+            webView.getSettings().setUseWideViewPort(true);
+            webViewDialog.setCancelable(false);
+            fullscreenButton.setVisibility(View.GONE);
+        } else {
+            // Switch to normal mode
+            webViewContainer.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            webView.getSettings().setLoadWithOverviewMode(false);
+            webView.getSettings().setUseWideViewPort(false);
+            webViewDialog.setCancelable(true);
+            fullscreenButton.setVisibility(View.VISIBLE);
+        }
     }
 }

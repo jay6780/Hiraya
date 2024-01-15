@@ -4,6 +4,11 @@
     android:layout_height="match_parent"
     android:background="@color/beige">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/bglogo" />
     <TextView
         android:id="@+id/SubjectTitle"
         android:layout_width="250dp"
@@ -91,62 +96,62 @@
         android:gravity="center"
         android:layout_height="wrap_content"
         android:textSize="16sp"/>
-    <LinearLayout
-        android:id="@+id/ll1"
-        android:layout_width="match_parent"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/fill_in_the_blank"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:layout_height="wrap_content">
-        <RadioGroup
-            android:id="@+id/radio_group"
-            android:layout_width="320dp"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/century_gothic"
-            android:text="question"
+<LinearLayout
+    android:id="@+id/ll1"
+    android:layout_width="match_parent"
+    android:layout_marginTop="20dp"
+    android:layout_below="@id/fill_in_the_blank"
+    android:layout_centerHorizontal="true"
+    android:gravity="center"
+    android:layout_height="wrap_content">
+    <RadioGroup
+        android:id="@+id/radio_group"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/century_gothic"
+        android:text="question"
+        android:textColor="@color/black"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_button1"
             android:textColor="@color/black"
-            android:orientation="vertical">
-
-            <RadioButton
-                android:id="@+id/radio_button1"
-                android:textColor="@color/black"
-                android:layout_gravity="center"
-                android:background="@drawable/borderbg2"
-                android:justificationMode="inter_word"
-                android:layout_width="match_parent"
-                android:fontFamily="@font/century_gothic"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"/>
+            android:layout_gravity="center"
+            android:background="@drawable/borderbg2"
+            android:justificationMode="inter_word"
+            android:layout_width="match_parent"
+            android:fontFamily="@font/century_gothic"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"/>
 
 
-            <RadioButton
-                android:id="@+id/radio_button2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:justificationMode="inter_word"
-                android:layout_gravity="center"
-                android:background="@drawable/borderbg2"
-                android:fontFamily="@font/century_gothic"
-                android:textColor="@color/black"
-                android:textSize="15sp" />
+        <RadioButton
+            android:id="@+id/radio_button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:justificationMode="inter_word"
+            android:layout_gravity="center"
+            android:background="@drawable/borderbg2"
+            android:fontFamily="@font/century_gothic"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
-            <RadioButton
-                android:id="@+id/radio_button3"
-                android:textColor="@color/black"
-                android:layout_width="match_parent"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="center"
-                android:justificationMode="inter_word"
-                android:fontFamily="@font/century_gothic"
-                android:background="@drawable/borderbg2"
-                android:layout_height="wrap_content"
-                android:textSize="15sp"/>
+        <RadioButton
+            android:id="@+id/radio_button3"
+            android:textColor="@color/black"
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:justificationMode="inter_word"
+            android:fontFamily="@font/century_gothic"
+            android:background="@drawable/borderbg2"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"/>
 
-        </RadioGroup>
+    </RadioGroup>
 
-    </LinearLayout>
+</LinearLayout>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/next_button"

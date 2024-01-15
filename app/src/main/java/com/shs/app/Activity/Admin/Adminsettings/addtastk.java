@@ -271,11 +271,18 @@ public class addtastk extends AppCompatActivity {
         } else if (fileUri != null) {
             uploadFile(announcementId, announcement);
         } else {
-            // Show an error message if neither image nor file is selected
-            Toast.makeText(this, "Please upload an image or select a file", Toast.LENGTH_SHORT).show();
-            progressDialog.dismiss();
+            // Check whether the title is set from getIntent or not
+            if (getIntent().getStringExtra("databaseReferenceName") != null) {
+                // If the title is set from getIntent, proceed with saving the announcement without showing the toast
+                saveAnnouncementToDatabase(announcementId, announcement);
+            } else {
+                // If the title is not set from getIntent, show the toast
+                Toast.makeText(this, "Please upload an image or select a file", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
         }
     }
+
 
     // Add this method to handle file upload
     private void uploadFile(String announcementId, Announcement announcement) {
