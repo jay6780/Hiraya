@@ -469,9 +469,9 @@ public class Gen_Physics2 extends AppCompatActivity {
             mFillInTheBlankEditText.setVisibility(View.GONE);
 
             // Set the radio button texts
-            mRadioButton1.setText(question.getAnswerOptions()[0]);
-            mRadioButton2.setText(question.getAnswerOptions()[1]);
-            mRadioButton3.setText(question.getAnswerOptions()[2]);
+            mRadioButton1.setText("A. "+question.getAnswerOptions()[0]);
+            mRadioButton2.setText("B. "+question.getAnswerOptions()[1]);
+            mRadioButton3.setText("C. "+question.getAnswerOptions()[2]);
 
             // Clear the selected radio button
             mRadioGroup.clearCheck();

@@ -1,5 +1,9 @@
 package com.shs.app.Activity.Student.StudentSettings.Quiz;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,10 +30,6 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -37,9 +37,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.shs.app.Activity.Student.StudentSettings.PeScores.PEscore1;
-import com.shs.app.Activity.Student.StudentSettings.PeScores.Pescore2;
 import com.shs.app.Activity.Student.StudentSettings.Student;
+import com.shs.app.Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores1;
 import com.shs.app.Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores2;
 import com.shs.app.Class.QuizClass.Question11;
 import com.shs.app.R;
@@ -51,7 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class PEquiz extends AppCompatActivity {
+public class practicalResearch2_quiz extends AppCompatActivity {
 
     private DatabaseReference mDatabase;
     private TextView mQuestionView,
@@ -109,9 +108,8 @@ public class PEquiz extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pequiz);
-
-        getSupportActionBar().setTitle("PE");
+        setContentView(R.layout.activity_practical_research2_quiz);
+        getSupportActionBar().setTitle("Practical Research2 Quiz");
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         Drawable homeButton = getResources().getDrawable(R.drawable.ic_home);
@@ -161,8 +159,8 @@ public class PEquiz extends AppCompatActivity {
             }
         });
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("PE");
-        mScoreRef = FirebaseDatabase.getInstance().getReference().child("PE_SCORES");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Practical_Research2");
+        mScoreRef = FirebaseDatabase.getInstance().getReference().child("Practical_Research2_score");
 
         mQuestionList = new ArrayList<>();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -197,8 +195,8 @@ public class PEquiz extends AppCompatActivity {
                 } else {
                     // Handle no questions found in the database
                     Log.e("DatabaseError", "No questions found in database");
-                    Toast.makeText(PEquiz.this, "Quiz is already done", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), PEscore1.class);
+                    Toast.makeText(getApplicationContext(), "Quiz is already done", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), Gen_Physics2_scores1.class);
                     startActivity(intent);
                     overridePendingTransition(0,0);
                     finish(); // Close the activity or take other appropriate action
@@ -226,7 +224,7 @@ public class PEquiz extends AppCompatActivity {
 
 
     private void startCountdownTimer() {
-        long totalTime = 3 * 60 * 1000;//3minutes
+        long totalTime = 3 * 60 * 1000; // 3 minutes
         mTimeRemaining = totalTime;
 
         mCountDownTimer = new CountDownTimer(mTimeRemaining, 1000) {
@@ -269,7 +267,7 @@ public class PEquiz extends AppCompatActivity {
         if (!isTimerRunning) {
             // Check if the user has already scored
             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("PE_SCORES").child(userId);
+            DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Practical_Research2_score").child(userId);
             scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -292,7 +290,7 @@ public class PEquiz extends AppCompatActivity {
 
         // Check if the user has already scored
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("PE_SCORES").child(userId);
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Practical_Research2_score").child(userId);
         scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -373,7 +371,7 @@ public class PEquiz extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            DatabaseReference wrongAnswersRef = FirebaseDatabase.getInstance().getReference().child("PE_wrong").child(userId);
+            DatabaseReference wrongAnswersRef = FirebaseDatabase.getInstance().getReference().child("Practical_Research2_wrong").child(userId);
 
             // Create a unique key for each wrong answer
             String wrongAnswerKey = wrongAnswersRef.push().getKey();
@@ -395,7 +393,7 @@ public class PEquiz extends AppCompatActivity {
     private void showQuestion() {
         // Check if the user has a record of scores already in the "Java_Easy_scores" node
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("PE_SCORES").child(userId);
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Practical_Research2_score").child(userId);
         scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -403,7 +401,7 @@ public class PEquiz extends AppCompatActivity {
                     // The user already has a record of scores, so ask if they want to retake the quiz
                     String message = "You have already completed the quiz. Your scores are: " + dataSnapshot.getValue() +
                             "\nDo you want to retake the quiz?";
-                    AlertDialog.Builder builder = new AlertDialog.Builder(PEquiz.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(practicalResearch2_quiz.this);
                     builder.setTitle("Quiz already completed")
                             .setMessage(message)
                             .setCancelable(false)
@@ -415,7 +413,7 @@ public class PEquiz extends AppCompatActivity {
 
                                     // Resume the timer and start the quiz again
                                     isTimerPaused = false;
-                                    Intent intent = new Intent(getApplicationContext(), PEquiz.class);
+                                    Intent intent = new Intent(getApplicationContext(), practicalResearch2_quiz.class);
                                     intent.putExtra("title", title);
                                     startActivity(intent);
                                     overridePendingTransition(0, 0);
@@ -427,7 +425,7 @@ public class PEquiz extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // Close the dialog and navigate to the activity you want to show
-                                    Intent intent = new Intent(PEquiz.this, Student.class);
+                                    Intent intent = new Intent(practicalResearch2_quiz.this, Student.class);
                                     startActivity(intent);
                                     overridePendingTransition(0,0);
                                     finish();
@@ -553,7 +551,7 @@ public class PEquiz extends AppCompatActivity {
     private void finishQuiz() {
         // Check if the user has already completed the quiz
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("PE_SCORES").child(userId);
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Practical_Research2_score").child(userId);
         scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -562,7 +560,7 @@ public class PEquiz extends AppCompatActivity {
                     mScoreRef.child(userId).setValue(mScore);
                 }
                 // Show results
-                Intent intent = new Intent(getApplicationContext(), Pescore2.class);
+                Intent intent = new Intent(getApplicationContext(), Gen_Physics2_scores2.class);
                 intent.putExtra("score", mScore);
                 startActivity(intent);
                 finish();

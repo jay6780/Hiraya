@@ -48,6 +48,7 @@ import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.Gen_Physics2;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.PEquiz;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.generalchemistry2_quiz;
+import com.shs.app.Activity.Student.StudentSettings.Quiz.practicalResearch2_quiz;
 import com.shs.app.Activity.Student.StudentSettings.Student;
 import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
 import com.shs.app.Class.Announce.Announcement;
@@ -174,6 +175,13 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
 
                     } else if (title.contains("generalchemistry2")) {
                         Intent peIntent = new Intent(getContext(), generalchemistry2_quiz.class);
+                        peIntent.putExtra("title", title);
+                        getContext().startActivity(peIntent);
+                        ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
+                        ((Activity) getContext()).finish();
+
+                    } else if (title.contains("Practical_Research2")) {
+                        Intent peIntent = new Intent(getContext(), practicalResearch2_quiz.class);
                         peIntent.putExtra("title", title);
                         getContext().startActivity(peIntent);
                         ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation

@@ -18,6 +18,24 @@
         android:theme="@style/Theme.ShsThesis"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.Student.StudentSettings.Quiz.practicalResearch2_quiz"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.practicalResearch2.pr2Update_choice"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.practicalResearch2.pr2Update_fill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.practicalResearch2.pr2Multiple"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.practicalResearch2.pr2Fill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.practicalResearch2.pr2Quiz"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Student.StudentSettings.generalChemistryScores.generalchemistry_score2"
             android:exported="false" />
         <activity
