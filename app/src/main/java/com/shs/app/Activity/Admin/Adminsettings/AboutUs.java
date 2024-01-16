@@ -5,12 +5,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
-import androidx.appcompat.widget.SearchView;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
@@ -43,28 +41,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
-import com.shs.app.Adapter.UserAdapter.UserAdapte2;
-import com.shs.app.Class.User.User3;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
+import com.youth.banner.Banner;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class Studentinfo extends AppCompatActivity {
+public class AboutUs extends AppCompatActivity {
+    ImageView studentImg,img1,img2,img3;
+    TextView fullnameText,userEmail,usernameText,phoneText;
+    Banner pagebanner;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    RecyclerView userview;
-    ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText;
-
-    DatabaseReference databaseReference;
-    List<User3> userList;
-    List<User3> originalUserList; // Store the original data here
-    UserAdapte2 userAdapter;
-    SearchView searchView;
-
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -72,11 +59,11 @@ public class Studentinfo extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_studentinfo);
-
+        setContentView(R.layout.activity_about_us);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         changeStatusBarColor(getResources().getColor(R.color.maroon));
@@ -101,27 +88,38 @@ public class Studentinfo extends AppCompatActivity {
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
-        userview = findViewById(R.id.userView);
-        searchView = findViewById(R.id.search);
-
-        userList = new ArrayList<>();
-        originalUserList = new ArrayList<>();
-        userAdapter = new UserAdapte2(userList, this);
-
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Student");
-
-        userview.setLayoutManager(new LinearLayoutManager(this));
-        userview.setAdapter(userAdapter);
-
-
         retrieveStudentDetails();
+
+
+        //image load
+        img1 = findViewById(R.id.image1);
+        img2 = findViewById(R.id.image2);
+        img3 = findViewById(R.id.image3);
+
+        RequestOptions requestOptions = new RequestOptions().circleCrop();
+        Glide.with(getApplicationContext())
+                .load(R.mipmap.image3)
+                .apply(requestOptions)
+                .into(img1);
+
+
+        Glide.with(getApplicationContext())
+                .load(R.mipmap.image1)
+                .apply(requestOptions)
+                .into(img2);
+
+        Glide.with(getApplicationContext())
+                .load(R.mipmap.image2)
+                .apply(requestOptions)
+                .into(img3);
+
 
 
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Show confirmation dialog before proceeding to profile update
-                DialogPlus dialog = DialogPlus.newDialog(Studentinfo.this)
+                DialogPlus dialog = DialogPlus.newDialog(AboutUs.this)
                         .setContentHolder(new ViewHolder(R.layout.cofirm))
                         .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
                         .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
@@ -155,49 +153,12 @@ public class Studentinfo extends AppCompatActivity {
             }
         });
 
-
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
-                originalUserList.clear(); // Clear the original data list
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    User3 user = snapshot.getValue(User3.class);
-                    userList.add(user);
-                    originalUserList.add(user); // Add data to the original list
-                }
-
-                userAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database error
-            }
-        });
-
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // Filter the list by username when the user types in the SearchView
-                filterUserListByUsername(newText);
-                return true;
-            }
-        });
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(Studentinfo.this);
+                    dialog.logout(AboutUs.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
@@ -225,7 +186,6 @@ public class Studentinfo extends AppCompatActivity {
                     return true;
 
 
-
                 }
 
                 if (item.getItemId() == R.id.info) {
@@ -248,32 +208,12 @@ public class Studentinfo extends AppCompatActivity {
         });
     }
 
-
-    private void filterUserListByUsername(String searchText) {
-        if (searchText.isEmpty()) {
-            // If the search text is empty, restore the original data
-            userAdapter.updateList(originalUserList);
-        } else {
-            String searchQuery = searchText.toLowerCase();
-
-            List<User3> filteredList = new ArrayList<>();
-            for (User3 user : userList) {
-                String username = user.getName() != null ? user.getName().toLowerCase() : "";
-
-                if (username.contains(searchQuery)) {
-                    filteredList.add(user);
-                }
-            }
-
-            userAdapter.updateList(filteredList);
-        }
-    }
-
     private void showChecklistDialog() {
         Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(Studentinfo.this);
+        dialog.showChecklistDialog(AboutUs.this);
 
     }
+
 
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -291,9 +231,7 @@ public class Studentinfo extends AppCompatActivity {
                     userEmail.setText(email);
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
-
                     studentImg.setTag(image);
-
                     if (image != null && !image.isEmpty()) {
                         // Load image with CircleCrop transformation
                         RequestOptions requestOptions = new RequestOptions().circleCrop();
@@ -316,12 +254,13 @@ public class Studentinfo extends AppCompatActivity {
         });
 
     }
+
+
     private void changeStatusBarColor(int color) {
         Window window = getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(color);
     }
-
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -334,5 +273,4 @@ public class Studentinfo extends AppCompatActivity {
             super.onBackPressed();
         }
     }
-    
 }

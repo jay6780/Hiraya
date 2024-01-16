@@ -214,7 +214,10 @@ public class assestment_activity extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.About) {
                     Toast.makeText(getApplicationContext(),"About Us", Toast.LENGTH_SHORT).show();
+                    Intent about = new Intent(getApplicationContext(), AboutUs.class);
+                    startActivity(about);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
 
 
@@ -238,6 +241,7 @@ public class assestment_activity extends AppCompatActivity {
                 return false;
             }
         });
+
 
 
         uploadTask.setOnClickListener(new View.OnClickListener() {

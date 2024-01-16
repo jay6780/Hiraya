@@ -38,6 +38,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.shs.app.Activity.Admin.Adminsettings.AboutUs;
 import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Admin.Adminsettings.AdminRegister;
 import com.shs.app.Activity.Admin.Adminsettings.Studentinfo;
@@ -192,9 +193,11 @@ public class Mil_quiz extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.About) {
                     Toast.makeText(getApplicationContext(),"About Us", Toast.LENGTH_SHORT).show();
+                    Intent about = new Intent(getApplicationContext(), AboutUs.class);
+                    startActivity(about);
                     overridePendingTransition(0, 0);
+                    finish();
                     return true;
-
 
                 }
 

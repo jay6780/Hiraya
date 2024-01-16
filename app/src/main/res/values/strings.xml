@@ -21,4 +21,14 @@
         <item>Physical Education</item>
     </string-array>
 
+<!--   aboutUs-->
+    <string name="welcome">Welcome to Hiraya, an innovative monitoring app designed to enhance the educational journey of students at San Antonio de Padua College (SAPC).Our app is a reflection of SAPC\'s commitment to holistic education, recognizing that learning goes beyond textbooks and classrooms.</string>
+    <string name="welcome2">Hiraya plays a pivotal role in fostering a holistic educational experience by monitoring students\' daily activities. We understand that the perfection of knowledge is best achieved when it is seamlessly integrated into every aspect of a student\'s life. By tracking and analyzing performance, Hiraya empowers students to excel academically while embracing personal growth and responsible commitment to excellence.</string>
+    <string name="vision">Our vision aligns with SAPC\'s mission of nurturing generations of dynamic, creative, and productive members of society. Hiraya aspires to be the bridge between academic achievement and personal development, aiming to produce well-rounded individuals equipped for success in the ever-evolving world.Together with San Antonio de Padua College, we embark on a journey to redefine education, where each student\'s unique strengths are celebrated, and their path to excellence is guided by data-driven insights provided by Hiraya.\n</string>
+    <string name="tristan">Tristan Emmanuel G. Araneta</string>
+    <string name="mary">Mary Joyce Rouie R. Basmayor</string>
+    <string name="Rain">Rain Margarette E. Sulibet</string>
+    <string name="Andrea">Andrea C. Martisano</string>
+    <string name="Gerard">Gerard Joseph G. Caparros</string>
+
 </resources>
