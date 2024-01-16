@@ -1,6 +1,5 @@
 package com.shs.app.Activity.Student.StudentSettings.Quiz;
 
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,12 +37,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.shs.app.Activity.Student.StudentSettings.Research_project_score.Research_project_score1;
+import com.shs.app.Activity.Student.StudentSettings.Research_project_score.Research_project_score2;
 import com.shs.app.Activity.Student.StudentSettings.Student;
-import com.shs.app.Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores1;
-import com.shs.app.Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores2;
+import com.shs.app.Activity.Student.StudentSettings.pr2_score.pr2_score1;
+import com.shs.app.Activity.Student.StudentSettings.pr2_score.pr2_score2;
 import com.shs.app.Class.QuizClass.Question11;
 import com.shs.app.R;
-
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,7 +52,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class Gen_Physics2 extends AppCompatActivity {
+public class Research_project_quizType extends AppCompatActivity {
+
     private DatabaseReference mDatabase;
     private TextView mQuestionView,
             mScoreView,TextTitle;
@@ -109,8 +110,8 @@ public class Gen_Physics2 extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gen_physics2);
-        getSupportActionBar().setTitle("Gen Physics Quiz");
+        setContentView(R.layout.activity_research_project_quiz_type);
+        getSupportActionBar().setTitle("Research project Quiz");
         Intent intent = getIntent();
         title = intent.getStringExtra("title");
         Drawable homeButton = getResources().getDrawable(R.drawable.ic_home);
@@ -160,8 +161,8 @@ public class Gen_Physics2 extends AppCompatActivity {
             }
         });
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2");
-        mScoreRef = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2_score");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("Research_project");
+        mScoreRef = FirebaseDatabase.getInstance().getReference().child("Research_project_score");
 
         mQuestionList = new ArrayList<>();
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -196,8 +197,8 @@ public class Gen_Physics2 extends AppCompatActivity {
                 } else {
                     // Handle no questions found in the database
                     Log.e("DatabaseError", "No questions found in database");
-                    Toast.makeText(Gen_Physics2.this, "Quiz is already done", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), Gen_Physics2_scores1.class);
+                    Toast.makeText(getApplicationContext(), "Quiz is already done", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), Research_project_score1.class);
                     startActivity(intent);
                     overridePendingTransition(0,0);
                     finish(); // Close the activity or take other appropriate action
@@ -268,7 +269,7 @@ public class Gen_Physics2 extends AppCompatActivity {
         if (!isTimerRunning) {
             // Check if the user has already scored
             String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-            DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2_score").child(userId);
+            DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Research_project_score").child(userId);
             scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -291,7 +292,7 @@ public class Gen_Physics2 extends AppCompatActivity {
 
         // Check if the user has already scored
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2_score").child(userId);
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Research_project_score").child(userId);
         scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -372,7 +373,7 @@ public class Gen_Physics2 extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            DatabaseReference wrongAnswersRef = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2_wrong").child(userId);
+            DatabaseReference wrongAnswersRef = FirebaseDatabase.getInstance().getReference().child("Research_project_wrong").child(userId);
 
             // Create a unique key for each wrong answer
             String wrongAnswerKey = wrongAnswersRef.push().getKey();
@@ -394,7 +395,7 @@ public class Gen_Physics2 extends AppCompatActivity {
     private void showQuestion() {
         // Check if the user has a record of scores already in the "Java_Easy_scores" node
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2_score").child(userId);
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Research_project_score").child(userId);
         scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -402,7 +403,7 @@ public class Gen_Physics2 extends AppCompatActivity {
                     // The user already has a record of scores, so ask if they want to retake the quiz
                     String message = "You have already completed the quiz. Your scores are: " + dataSnapshot.getValue() +
                             "\nDo you want to retake the quiz?";
-                    AlertDialog.Builder builder = new AlertDialog.Builder(Gen_Physics2.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(Research_project_quizType.this);
                     builder.setTitle("Quiz already completed")
                             .setMessage(message)
                             .setCancelable(false)
@@ -414,7 +415,7 @@ public class Gen_Physics2 extends AppCompatActivity {
 
                                     // Resume the timer and start the quiz again
                                     isTimerPaused = false;
-                                    Intent intent = new Intent(getApplicationContext(), Gen_Physics2.class);
+                                    Intent intent = new Intent(getApplicationContext(), Research_project_quizType.class);
                                     intent.putExtra("title", title);
                                     startActivity(intent);
                                     overridePendingTransition(0, 0);
@@ -426,7 +427,7 @@ public class Gen_Physics2 extends AppCompatActivity {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     // Close the dialog and navigate to the activity you want to show
-                                    Intent intent = new Intent(Gen_Physics2.this, Student.class);
+                                    Intent intent = new Intent(Research_project_quizType.this, Student.class);
                                     startActivity(intent);
                                     overridePendingTransition(0,0);
                                     finish();
@@ -552,7 +553,7 @@ public class Gen_Physics2 extends AppCompatActivity {
     private void finishQuiz() {
         // Check if the user has already completed the quiz
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Gen_Physics2_score").child(userId);
+        DatabaseReference scoresRef = FirebaseDatabase.getInstance().getReference().child("Research_project_score").child(userId);
         scoresRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -561,7 +562,7 @@ public class Gen_Physics2 extends AppCompatActivity {
                     mScoreRef.child(userId).setValue(mScore);
                 }
                 // Show results
-                Intent intent = new Intent(getApplicationContext(), Gen_Physics2_scores2.class);
+                Intent intent = new Intent(getApplicationContext(), Research_project_score2.class);
                 intent.putExtra("score", mScore);
                 startActivity(intent);
                 finish();

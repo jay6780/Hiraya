@@ -18,6 +18,60 @@
         android:theme="@style/Theme.ShsThesis"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.Student.StudentSettings.Milscores.milscore_2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Milscores.milscore_1"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Quiz.Mil_quizActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.MIL.Mil_update_choice"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.MIL.Mil_fill_update"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.MIL.Mil_choice"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.MIL.Mil_fill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.MIL.Mil_quiz"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Research_project_score.Research_project_score2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Research_project_score.Research_project_score1"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.Quiz.Research_project_quizType"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.Reseach_project.R_project_choice_update"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.Reseach_project.R_project_fill_update"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.Reseach_project.R_project_multiple"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.Reseach_project.R_projectFill"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.quizManager.Reseach_project.Research_project_quiz"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.pr2_score.pr2_score2"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Student.StudentSettings.pr2_score.pr2_score1"
+            android:exported="false" />
+        <activity
             android:name=".Activity.Student.StudentSettings.Quiz.practicalResearch2_quiz"
             android:exported="false" />
         <activity

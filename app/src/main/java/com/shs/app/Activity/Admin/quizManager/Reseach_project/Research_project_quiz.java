@@ -1,4 +1,4 @@
-package com.shs.app.Activity.Admin.quizManager.practicalResearch2;
+package com.shs.app.Activity.Admin.quizManager.Reseach_project;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -42,23 +42,23 @@ import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Admin.Adminsettings.AdminRegister;
 import com.shs.app.Activity.Admin.Adminsettings.Studentinfo;
 import com.shs.app.Activity.Admin.Adminsettings.addtastk;
-import com.shs.app.Activity.Admin.quizManager.PE.p_eSubject;
-import com.shs.app.Adapter.quizAdapter.PeAdapter;
+import com.shs.app.Activity.Admin.quizManager.practicalResearch2.pr2Quiz;
 import com.shs.app.Adapter.quizAdapter.Practical_Research2_adapter;
+import com.shs.app.Adapter.quizAdapter.Research_project_adapter;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class pr2Quiz extends AppCompatActivity {
+public class Research_project_quiz extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
     FloatingActionButton uploadQuiz;
     private RecyclerView quizRecycler;
-    private Practical_Research2_adapter quizAdapter;
+    private Research_project_adapter quizAdapter;
     private List<DataSnapshot> quizDataSnapshots;
 
     ImageView studentImg;
@@ -75,13 +75,13 @@ public class pr2Quiz extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pr2_quiz);
+        setContentView(R.layout.activity_research_project_quiz);
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        getSupportActionBar().setTitle("Practical Research2");
+        getSupportActionBar().setTitle("Research_project");
 // Set the color of the title to black
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -108,7 +108,7 @@ public class pr2Quiz extends AppCompatActivity {
         quizRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         quizDataSnapshots = new ArrayList<>();
-        quizAdapter = new Practical_Research2_adapter(this, quizDataSnapshots);
+        quizAdapter = new Research_project_adapter(this, quizDataSnapshots);
         quizRecycler.setAdapter(quizAdapter);
 
 
@@ -119,7 +119,7 @@ public class pr2Quiz extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
-                intent.putExtra("databaseReferenceName", "Practical_Research2");
+                intent.putExtra("databaseReferenceName", "Research_project");
                 startActivity(intent);
             }
         });
@@ -128,7 +128,7 @@ public class pr2Quiz extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Dialog fill = new Dialog();
-                fill.Pr2fill(pr2Quiz.this);
+                fill.RprojectFill(Research_project_quiz.this);
 
             }
 
@@ -138,13 +138,13 @@ public class pr2Quiz extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Dialog choice = new Dialog();
-                choice.Pr2choice(pr2Quiz.this);
+                choice.RprojectChoice(Research_project_quiz.this);
             }
 
         });
 
         // Initialize Firebase Database
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Practical_Research2");
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Research_project");
         // Add a ValueEventListener to fetch data
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -170,7 +170,7 @@ public class pr2Quiz extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(pr2Quiz.this);
+                    dialog.logout(Research_project_quiz.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
@@ -262,7 +262,7 @@ public class pr2Quiz extends AppCompatActivity {
     }
     private void showChecklistDialog() {
         Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(pr2Quiz.this);
+        dialog.showChecklistDialog(Research_project_quiz.this);
 
 
 

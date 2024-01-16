@@ -38,6 +38,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.shs.app.Activity.Student.StudentSettings.Student;
+import com.shs.app.Activity.Student.StudentSettings.pr2_score.pr2_score1;
+import com.shs.app.Activity.Student.StudentSettings.pr2_score.pr2_score2;
 import com.shs.app.Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores1;
 import com.shs.app.Activity.Student.StudentSettings.quiz_scores.Gen2.Gen_Physics2_scores2;
 import com.shs.app.Class.QuizClass.Question11;
@@ -196,7 +198,7 @@ public class practicalResearch2_quiz extends AppCompatActivity {
                     // Handle no questions found in the database
                     Log.e("DatabaseError", "No questions found in database");
                     Toast.makeText(getApplicationContext(), "Quiz is already done", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), Gen_Physics2_scores1.class);
+                    Intent intent = new Intent(getApplicationContext(), pr2_score1.class);
                     startActivity(intent);
                     overridePendingTransition(0,0);
                     finish(); // Close the activity or take other appropriate action
@@ -468,9 +470,9 @@ public class practicalResearch2_quiz extends AppCompatActivity {
             mFillInTheBlankEditText.setVisibility(View.GONE);
 
             // Set the radio button texts
-            mRadioButton1.setText("A. "+question.getAnswerOptions()[0]);
-            mRadioButton2.setText("B. "+question.getAnswerOptions()[1]);
-            mRadioButton3.setText("C. "+question.getAnswerOptions()[2]);
+            mRadioButton1.setText(question.getAnswerOptions()[0]);
+            mRadioButton2.setText(question.getAnswerOptions()[1]);
+            mRadioButton3.setText(question.getAnswerOptions()[2]);
 
             // Clear the selected radio button
             mRadioGroup.clearCheck();
@@ -560,7 +562,7 @@ public class practicalResearch2_quiz extends AppCompatActivity {
                     mScoreRef.child(userId).setValue(mScore);
                 }
                 // Show results
-                Intent intent = new Intent(getApplicationContext(), Gen_Physics2_scores2.class);
+                Intent intent = new Intent(getApplicationContext(), pr2_score2.class);
                 intent.putExtra("score", mScore);
                 startActivity(intent);
                 finish();

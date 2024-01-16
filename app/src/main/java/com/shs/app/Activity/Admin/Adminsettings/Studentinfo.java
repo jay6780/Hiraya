@@ -94,7 +94,7 @@ public class Studentinfo extends AppCompatActivity {
         drawerToggle.syncState();
         DrawerArrowDrawable toggleDrawable = drawerToggle.getDrawerArrowDrawable();
         toggleDrawable.setColor(Color.YELLOW);
-        
+
         View headerView = navigationView.getHeaderView(0);
         studentImg = headerView.findViewById(R.id.students);
         fullnameText = headerView.findViewById(R.id.fullname);
@@ -140,7 +140,7 @@ public class Studentinfo extends AppCompatActivity {
                     intent.putExtra("name", fullnameText.getText().toString());
                     intent.putExtra("username", usernameText.getText().toString());
                     intent.putExtra("email", userEmail.getText().toString());
-                    intent.putExtra("imageUrl", (String) studentImg.getTag());
+                    intent.putExtra("image", (String) studentImg.getTag());
                     intent.putExtra("phone", phoneText.getText().toString());
                     startActivity(intent);
                     overridePendingTransition(0, 0);
@@ -280,7 +280,7 @@ public class Studentinfo extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String fullName = dataSnapshot.child("name").getValue(String.class);
-                    String imageUrl = dataSnapshot.child("image").getValue(String.class);
+                    String image = dataSnapshot.child("image").getValue(String.class);
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
@@ -289,11 +289,13 @@ public class Studentinfo extends AppCompatActivity {
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
 
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                    studentImg.setTag(image);
+
+                    if (image != null && !image.isEmpty()) {
                         // Load image with CircleCrop transformation
                         RequestOptions requestOptions = new RequestOptions().circleCrop();
                         Glide.with(getApplicationContext())
-                                .load(imageUrl)
+                                .load(image)
                                 .apply(requestOptions)
                                 .into(studentImg);
                     } else {

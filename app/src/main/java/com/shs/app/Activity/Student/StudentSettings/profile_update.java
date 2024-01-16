@@ -98,18 +98,18 @@ public class profile_update extends AppCompatActivity {
         // Set the title of the action bar
         getSupportActionBar().setTitle("Student Update");
         Drawable homeButton = getResources().getDrawable(R.drawable.ic_home);
-        homeButton.setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_ATOP);
+        homeButton.setColorFilter(Color.YELLOW, PorterDuff.Mode.SRC_ATOP);
         getSupportActionBar().setHomeAsUpIndicator(homeButton);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        changeStatusBarColor(getResources().getColor(R.color.beige));
+        changeStatusBarColor(getResources().getColor(R.color.maroon));
 
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
-        text.setSpan(new ForegroundColorSpan(Color.BLACK), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+        text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
         getSupportActionBar().setTitle(text);
 
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#f5f5dc")));
+        actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#7D0A0A")));
         // Initialize views
         fullnameEditText = findViewById(R.id.fullname);
         usernameEditText = findViewById(R.id.username);
@@ -128,7 +128,7 @@ public class profile_update extends AppCompatActivity {
             String fullName = intent.getStringExtra("name");
             String username = intent.getStringExtra("username");
             String email = intent.getStringExtra("email");
-            String imageUrl = intent.getStringExtra("image"); // Retrieve the image URL
+            String image = intent.getStringExtra("image"); // Retrieve the image URL
             String phoneNumber = intent.getStringExtra("phone");
             String birthday = intent.getStringExtra("birthday");
 
@@ -140,10 +140,10 @@ public class profile_update extends AppCompatActivity {
             phoneNumberEditText.setText(String.valueOf(phoneNumber));
 
             // Load the image into the ImageView using Glide with CircleTransformation
-            if (imageUrl != null && !imageUrl.isEmpty()) {
+            if (image != null && !image.isEmpty()) {
                 RequestOptions requestOptions = new RequestOptions().circleCrop();
                 Glide.with(this)
-                        .load(imageUrl)
+                        .load(image)
                         .apply(requestOptions)
                         .into(profileImageView);
             } else {

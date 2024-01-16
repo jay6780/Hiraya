@@ -17,8 +17,10 @@ import com.shs.app.Activity.Admin.Uploadtask.MILActivity;
 import com.shs.app.Activity.Admin.Uploadtask.PhysicalEducationActivity;
 import com.shs.app.Activity.Admin.Uploadtask.PracticalResearchActivity;
 import com.shs.app.Activity.Admin.Uploadtask.ResearchProjectActivity;
+import com.shs.app.Activity.Admin.quizManager.MIL.Mil_quiz;
 import com.shs.app.Activity.Admin.quizManager.PE.p_eSubject;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.quiz_general_physics;
+import com.shs.app.Activity.Admin.quizManager.Reseach_project.Research_project_quiz;
 import com.shs.app.Activity.Admin.quizManager.generalChemistryQuiz.generalchemistry2_quiz;
 import com.shs.app.Activity.Admin.quizManager.practicalResearch2.pr2Quiz;
 import com.shs.app.R;
@@ -51,8 +53,8 @@ public class Dialog_task {
         itemIntentMap.put("General Physics2", quiz_general_physics.class);
         itemIntentMap.put("General Chemistry2", generalchemistry2_quiz.class);
         itemIntentMap.put("Practical Research2", pr2Quiz.class);
-        itemIntentMap.put("Research Project",null);
-        itemIntentMap.put("MIL", null);
+        itemIntentMap.put("Research Project", Research_project_quiz.class);
+        itemIntentMap.put("MIL", Mil_quiz.class);
         itemIntentMap.put("Physical Education", p_eSubject.class);
 
         Button okButton = dialogView.findViewById(R.id.ok_button);

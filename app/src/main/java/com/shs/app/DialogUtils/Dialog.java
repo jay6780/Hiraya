@@ -14,11 +14,15 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+import com.shs.app.Activity.Admin.quizManager.MIL.Mil_choice;
+import com.shs.app.Activity.Admin.quizManager.MIL.Mil_fill;
 import com.shs.app.Activity.Admin.quizManager.PE.peFillIntheblanks;
 import com.shs.app.Activity.Admin.quizManager.PE.pe_multiple;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_fill;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_fill_update;
 import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.generalphysics_multiple;
+import com.shs.app.Activity.Admin.quizManager.Reseach_project.R_projectFill;
+import com.shs.app.Activity.Admin.quizManager.Reseach_project.R_project_multiple;
 import com.shs.app.Activity.Admin.quizManager.generalChemistryQuiz.generalchemistry2_addfill;
 import com.shs.app.Activity.Admin.quizManager.generalChemistryQuiz.generalchemistry2_choiceadd;
 import com.shs.app.Activity.Admin.quizManager.practicalResearch2.pr2Fill;
@@ -123,7 +127,7 @@ public class Dialog {
         Button cancel = dialogView.findViewById(R.id.no);
         logout.setOnClickListener(v -> {
             Toast.makeText(activity, "Multiple choice", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(activity.getApplicationContext(), pr2Multiple.class);
+            Intent intent = new Intent(activity.getApplicationContext(), pe_multiple.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
             activity.overridePendingTransition(0, 0);
@@ -135,10 +139,6 @@ public class Dialog {
         });
         dialog.show();
     }
-
-
-
-
 
 
 
@@ -182,7 +182,7 @@ public class Dialog {
         Button cancel = dialogView.findViewById(R.id.no);
         logout.setOnClickListener(v -> {
             Toast.makeText(activity, "Multiple choice", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(activity.getApplicationContext(), pe_multiple.class);
+            Intent intent = new Intent(activity.getApplicationContext(), pr2Multiple.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             activity.startActivity(intent);
             activity.overridePendingTransition(0, 0);
@@ -194,6 +194,64 @@ public class Dialog {
         });
         dialog.show();
     }
+
+
+
+
+
+    public void RprojectFill(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.fill_layout))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button logout = dialogView.findViewById(R.id.Yes);
+        Button cancel = dialogView.findViewById(R.id.no);
+        logout.setOnClickListener(v -> {
+            Toast.makeText(activity, "Fill in the blanks", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity.getApplicationContext(), R_projectFill.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+            activity.finish();
+
+        });
+        cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+
+    public void RprojectChoice(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.choice_layout))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button logout = dialogView.findViewById(R.id.Yes);
+        Button cancel = dialogView.findViewById(R.id.no);
+        logout.setOnClickListener(v -> {
+            Toast.makeText(activity, "Multiple choice", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity.getApplicationContext(), R_project_multiple.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+            activity.finish();
+
+        });
+        cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
 
 
 
@@ -252,6 +310,62 @@ public class Dialog {
         });
         dialog.show();
     }
+
+
+
+    public void MilFill(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.fill_layout))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button logout = dialogView.findViewById(R.id.Yes);
+        Button cancel = dialogView.findViewById(R.id.no);
+        logout.setOnClickListener(v -> {
+            Toast.makeText(activity, "Fill in the blanks", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity.getApplicationContext(), Mil_fill.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+            activity.finish();
+
+        });
+        cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+
+    public void MilChoice(Activity activity) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.choice_layout))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+        View dialogView = dialog.getHolderView();
+        Button logout = dialogView.findViewById(R.id.Yes);
+        Button cancel = dialogView.findViewById(R.id.no);
+        logout.setOnClickListener(v -> {
+            Toast.makeText(activity, "Multiple choice", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(activity.getApplicationContext(), Mil_choice.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
+            activity.finish();
+
+        });
+        cancel.setOnClickListener(v -> {
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
 
 
     public void logout(Activity activity) {

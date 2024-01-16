@@ -46,7 +46,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.Gen_Physics2;
+import com.shs.app.Activity.Student.StudentSettings.Quiz.Mil_quizActivity;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.PEquiz;
+import com.shs.app.Activity.Student.StudentSettings.Quiz.Research_project_quizType;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.generalchemistry2_quiz;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.practicalResearch2_quiz;
 import com.shs.app.Activity.Student.StudentSettings.Student;
@@ -161,9 +163,9 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                     String fileUrl = announcement.getFileUrl();
                     //intentPutExtra check if has quiz
                     if (title.contains("Gen_Physics2")) {
-                        Intent intent = new Intent(getContext(), Gen_Physics2.class);
-                        intent.putExtra("title", title);
-                        getContext().startActivity(intent);
+                        Intent gP = new Intent(getContext(), Gen_Physics2.class);
+                        gP.putExtra("title", title);
+                        getContext().startActivity(gP);
                         ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                         ((Activity) getContext()).finish();
                     } else if (title.contains("PE")) {
@@ -174,16 +176,30 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                         ((Activity) getContext()).finish();
 
                     } else if (title.contains("generalchemistry2")) {
-                        Intent peIntent = new Intent(getContext(), generalchemistry2_quiz.class);
-                        peIntent.putExtra("title", title);
-                        getContext().startActivity(peIntent);
+                        Intent gE = new Intent(getContext(), generalchemistry2_quiz.class);
+                        gE.putExtra("title", title);
+                        getContext().startActivity(gE);
                         ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                         ((Activity) getContext()).finish();
 
                     } else if (title.contains("Practical_Research2")) {
-                        Intent peIntent = new Intent(getContext(), practicalResearch2_quiz.class);
-                        peIntent.putExtra("title", title);
-                        getContext().startActivity(peIntent);
+                        Intent Pr2 = new Intent(getContext(), practicalResearch2_quiz.class);
+                        Pr2.putExtra("title", title);
+                        getContext().startActivity(Pr2);
+                        ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
+                        ((Activity) getContext()).finish();
+
+                    } else if (title.contains("Research_project")) {
+                        Intent Rp = new Intent(getContext(), Research_project_quizType.class);
+                        Rp.putExtra("title", title);
+                        getContext().startActivity(Rp);
+                        ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
+                        ((Activity) getContext()).finish();
+
+                    } else if (title.contains("MIL")) {
+                        Intent mil = new Intent(getContext(), Mil_quizActivity.class);
+                        mil.putExtra("title", title);
+                        getContext().startActivity(mil);
                         ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                         ((Activity) getContext()).finish();
 

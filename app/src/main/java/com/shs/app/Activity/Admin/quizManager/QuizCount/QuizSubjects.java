@@ -180,7 +180,7 @@ public class QuizSubjects extends AppCompatActivity {
                     intent.putExtra("name", fullnameText.getText().toString());
                     intent.putExtra("username", usernameText.getText().toString());
                     intent.putExtra("email", userEmail.getText().toString());
-                    intent.putExtra("imageUrl", (String) studentImg.getTag());
+                    intent.putExtra("image", (String) studentImg.getTag());
                     intent.putExtra("phone", phoneText.getText().toString());
                     startActivity(intent);
                     overridePendingTransition(0, 0);
@@ -201,6 +201,9 @@ public class QuizSubjects extends AppCompatActivity {
         DatabaseReference Gen_Physics2 = FirebaseDatabase.getInstance().getReference("Gen_Physics2");
         DatabaseReference PE  = FirebaseDatabase.getInstance().getReference("PE");
         DatabaseReference GenChemistry2  = FirebaseDatabase.getInstance().getReference("generalchemistry2");
+        DatabaseReference pr2  = FirebaseDatabase.getInstance().getReference("Practical_Research2");
+        DatabaseReference Research  = FirebaseDatabase.getInstance().getReference("Research_project");
+        DatabaseReference mil  = FirebaseDatabase.getInstance().getReference("MIL");
 //        DatabaseReference normalRef = FirebaseDatabase.getInstance().getReference("Java_normal");
 
         // Add a ValueEventListener for each node separately to retrieve data from Firebase
@@ -250,16 +253,67 @@ public class QuizSubjects extends AppCompatActivity {
         };
 
 
+        ValueEventListener practical = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int count = (int) dataSnapshot.getChildrenCount();
+                nodeCounts.add(count);
+                nodeNames.add("Practical_Research2");
+                updateAdapterData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FirebaseError", "Error fetching data from Firebase: " + databaseError.getMessage());
+            }
+        };
+
+        ValueEventListener R_project = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int count = (int) dataSnapshot.getChildrenCount();
+                nodeCounts.add(count);
+                nodeNames.add("Research_project");
+                updateAdapterData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FirebaseError", "Error fetching data from Firebase: " + databaseError.getMessage());
+            }
+        };
+
+        ValueEventListener media = new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int count = (int) dataSnapshot.getChildrenCount();
+                nodeCounts.add(count);
+                nodeNames.add("MIL");
+                updateAdapterData();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("FirebaseError", "Error fetching data from Firebase: " + databaseError.getMessage());
+            }
+        };
+
+
+
+
 
         // Add the listeners to the database references
         GenChemistry2.addValueEventListener(genche);
         Gen_Physics2.addValueEventListener(Gen_Physics2Listener);
         PE.addValueEventListener(PEListener);
+        pr2.addValueEventListener(practical);
+        Research.addValueEventListener(R_project);
+        mil.addValueEventListener(media);
     }
 
     private void updateAdapterData() {
         // Check if all data is retrieved for all nodes
-        if (nodeCounts.size() == 3) { // Assuming you have four nodes: Easy_mode, Normal_mode, Hard_mode, and 4pics
+        if (nodeCounts.size() == 6) { // Assuming you have four nodes: Easy_mode, Normal_mode, Hard_mode, and 4pics
             // Clear the list before adding new items
             quizItemList.clear();
             // Add a dummy QuizItem for each node (you can modify this according to your actual data structure)
@@ -337,7 +391,7 @@ public class QuizSubjects extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String fullName = dataSnapshot.child("name").getValue(String.class);
-                    String imageUrl = dataSnapshot.child("image").getValue(String.class);
+                    String image = dataSnapshot.child("image").getValue(String.class);
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
@@ -346,11 +400,13 @@ public class QuizSubjects extends AppCompatActivity {
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
 
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                    studentImg.setTag(image);
+
+                    if (image != null && !image.isEmpty()) {
                         // Load image with CircleCrop transformation
                         RequestOptions requestOptions = new RequestOptions().circleCrop();
                         Glide.with(getApplicationContext())
-                                .load(imageUrl)
+                                .load(image)
                                 .apply(requestOptions)
                                 .into(studentImg);
                     } else {
