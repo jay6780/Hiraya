@@ -38,10 +38,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.shs.app.Activity.Admin.Adminsettings.AboutUs;
 import com.shs.app.Activity.Admin.Adminsettings.addtastk;
 import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter;
 import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -170,11 +172,6 @@ public class assestment_activity2 extends AppCompatActivity {
         window.setStatusBarColor(color);
     }
 
-    private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(assestment_activity2.this);
-
-    }
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("Student").child(userId);

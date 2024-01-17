@@ -46,6 +46,7 @@ import com.orhanobut.dialogplus.ViewHolder;
 import com.shs.app.Adapter.UserAdapter.UserAdapte2;
 import com.shs.app.Class.User.User3;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -270,8 +271,8 @@ public class Studentinfo extends AppCompatActivity {
     }
 
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(Studentinfo.this);
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(Studentinfo.this);
 
     }
 

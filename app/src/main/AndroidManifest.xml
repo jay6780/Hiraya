@@ -18,6 +18,29 @@
         android:theme="@style/Theme.ShsThesis"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.Admin.checkList.pE_checklist"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.checkList.mil_checkList"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.checkList.research_project_checklist"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.checkList.pr2_checklist"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.checkList.general_chemistry_checklist"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.Admin.checkList.general_physics2_checklist"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activity.Admin.Adminsettings.checklist"
+            android:exported="false"
+            android:screenOrientation="landscape" />
+        <activity
             android:name=".Activity.Admin.Adminsettings.AboutUs"
             android:exported="false" />
         <activity

@@ -47,6 +47,7 @@ import com.shs.app.Activity.Admin.quizManager.practicalResearch2.pr2Quiz;
 import com.shs.app.Adapter.quizAdapter.Practical_Research2_adapter;
 import com.shs.app.Adapter.quizAdapter.Research_project_adapter;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -264,14 +265,10 @@ public class Research_project_quiz extends AppCompatActivity {
         });
     }
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(Research_project_quiz.this);
-
-
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(Research_project_quiz.this);
 
     }
-
-
 
     @Override
     public void onBackPressed() {

@@ -46,6 +46,7 @@ import com.shs.app.Activity.Admin.quizManager.QuizCount.QuizSubjects;
 import com.shs.app.Activity.Admin.quizManager.archiving.archive;
 import com.shs.app.Adapter.imageAdapter.ImageAdapter;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 import com.youth.banner.Banner;
 import com.youth.banner.indicator.CircleIndicator;
@@ -285,8 +286,8 @@ public class Admin extends AppCompatActivity {
 
 
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(Admin.this);
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(Admin.this);
 
     }
 

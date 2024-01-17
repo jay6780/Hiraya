@@ -45,6 +45,7 @@ import com.shs.app.Activity.Admin.Adminsettings.Studentinfo;
 import com.shs.app.Activity.Admin.Adminsettings.addtastk;
 import com.shs.app.Adapter.quizAdapter.QuizAdapter6;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -262,13 +263,10 @@ public class quiz_general_physics extends AppCompatActivity {
         });
     }
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(quiz_general_physics.this);
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(quiz_general_physics.this);
 
-
-
-}
-
+    }
 
 
     @Override

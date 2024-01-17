@@ -54,6 +54,7 @@ import com.shs.app.Adapter.imageAdapter.ImageAdapter;
 import com.shs.app.Adapter.quizAdapter.QuizAdapter2;
 import com.shs.app.Class.QuizClass.QuizItem;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 import com.youth.banner.Banner;
 import com.youth.banner.indicator.CircleIndicator;
@@ -382,11 +383,10 @@ public class QuizSubjects extends AppCompatActivity {
     }
 
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(QuizSubjects.this);
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(QuizSubjects.this);
 
     }
-
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);

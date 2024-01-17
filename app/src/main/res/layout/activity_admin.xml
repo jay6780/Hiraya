@@ -11,16 +11,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <com.youth.banner.Banner
-            android:id="@+id/banner"
-            android:layout_width="match_parent"
-            android:layout_height="150dp" />
 
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="match_parent">
+
+            <com.youth.banner.Banner
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="150dp" />
+
+           <androidx.core.widget.NestedScrollView
+               android:layout_width="match_parent"
+               android:layout_below="@+id/banner"
+               android:layout_height="wrap_content">
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_centerInParent="true"
-    android:layout_below="@+id/banner"
     android:layout_height="wrap_content">
+
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -249,6 +258,8 @@
         </LinearLayout>
     </RelativeLayout>
 </LinearLayout>
+           </androidx.core.widget.NestedScrollView>
+       </RelativeLayout>
     </RelativeLayout>
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"

@@ -42,11 +42,12 @@ import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 import com.youth.banner.Banner;
 
 public class AboutUs extends AppCompatActivity {
-    ImageView studentImg,img1,img2,img3;
+    ImageView studentImg,img1,img2,img3,img4,img5;
     TextView fullnameText,userEmail,usernameText,phoneText;
     Banner pagebanner;
     DrawerLayout drawerLayout;
@@ -95,6 +96,8 @@ public class AboutUs extends AppCompatActivity {
         img1 = findViewById(R.id.image1);
         img2 = findViewById(R.id.image2);
         img3 = findViewById(R.id.image3);
+        img4 = findViewById(R.id.image4);
+        img5 = findViewById(R.id.image5);
 
         RequestOptions requestOptions = new RequestOptions().circleCrop();
         Glide.with(getApplicationContext())
@@ -112,6 +115,20 @@ public class AboutUs extends AppCompatActivity {
                 .load(R.mipmap.image2)
                 .apply(requestOptions)
                 .into(img3);
+
+
+
+        Glide.with(getApplicationContext())
+                .load(R.mipmap.image4)
+                .apply(requestOptions)
+                .into(img4);
+
+
+        Glide.with(getApplicationContext())
+                .load(R.mipmap.image5)
+                .apply(requestOptions)
+                .into(img5);
+
 
 
 
@@ -209,8 +226,8 @@ public class AboutUs extends AppCompatActivity {
     }
 
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(AboutUs.this);
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(AboutUs.this);
 
     }
 

@@ -1,33 +1,31 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/drawer_layout">
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:background="@color/beige"
-        android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/memberListView"
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/beige">
+
+    <de.codecrafters.tableview.TableView
+        android:id="@+id/tableView"
         android:layout_width="match_parent"
-        android:scrollbars="vertical"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        app:tableView_columnCount="4" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab23"
+        android:id="@+id/rotate"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="20dp"
         android:layout_marginBottom="20dp"
-        android:src="@drawable/baseline_add_24"
-        app:backgroundTint="#D6CFD2" />
-
-    </RelativeLayout>
+        android:src="@drawable/baseline_screen_rotation_24"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="20dp"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>
     <com.google.android.material.navigation.NavigationView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

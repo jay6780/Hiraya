@@ -1,5 +1,4 @@
-package com.shs.app.Activity.Admin.quizManager.PE;
-
+package com.shs.app.Activity.Admin.checkList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -9,12 +8,12 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -33,6 +32,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -43,9 +43,10 @@ import com.shs.app.Activity.Admin.Adminsettings.AboutUs;
 import com.shs.app.Activity.Admin.Adminsettings.Admin;
 import com.shs.app.Activity.Admin.Adminsettings.AdminRegister;
 import com.shs.app.Activity.Admin.Adminsettings.Studentinfo;
-import com.shs.app.Activity.Admin.Adminsettings.addtastk;
-import com.shs.app.Adapter.quizAdapter.PeAdapter;
-import com.shs.app.Adapter.quizAdapter.QuizAdapter6;
+import com.shs.app.Adapter.tableAdapter.CustomTableDataAdapter;
+import com.shs.app.Adapter.tableAdapter.CustomTableHeaderAdapter;
+import com.shs.app.Adapter.tableAdapter.SeparationLineTableDecoration;
+import com.shs.app.Class.Student.Students;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
@@ -53,18 +54,17 @@ import com.shs.app.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class p_eSubject extends AppCompatActivity {
-    DrawerLayout drawerLayout;
-    NavigationView navigationView;
-    ActionBarDrawerToggle drawerToggle;
-    FloatingActionButton uploadQuiz;
-    private RecyclerView quizRecycler;
-    private PeAdapter quizAdapter;
-    private List<DataSnapshot> quizDataSnapshots;
+import de.codecrafters.tableview.TableDataAdapter;
+import de.codecrafters.tableview.TableView;
+import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
+
+public class research_project_checklist extends AppCompatActivity {
 
     ImageView studentImg;
     TextView fullnameText,userEmail,usernameText,phoneText;
-
+    DrawerLayout drawerLayout;
+    NavigationView navigationView;
+    ActionBarDrawerToggle drawerToggle;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -73,16 +73,22 @@ public class p_eSubject extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private DatabaseReference studentRef;
+    private List<Students> studentList;
+    private TableView<String[]> tableView;  // Note the type change to String[]
+    private String[][] studentData;
+    FloatingActionButton rotateBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pe_subject);
-        changeStatusBarColor(getResources().getColor(R.color.maroon));
+        setContentView(R.layout.activity_research_project_checklist);
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
+        changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        getSupportActionBar().setTitle("PE");
+        getSupportActionBar().setTitle("Research Project");
 // Set the color of the title to black
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -102,77 +108,91 @@ public class p_eSubject extends AppCompatActivity {
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
 
-        uploadQuiz = findViewById(R.id.publishBtn);
-
-        quizRecycler = findViewById(R.id.quiz);
-        quizRecycler.setHasFixedSize(true);
-        quizRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        quizDataSnapshots = new ArrayList<>();
-        quizAdapter = new PeAdapter(this, quizDataSnapshots);
-        quizRecycler.setAdapter(quizAdapter);
-
-
+        rotateBtn = findViewById(R.id.rotate);
         retrieveStudentDetails();
 
+        // Initialize TableView
+        tableView = findViewById(R.id.tableView);
+        tableView.setColumnCount(4);  // Set the number of columns based on your data (1 for names, 3 for assessments)
 
-        uploadQuiz.setOnClickListener(new View.OnClickListener() {
+        FirebaseApp.initializeApp(this);
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        studentRef = firebaseDatabase.getReference("Student");
+        studentList = new ArrayList<>();
+
+        rotateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), addtastk.class);
-                intent.putExtra("databaseReferenceName", "PE");
-                startActivity(intent);
+                int orientation = getResources().getConfiguration().orientation;
+                if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+                } else {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                }
             }
         });
 
-        findViewById(R.id.fill_in_the_blanks).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Dialog fill = new Dialog();
-                fill.PedialogFill(p_eSubject.this);
 
-            }
-
-        });
-
-        findViewById(R.id.multiple_choice).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Dialog choice = new Dialog();
-                choice.PedialogChoice(p_eSubject.this);
-            }
-
-        });
-
-        // Initialize Firebase Database
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("PE");
-
-        // Add a ValueEventListener to fetch data
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        studentRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                quizDataSnapshots.clear(); // Clear the list before adding data
+                studentList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    quizDataSnapshots.add(snapshot);
+                    String studentId = snapshot.getKey();
+                    String name = snapshot.child("name").getValue(String.class);
+                    Students student = new Students(studentId, null, null, name, null);
+                    studentList.add(student);
                 }
-                quizAdapter.notifyDataSetChanged(); // Notify the adapter of data changes
+
+                // Convert studentList to a 2D array for the table data
+                studentData = new String[studentList.size()][4];  // Adjust columns accordingly
+
+                for (int i = 0; i < studentList.size(); i++) {
+                    Students student = studentList.get(i);
+                    studentData[i][0] = student.getName();
+                    // Set default values for the other columns
+                    studentData[i][1] = "N/A";
+                    studentData[i][2] = "N/A";
+                    studentData[i][3] = "N/A";
+                }
+
+                // Create the adapter and decoration after populating studentData
+                TableDataAdapter<String[]> customTableDataAdapter = new CustomTableDataAdapter(research_project_checklist.this, studentData);
+
+                SeparationLineTableDecoration decoration = new SeparationLineTableDecoration(
+                        research_project_checklist.this,
+                        getResources().getColor(R.color.black),
+                        getResources().getDimension(R.dimen.separatorHeight),
+                        customTableDataAdapter
+                );
+
+                tableView.addView(decoration);
+
+                List<String[]> headerData = new ArrayList<>();
+                headerData.add(new String[]{"Name", "Written Works", "Performance Task", "Quarterly Assessment"});
+                tableView.setHeaderAdapter(new CustomTableHeaderAdapter(research_project_checklist.this,
+                        "Name", "Written Works", "Performance Task", "Quarterly Assessment"));
+
+                tableView.setColumnWeight(1, 1);
+                tableView.setColumnWeight(2, 1);
+                tableView.setColumnWeight(3, 1);
+
+                tableView.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(getResources().getColor(R.color.beige), getResources().getColor(R.color.beige)));
+
+                tableView.setDataAdapter(customTableDataAdapter);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database errors if any
+                // Handle database error
             }
         });
-
-
-
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 if (item.getItemId() == R.id.logout) {
                     Dialog dialog = new Dialog();
-                    dialog.logout(p_eSubject.this);
+                    dialog.logout(research_project_checklist.this);
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
@@ -199,6 +219,7 @@ public class p_eSubject extends AppCompatActivity {
                     finish();
                     return true;
 
+
                 }
 
                 if (item.getItemId() == R.id.info) {
@@ -221,11 +242,6 @@ public class p_eSubject extends AppCompatActivity {
         });
     }
 
-    private void changeStatusBarColor(int color) {
-        Window window = getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.setStatusBarColor(color);
-    }
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);
@@ -234,7 +250,7 @@ public class p_eSubject extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     String fullName = dataSnapshot.child("name").getValue(String.class);
-                    String imageUrl = dataSnapshot.child("image").getValue(String.class);
+                    String image = dataSnapshot.child("image").getValue(String.class);
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
@@ -242,12 +258,12 @@ public class p_eSubject extends AppCompatActivity {
                     userEmail.setText(email);
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);
-
-                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                    studentImg.setTag(image);
+                    if (image != null && !image.isEmpty()) {
                         // Load image with CircleCrop transformation
                         RequestOptions requestOptions = new RequestOptions().circleCrop();
                         Glide.with(getApplicationContext())
-                                .load(imageUrl)
+                                .load(image)
                                 .apply(requestOptions)
                                 .into(studentImg);
                     } else {
@@ -266,10 +282,15 @@ public class p_eSubject extends AppCompatActivity {
     }
     private void showChecklistDialog() {
         Dialog_task dialog = new Dialog_task();
-        dialog.checklist2(p_eSubject.this);
+        dialog.checklist2(research_project_checklist.this);
 
     }
 
+    private void changeStatusBarColor(int color) {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.setStatusBarColor(color);
+    }
 
     @Override
     public void onBackPressed() {
@@ -277,11 +298,10 @@ public class p_eSubject extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
-            Intent back = new Intent(getApplicationContext(), addtastk.class);
-            startActivity(back);
+            Intent i = new Intent(getApplicationContext(),Admin.class);
+            startActivity(i);
             overridePendingTransition(0,0);
             finish();
         }
     }
-
 }

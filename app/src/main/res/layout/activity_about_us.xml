@@ -39,36 +39,10 @@
         android:layout_height="2dp"/>
 
 
-        <ImageView
-            android:layout_width="120dp"
-            android:id="@+id/image1"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="20dp"
-            android:layout_below="@+id/seperation"
-            android:layout_height="120dp"/>
-
-
-    <ImageView
-        android:layout_width="120dp"
-        android:id="@+id/image2"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="10dp"
-        android:layout_below="@+id/image1"
-        android:layout_height="120dp"/>
-
-
-    <ImageView
-        android:layout_width="120dp"
-        android:id="@+id/image3"
-        android:layout_marginTop="20dp"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="20dp"
-        android:layout_below="@+id/image1"
-        android:layout_height="120dp"/>
 
 <TextView
     android:id="@+id/text1"
-    android:layout_below="@+id/image3"
+    android:layout_below="@+id/seperation"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginTop="10dp"
@@ -154,73 +128,120 @@
         android:layout_below="@id/researcher"
         android:layout_height="2dp"/>
 
+<ImageView
+    android:layout_width="120dp"
+    android:layout_marginTop="20dp"
+    android:layout_below="@+id/seperation3"
+    android:layout_marginStart="25dp"
+    android:id="@+id/image1"
+    android:src="@drawable/baseline_person_24"
+    android:layout_height="120dp"/>
 
     <TextView
-        android:id="@+id/tristan"
-        android:layout_marginTop="10dp"
+        android:id="@+id/name1"
+        android:layout_marginStart="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/seperation3"
+        android:layout_below="@id/image1"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/maroon"
         android:fontFamily="@font/century_gothic"
-        android:layout_centerHorizontal="true"
-        android:textSize="15dp"
-        android:text="@string/tristan"/>
-
-
-    <TextView
-        android:id="@+id/Mary"
-        android:layout_marginTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tristan"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:fontFamily="@font/century_gothic"
-        android:layout_centerHorizontal="true"
-        android:textSize="15dp"
+        android:textSize="12sp"
         android:text="@string/mary"/>
 
 
-    <TextView
-        android:id="@+id/Rain"
-        android:layout_marginTop="5dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/Mary"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:fontFamily="@font/century_gothic"
-        android:layout_centerHorizontal="true"
-        android:textSize="15dp"
-        android:text="@string/Rain"/>
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="100dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:layout_below="@+id/seperation3"
+        android:id="@+id/image2"
+        android:src="@drawable/baseline_person_24"
+        android:layout_height="120dp"/>
 
     <TextView
-        android:id="@+id/Andrea"
-        android:layout_marginTop="5dp"
+        android:id="@+id/name2"
+        android:layout_marginEnd="25dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/Rain"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/image2"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/maroon"
         android:fontFamily="@font/century_gothic"
-        android:layout_centerHorizontal="true"
-        android:textSize="15dp"
+        android:textSize="12sp"
         android:text="@string/Andrea"/>
 
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/name2"
+        android:layout_marginStart="25dp"
+        android:id="@+id/image3"
+        android:src="@drawable/baseline_person_24"
+        android:layout_height="120dp"/>
+
     <TextView
-        android:id="@+id/Gerard"
-        android:layout_marginTop="5dp"
+        android:id="@+id/name3"
+        android:layout_marginStart="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/Andrea"
-        android:layout_marginBottom="15dp"
+        android:layout_below="@id/image3"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/maroon"
         android:fontFamily="@font/century_gothic"
+        android:textSize="12sp"
+        android:text="@string/Rain"/>
+
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="120dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="25dp"
+        android:layout_below="@+id/name2"
+        android:id="@+id/image4"
+        android:src="@drawable/baseline_person_24"
+        android:layout_height="120dp"/>
+
+    <TextView
+        android:id="@+id/name4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/image4"
+        android:textStyle="bold"
+        android:textColor="@color/maroon"
+        android:fontFamily="@font/century_gothic"
+        android:textSize="12sp"
+        android:text="@string/tristan"/>
+
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/name4"
         android:layout_centerHorizontal="true"
-        android:textSize="15dp"
+        android:id="@+id/image5"
+        android:src="@drawable/baseline_person_24"
+        android:layout_height="120dp"/>
+
+    <TextView
+        android:id="@+id/name5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image5"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textColor="@color/maroon"
+        android:layout_marginBottom="15dp"
+        android:fontFamily="@font/century_gothic"
+        android:textSize="12sp"
         android:text="@string/Gerard"/>
 
 

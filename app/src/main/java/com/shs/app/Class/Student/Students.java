@@ -1,4 +1,4 @@
-package com.shs.app.Activity.Student.StudentSettings;
+package com.shs.app.Class.Student;
 
 public class Students {
     private String id;

@@ -49,7 +49,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.shs.app.Activity.Student.StudentSettings.Students;
+import com.shs.app.Class.Student.Students;
 import com.shs.app.Adapter.CommentAdapter.CommentAdapter;
 import com.shs.app.Class.comment.Comment;
 import com.shs.app.R;

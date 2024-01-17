@@ -45,6 +45,7 @@ import com.orhanobut.dialogplus.ViewHolder;
 import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter;
 import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -262,8 +263,8 @@ public class assestment_activity extends AppCompatActivity {
     }
 
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(assestment_activity.this);
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(assestment_activity.this);
 
     }
     private void retrieveStudentDetails() {

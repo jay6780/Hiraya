@@ -47,6 +47,7 @@ import com.shs.app.Activity.Admin.quizManager.QuizSubjects.GenPhysics.quiz_gener
 import com.shs.app.Adapter.quizAdapter.QuizAdapter6;
 import com.shs.app.Adapter.quizAdapter.generalchemistryAdapter;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -266,13 +267,10 @@ public class generalchemistry2_quiz extends AppCompatActivity {
         });
     }
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(generalchemistry2_quiz.this);
-
-
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(generalchemistry2_quiz.this);
 
     }
-
 
 
     @Override

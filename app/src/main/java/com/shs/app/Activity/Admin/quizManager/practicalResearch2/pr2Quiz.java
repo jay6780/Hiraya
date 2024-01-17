@@ -47,6 +47,7 @@ import com.shs.app.Activity.Admin.quizManager.PE.p_eSubject;
 import com.shs.app.Adapter.quizAdapter.PeAdapter;
 import com.shs.app.Adapter.quizAdapter.Practical_Research2_adapter;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -263,10 +264,8 @@ public class pr2Quiz extends AppCompatActivity {
         });
     }
     private void showChecklistDialog() {
-        Dialog dialog = new Dialog();
-        dialog.showChecklistDialog(pr2Quiz.this);
-
-
+        Dialog_task dialog = new Dialog_task();
+        dialog.checklist2(pr2Quiz.this);
 
     }
 
