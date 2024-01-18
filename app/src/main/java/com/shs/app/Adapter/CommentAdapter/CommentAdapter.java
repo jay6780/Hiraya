@@ -11,11 +11,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.method.DigitsKeyListener;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -95,7 +97,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
                         holder.fileNAME.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                downloadFile(holder.itemView.getContext(), comment.getFilename(), comment.getFileUrl());
+                                showFileOptionsDialog(holder.itemView.getContext(), comment);
                             }
                         });
                     } else {
@@ -121,52 +123,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         }
 
 
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                // Get the current user's UID
-                String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-                // Retrieve the admin UID from the "ADMIN" node
-                DatabaseReference adminRef = FirebaseDatabase.getInstance().getReference().child("ADMIN");
-                adminRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            // Only allow admin to delete comments
-                            DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference().child("comments");
-                            commentRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                        String commentId = snapshot.getKey();
-                                        deleteComment(commentId, view.getContext());
-                                        break;  // Only delete the first comment, modify as needed
-                                    }
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    // Handle potential errors here
-                                    Toast.makeText(view.getContext(), "Error retrieving comments", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        } else {
-                            // Show a message indicating that only admins can delete comments
-                            Toast.makeText(view.getContext(), "Only admins can delete comments", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        // Handle potential errors here
-                        Toast.makeText(view.getContext(), "Error checking admin status", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                return true;
-            }
-        });
+//
 
         // Check if the comment has image content
         if (comment.getImageContent() != null && !comment.getImageContent().isEmpty()) {
@@ -188,10 +145,169 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         }
     }
 
-    public void deleteComment(String commentId, Context context) {
-        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference().child("comments").child(commentId);
+    private void showFileOptionsDialog(Context context, Comment comment) {
+        CharSequence[] options = new CharSequence[]{"Download", "Performance Task","Quarterly Assessment"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Options");
+        builder.setItems(options, (dialog, which) -> {
+            switch (which) {
+                case 0:
+                    downloadFile(context, comment.getFilename(), comment.getFileUrl());
+                    break;
+                case 1:
+                    showAddGradeDialog(context, comment);
+                    break;
+                case 2:
+                    showAddGradeDialog2(context, comment);
+                    break;
+            }
+        });
+        builder.show();
+    }
+
+    private void showAddGradeDialog2(Context context, Comment comment) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Add Grade");
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_add_grade, null);
+        builder.setView(view);
+        EditText gradeEditText = view.findViewById(R.id.editTextGrade);
+
+        // Set InputFilter to allow only numerical numbers
+        gradeEditText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+
+        builder.setPositiveButton("Next", (dialog, which) -> {
+            // Retrieve the entered grade from the EditText
+            String grade = gradeEditText.getText().toString().trim();
+
+            // Check if the entered value is a valid number
+            if (isValidNumber(grade)) {
+                // Show the second dialog to select a performance task
+                showSelectTaskDialog2(context, comment, grade);
+            } else {
+                // Display a Toast for invalid input
+                Toast.makeText(context, "Please input a valid numerical grade.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            // Cancel button click
+        });
+
+        // Show the first AlertDialog
+        builder.show();
+    }
+
+    private void showSelectTaskDialog2(Context context, Comment comment, String grade) {
+        CharSequence[] tasks = new CharSequence[]{
+                "General_Physics2_quarterly_assessment",
+                "General_Chemistry2_quarterly_assessment",
+                "Practical_Research2_quarterly_assessment",
+                "Research_Project_quarterly_assessment",
+                "MIL_quarterly_assessment",
+                "Physical_Education_quarterly_assessment"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Select Quarterly Assessment");
+        builder.setItems(tasks, (dialog, which) -> {
+            String selectedTask = tasks[which].toString();
+            saveGradeToDatabase2(comment.getUid(), selectedTask, grade,context);
+        });
+        builder.show();
+    }
+
+    private void saveGradeToDatabase2(String uid, String selectedTask, String grade,Context context) {
+        DatabaseReference gradeRef = FirebaseDatabase.getInstance().getReference().child("Grade2").child(uid);
+        DatabaseReference taskRef = gradeRef.child(selectedTask);
+
+        taskRef.setValue(grade);
+
+        Toast.makeText(context, "Grade added successfully", Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void showAddGradeDialog(Context context, Comment comment) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Add Grade");
+        View view = LayoutInflater.from(context).inflate(R.layout.dialog_add_grade, null);
+        builder.setView(view);
+        EditText gradeEditText = view.findViewById(R.id.editTextGrade);
+
+        // Set InputFilter to allow only numerical numbers
+        gradeEditText.setKeyListener(DigitsKeyListener.getInstance("0123456789"));
+
+        builder.setPositiveButton("Next", (dialog, which) -> {
+            // Retrieve the entered grade from the EditText
+            String grade = gradeEditText.getText().toString().trim();
+
+            // Check if the entered value is a valid number
+            if (isValidNumber(grade)) {
+                // Show the second dialog to select a performance task
+                showSelectTaskDialog(context, comment, grade);
+            } else {
+                // Display a Toast for invalid input
+                Toast.makeText(context, "Please input a valid numerical grade.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialog, which) -> {
+            // Cancel button click
+        });
+
+        // Show the first AlertDialog
+        builder.show();
+    }
+
+    // Helper method to check if the input is a valid number
+    private boolean isValidNumber(String input) {
+        try {
+            // Try parsing the input to a double
+            Double.parseDouble(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private void showSelectTaskDialog(Context context, Comment comment, String grade) {
+        CharSequence[] tasks = new CharSequence[]{
+                "General_Physics2_performanceTask",
+                "General_Chemistry2_performanceTask",
+                "Practical_Research2_performanceTask",
+                "Research_Project_performanceTask",
+                "MIL_performanceTask",
+                "Physical_Education_performanceTask"
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Select Performance Task");
+        builder.setItems(tasks, (dialog, which) -> {
+            String selectedTask = tasks[which].toString();
+            saveGradeToDatabase(comment.getUid(), selectedTask, grade,context);
+        });
+        builder.show();
+    }
+
+    private void saveGradeToDatabase(String uid, String selectedTask, String grade,Context context) {
+        DatabaseReference gradeRef2 = FirebaseDatabase.getInstance().getReference().child("Grade").child(uid);
+        DatabaseReference taskRef2= gradeRef2.child(selectedTask);
+
+        taskRef2.setValue(grade);
+
+        Toast.makeText(context, "Grade added successfully", Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void deleteComment(String announcementId, String commentId, String uid, Context context) {
+        DatabaseReference commentRef = FirebaseDatabase.getInstance().getReference()
+                .child("comments")
+                .child(announcementId)
+                .child(commentId);
+
         deleteSingleComment(commentRef, context);
     }
+
 
     private void deleteSingleComment(DatabaseReference commentRef, Context context) {
         commentRef.removeValue()
@@ -211,7 +327,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
 
     private void downloadFile(Context context, String fileName, String fileUrl) {
-        // Use DownloadManager to handle the file download
         DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
         Uri uri = Uri.parse(fileUrl); // Assuming fileUrl is the URL of the file to be downloaded
 

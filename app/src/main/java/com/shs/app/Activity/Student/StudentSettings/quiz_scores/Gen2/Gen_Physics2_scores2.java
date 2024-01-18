@@ -73,6 +73,11 @@ public class Gen_Physics2_scores2 extends AppCompatActivity {
                         int quizScore = dataSnapshot.getValue(Integer.class);
                         score.setText("Score: " + quizScore);
 
+                        // Save the score to another database named "written_works"
+                        DatabaseReference writtenWorksRef = FirebaseDatabase.getInstance().getReference("written_works");
+                        // Use "General_Physics2_performanceTask" as the key
+                        writtenWorksRef.child(currentUser.getUid()).child("General_Physics2_written_works").setValue(String.valueOf(quizScore));
+
                         // Center the score vertically
                         score.setGravity(Gravity.CENTER_VERTICAL);
 

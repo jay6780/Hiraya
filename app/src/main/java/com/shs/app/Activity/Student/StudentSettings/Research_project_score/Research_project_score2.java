@@ -72,7 +72,8 @@ public class Research_project_score2 extends AppCompatActivity {
                     if (dataSnapshot.exists()) {
                         int quizScore = dataSnapshot.getValue(Integer.class);
                         score.setText("Score: " + quizScore);
-
+                        DatabaseReference writtenWorksRef = FirebaseDatabase.getInstance().getReference("written_works");
+                        writtenWorksRef.child(currentUser.getUid()).child("Research_Project_written_works").setValue(String.valueOf(quizScore));
                         // Center the score vertically
                         score.setGravity(Gravity.CENTER_VERTICAL);
 

@@ -72,6 +72,9 @@ public class Pescore2 extends AppCompatActivity {
                         int quizScore = dataSnapshot.getValue(Integer.class);
                         score.setText("Score: " + quizScore);
 
+                        DatabaseReference writtenWorksRef = FirebaseDatabase.getInstance().getReference("written_works");
+                        writtenWorksRef.child(currentUser.getUid()).child("Physical_Education_written_works").setValue(String.valueOf(quizScore));
+
                         // Center the score vertically
                         score.setGravity(Gravity.CENTER_VERTICAL);
 

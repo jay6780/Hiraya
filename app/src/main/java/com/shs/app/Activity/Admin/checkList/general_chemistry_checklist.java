@@ -47,6 +47,8 @@ import com.shs.app.Adapter.tableAdapter.CustomTableDataAdapter;
 import com.shs.app.Adapter.tableAdapter.CustomTableHeaderAdapter;
 import com.shs.app.Adapter.tableAdapter.SeparationLineTableDecoration;
 import com.shs.app.Class.Student.Students;
+import com.shs.app.DialogUtils.GenChemistry.GenChemistryDialog;
+import com.shs.app.DialogUtils.GenPhysics.genPhysicsDialog;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.DialogUtils.Dialog_task;
 import com.shs.app.R;
@@ -59,7 +61,6 @@ import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 
 public class general_chemistry_checklist extends AppCompatActivity {
-
     ImageView studentImg;
     TextView fullnameText,userEmail,usernameText,phoneText;
     DrawerLayout drawerLayout;
@@ -77,7 +78,7 @@ public class general_chemistry_checklist extends AppCompatActivity {
     private List<Students> studentList;
     private TableView<String[]> tableView;  // Note the type change to String[]
     private String[][] studentData;
-    FloatingActionButton rotateBtn;
+    FloatingActionButton rotateBtn,delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,7 @@ public class general_chemistry_checklist extends AppCompatActivity {
         changeStatusBarColor(getResources().getColor(R.color.maroon));
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        getSupportActionBar().setTitle("General Chemistry2");
+        getSupportActionBar().setTitle("General Chemistry");
 // Set the color of the title to black
         SpannableString text = new SpannableString(getSupportActionBar().getTitle());
         text.setSpan(new ForegroundColorSpan(Color.YELLOW), 0, text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
@@ -109,6 +110,7 @@ public class general_chemistry_checklist extends AppCompatActivity {
         phoneText = headerView.findViewById(R.id.phone);
 
         rotateBtn = findViewById(R.id.rotate);
+        delete = findViewById(R.id.clear);
         retrieveStudentDetails();
 
         // Initialize TableView
@@ -132,6 +134,14 @@ public class general_chemistry_checklist extends AppCompatActivity {
             }
         });
 
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteDataForStudentDialog();
+
+            }
+        });
+
 
         studentRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -152,36 +162,15 @@ public class general_chemistry_checklist extends AppCompatActivity {
                     studentData[i][0] = student.getName();
                     // Set default values for the other columns
                     studentData[i][1] = "N/A";
-                    studentData[i][2] = "N/A";
+                    retrievePerformanceTaskData(student.getId(), i);
+                    retrievePerformanceTaskData2(student.getId(), i);
+                    retrievePerformanceTaskData3(student.getId(), i);
                     studentData[i][3] = "N/A";
                 }
 
                 // Create the adapter and decoration after populating studentData
-                TableDataAdapter<String[]> customTableDataAdapter = new CustomTableDataAdapter(general_chemistry_checklist.this, studentData);
 
-                SeparationLineTableDecoration decoration = new SeparationLineTableDecoration(
-                        general_chemistry_checklist.this,
-                        getResources().getColor(R.color.black),
-                        getResources().getDimension(R.dimen.separatorHeight),
-                        customTableDataAdapter
-                );
-
-                tableView.addView(decoration);
-
-                List<String[]> headerData = new ArrayList<>();
-                headerData.add(new String[]{"Name", "Written Works", "Performance Task", "Quarterly Assessment"});
-                tableView.setHeaderAdapter(new CustomTableHeaderAdapter(general_chemistry_checklist.this,
-                        "Name", "Written Works", "Performance Task", "Quarterly Assessment"));
-
-                tableView.setColumnWeight(1, 1);
-                tableView.setColumnWeight(2, 1);
-                tableView.setColumnWeight(3, 1);
-
-                tableView.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(getResources().getColor(R.color.beige), getResources().getColor(R.color.beige)));
-
-                tableView.setDataAdapter(customTableDataAdapter);
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Handle database error
@@ -240,6 +229,112 @@ public class general_chemistry_checklist extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void deleteDataForStudentDialog() {
+        GenChemistryDialog deleteDialog = new GenChemistryDialog(this, studentList);
+        deleteDialog.deleteDataForStudentDialog();
+
+    }
+    private void retrievePerformanceTaskData3(String studentId, final int rowIndex) {
+        DatabaseReference generalChemistryRef = FirebaseDatabase.getInstance().getReference().child("Grade2").child(studentId).child("General_Chemistry2_quarterly_assessment");
+        generalChemistryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String performanceTaskScore = dataSnapshot.getValue(String.class);
+                    // Update the performance task data in the studentData array
+                    studentData[rowIndex][3] = performanceTaskScore;
+                } else {
+                    // Set the value to "N/A" if there is no grade
+                    studentData[rowIndex][3] = "N/A";
+                }
+
+                // Update the TableView with the modified studentData
+                updateTableView();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle potential errors here
+            }
+        });
+    }
+
+    private void retrievePerformanceTaskData2(String studentId, final int rowIndex) {
+        DatabaseReference generalChemistryRef = FirebaseDatabase.getInstance().getReference().child("written_works").child(studentId).child("general_chemistry_written_works");
+        generalChemistryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String performanceTaskScore = dataSnapshot.getValue(String.class);
+                    // Update the performance task data in the studentData array
+                    studentData[rowIndex][1] = performanceTaskScore;
+                } else {
+                    // Set the value to "N/A" if there is no grade
+                    studentData[rowIndex][1] = "N/A";
+                }
+
+                // Update the TableView with the modified studentData
+                updateTableView();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle potential errors here
+            }
+        });
+    }
+
+    private void retrievePerformanceTaskData(String studentId, final int rowIndex) {
+        DatabaseReference generalChemistryRef = FirebaseDatabase.getInstance().getReference().child("Grade").child(studentId).child("General_Chemistry2_performanceTask");
+        generalChemistryRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    String performanceTaskScore = dataSnapshot.getValue(String.class);
+                    studentData[rowIndex][2] = performanceTaskScore;
+                } else {
+                    studentData[rowIndex][2] = "N/A";
+                }
+
+                // Update the TableView with the modified studentData
+                updateTableView();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle potential errors here
+            }
+        });
+    }
+
+    private void updateTableView() {
+        // Create the adapter and decoration after populating studentData
+        TableDataAdapter<String[]> customTableDataAdapter = new CustomTableDataAdapter(general_chemistry_checklist.this, studentData);
+
+        SeparationLineTableDecoration decoration = new SeparationLineTableDecoration(
+                general_chemistry_checklist.this,
+                getResources().getColor(R.color.black),
+                getResources().getDimension(R.dimen.separatorHeight),
+                customTableDataAdapter
+        );
+
+        tableView.addView(decoration);
+
+        // Set the header and other properties
+        List<String[]> headerData = new ArrayList<>();
+        headerData.add(new String[]{"Name", "Written Works", "Performance Task", "Quarterly Assessment"});
+        tableView.setHeaderAdapter(new CustomTableHeaderAdapter(general_chemistry_checklist.this,
+                "Name", "Written Works", "Performance Task", "Quarterly Assessment"));
+
+        tableView.setColumnWeight(1, 1);
+        tableView.setColumnWeight(2, 1);
+        tableView.setColumnWeight(3, 1);
+
+        tableView.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(getResources().getColor(R.color.beige), getResources().getColor(R.color.beige)));
+
+        tableView.setDataAdapter(customTableDataAdapter);
     }
 
     private void retrieveStudentDetails() {
