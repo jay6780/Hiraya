@@ -123,6 +123,8 @@ public class generalchemistry2_quiz extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
                 intent.putExtra("databaseReferenceName", "generalchemistry2");
                 startActivity(intent);
+                overridePendingTransition(0,0);
+                finish();
             }
         });
 

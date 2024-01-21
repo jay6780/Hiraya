@@ -123,6 +123,8 @@ public class Research_project_quiz extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
                 intent.putExtra("databaseReferenceName", "Research_project");
                 startActivity(intent);
+                overridePendingTransition(0,0);
+                finish();
             }
         });
 

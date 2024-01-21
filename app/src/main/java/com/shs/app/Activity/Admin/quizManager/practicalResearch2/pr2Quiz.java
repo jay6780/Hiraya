@@ -123,6 +123,8 @@ public class pr2Quiz extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
                 intent.putExtra("databaseReferenceName", "Practical_Research2");
                 startActivity(intent);
+                overridePendingTransition(0,0);
+                finish();
             }
         });
 

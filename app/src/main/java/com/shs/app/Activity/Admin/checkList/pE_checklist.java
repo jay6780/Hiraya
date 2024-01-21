@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -20,6 +21,7 @@ import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -60,7 +62,7 @@ import de.codecrafters.tableview.TableDataAdapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 
-public class pE_checklist extends AppCompatActivity {
+public class pE_checklist extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
     ImageView studentImg;
     TextView fullnameText,userEmail,usernameText,phoneText;
@@ -80,7 +82,7 @@ public class pE_checklist extends AppCompatActivity {
     private TableView<String[]> tableView;  // Note the type change to String[]
     private String[][] studentData;
     FloatingActionButton rotateBtn,delete;
-
+    SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,7 +115,8 @@ public class pE_checklist extends AppCompatActivity {
         rotateBtn = findViewById(R.id.rotate);
         delete = findViewById(R.id.clear);
         retrieveStudentDetails();
-
+        searchView = findViewById(R.id.search);
+        searchView.setOnQueryTextListener(this);
         // Initialize TableView
         tableView = findViewById(R.id.tableView);
         tableView.setColumnCount(4);  // Set the number of columns based on your data (1 for names, 3 for assessments)
@@ -242,17 +245,23 @@ public class pE_checklist extends AppCompatActivity {
         gradeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String performanceTaskScore = dataSnapshot.getValue(String.class);
-                    // Update the performance task data in the studentData array
-                    studentData[rowIndex][3] = performanceTaskScore;
-                } else {
-                    // Set the value to "N/A" if there is no grade
-                    studentData[rowIndex][3] = "N/A";
-                }
+                if (rowIndex < studentData.length) { // Check if rowIndex is within bounds
+                    if (dataSnapshot.exists()) {
+                        String performanceTaskScore = dataSnapshot.getValue(String.class);
+                        // Update the performance task data in the studentData array
+                        studentData[rowIndex][3] = performanceTaskScore;
+                    } else {
+                        // Set the value to "N/A" if there is no grade
+                        studentData[rowIndex][3] = "N/A";
+                    }
 
-                // Update the TableView with the modified studentData
-                updateTableView();
+                    // Update the TableView with the modified studentData
+                    updateTableView();
+                } else {
+                    // Handle the case where rowIndex is out of bounds
+                    // For example, you can log a message or take appropriate action
+                    Log.e("ArrayIndexOutOfBounds", "Row index is out of bounds: " + rowIndex);
+                }
             }
 
             @Override
@@ -267,17 +276,23 @@ public class pE_checklist extends AppCompatActivity {
         gradeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String performanceTaskScore = dataSnapshot.getValue(String.class);
-                    // Update the performance task data in the studentData array
-                    studentData[rowIndex][1] = performanceTaskScore;
-                } else {
-                    // Set the value to "N/A" if there is no grade
-                    studentData[rowIndex][1] = "N/A";
-                }
+                if (rowIndex >= 0 && rowIndex < studentData.length) { // Check if rowIndex is within bounds
+                    if (dataSnapshot.exists()) {
+                        String performanceTaskScore = dataSnapshot.getValue(String.class);
+                        // Update the performance task data in the studentData array
+                        studentData[rowIndex][1] = performanceTaskScore;
+                    } else {
+                        // Set the value to "N/A" if there is no grade
+                        studentData[rowIndex][1] = "N/A";
+                    }
 
-                // Update the TableView with the modified studentData
-                updateTableView();
+                    // Update the TableView with the modified studentData
+                    updateTableView();
+                } else {
+                    // Handle the case where rowIndex is out of bounds
+                    // For example, you can log a message or take appropriate action
+                    Log.e("ArrayIndexOutOfBounds", "Row index is out of bounds: " + rowIndex);
+                }
             }
 
             @Override
@@ -292,17 +307,23 @@ public class pE_checklist extends AppCompatActivity {
         gradeRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    String performanceTaskScore = dataSnapshot.getValue(String.class);
-                    // Update the performance task data in the studentData array
-                    studentData[rowIndex][2] = performanceTaskScore;
-                } else {
-                    // Set the value to "N/A" if there is no grade
-                    studentData[rowIndex][2] = "N/A";
-                }
+                if (rowIndex >= 0 && rowIndex < studentData.length) { // Check if rowIndex is within bounds
+                    if (dataSnapshot.exists()) {
+                        String performanceTaskScore = dataSnapshot.getValue(String.class);
+                        // Update the performance task data in the studentData array
+                        studentData[rowIndex][2] = performanceTaskScore;
+                    } else {
+                        // Set the value to "N/A" if there is no grade
+                        studentData[rowIndex][2] = "N/A";
+                    }
 
-                // Update the TableView with the modified studentData
-                updateTableView();
+                    // Update the TableView with the modified studentData
+                    updateTableView();
+                } else {
+                    // Handle the case where rowIndex is out of bounds
+                    // For example, you can log a message or take appropriate action
+                    Log.e("ArrayIndexOutOfBounds", "Row index is out of bounds: " + rowIndex);
+                }
             }
 
             @Override
@@ -402,4 +423,42 @@ public class pE_checklist extends AppCompatActivity {
             finish();
         }
     }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        filterStudentData(newText);
+        return false;
+    }
+
+    private void filterStudentData(String query) {
+        List<Students> filteredList = new ArrayList<>();
+
+        for (Students student : studentList) {
+            if (student.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(student);
+            }
+        }
+
+        // Convert filteredList to a 2D array for the table data
+        studentData = new String[filteredList.size()][4];
+
+        for (int i = 0; i < filteredList.size(); i++) {
+            Students student = filteredList.get(i);
+            studentData[i][0] = student.getName();
+            studentData[i][1] = "N/A";
+            retrievePerformanceTaskData(student.getId(), i);
+            retrievePerformanceTaskData2(student.getId(), i);
+            retrievePerformanceTaskData3(student.getId(), i);
+            studentData[i][3] = "N/A";
+        }
+
+        // Update the TableView with the modified studentData
+        updateTableView();
+    }
+
 }

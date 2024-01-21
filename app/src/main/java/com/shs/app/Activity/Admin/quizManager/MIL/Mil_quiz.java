@@ -123,6 +123,8 @@ public class Mil_quiz extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
                 intent.putExtra("databaseReferenceName", "MIL");
                 startActivity(intent);
+                overridePendingTransition(0,0);
+                finish();
             }
         });
 

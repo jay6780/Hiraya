@@ -120,6 +120,8 @@ public class quiz_general_physics extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
                 intent.putExtra("databaseReferenceName", "Gen_Physics2");
                 startActivity(intent);
+                overridePendingTransition(0,0);
+                finish();
             }
         });
 

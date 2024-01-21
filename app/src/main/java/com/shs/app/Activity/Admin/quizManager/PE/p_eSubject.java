@@ -122,6 +122,8 @@ public class p_eSubject extends AppCompatActivity {
                 Intent intent = new Intent(getApplicationContext(), addtastk.class);
                 intent.putExtra("databaseReferenceName", "PE");
                 startActivity(intent);
+                overridePendingTransition(0,0);
+                finish();
             }
         });
 

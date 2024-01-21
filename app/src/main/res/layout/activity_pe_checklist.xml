@@ -10,9 +10,36 @@
         android:layout_height="match_parent"
         android:background="@color/beige">
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/maroon"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
+
+
+        <androidx.appcompat.widget.SearchView
+            android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/search_border"
+            android:focusable="false"
+            android:iconifiedByDefault="false"
+            android:searchHintIcon="@null"
+            app:closeIcon="@drawable/clear"
+            app:queryHint="Search..."
+            app:searchIcon="@drawable/search" />
+
+
         <de.codecrafters.tableview.TableView
             android:id="@+id/tableView"
             android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/search"
             android:layout_height="match_parent"
             app:tableView_columnCount="4" />
 
