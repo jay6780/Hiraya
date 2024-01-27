@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -54,6 +55,8 @@ import com.shs.app.R;
 
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -319,51 +322,100 @@ public class addtastk extends AppCompatActivity {
     private void uploadImage(String announcementId, Announcement announcement) {
         progressDialog.setMessage("Uploading Image...");
 
-        try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            int quality = 100;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream);
+        // Get the image URI using the getImageUri function
+        Uri imageUri = getImageUri();
 
-            while (byteArrayOutputStream.toByteArray().length / 1024 > 1024) {
-                byteArrayOutputStream.reset();
-                quality -= 10;
+        if (imageUri != null) {
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), imageUri);
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                int quality = 50;
                 bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream);
+
+                while (byteArrayOutputStream.toByteArray().length / 1024 > 1024) {
+                    byteArrayOutputStream.reset();
+                    quality -= 10;
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream);
+                }
+
+                byte[] compressedImageData = byteArrayOutputStream.toByteArray();
+
+                // Create a reference to the location where the image will be stored in Firebase Storage
+                StorageReference imageRef = storageReference.child(announcementId + ".jpg");
+
+                // Upload the compressed image to Firebase Storage
+                UploadTask uploadTask = imageRef.putBytes(compressedImageData);
+                uploadTask.continueWithTask(task -> {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Retrieve the URL of the uploaded image
+                    return imageRef.getDownloadUrl();
+                }).addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+
+                        // Set the image URL in the announcement object
+                        announcement.setImageUrl(downloadUri.toString());
+
+                        // Save the announcement to the database
+                        saveAnnouncementToDatabase(announcementId, announcement);
+                    } else {
+                        progressDialog.dismiss();
+                        showErrorDialog();
+                    }
+                });
+            } catch (IOException e) {
+                Toast.makeText(this, "Failed to compress image", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
             }
-
-            byte[] compressedImageData = byteArrayOutputStream.toByteArray();
-
-            // Create a reference to the location where the image will be stored in Firebase Storage
-            StorageReference imageRef = storageReference.child(announcementId + ".jpg");
-
-            // Upload the compressed image to Firebase Storage
-            UploadTask uploadTask = imageRef.putBytes(compressedImageData);
-            uploadTask.continueWithTask(task -> {
-                if (!task.isSuccessful()) {
-                    throw task.getException();
-                }
-
-                // Retrieve the URL of the uploaded image
-                return imageRef.getDownloadUrl();
-            }).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    Uri downloadUri = task.getResult();
-
-                    // Set the image URL in the announcement object
-                    announcement.setImageUrl(downloadUri.toString());
-
-                    // Save the announcement to the database
-                    saveAnnouncementToDatabase(announcementId, announcement);
-                } else {
-                    progressDialog.dismiss();
-                    showErrorDialog();
-                }
-            });
-        } catch (IOException e) {
-            Toast.makeText(this, "Failed to compress image", Toast.LENGTH_SHORT).show();
+        } else {
+            // Handle the case where imageUri is null (getImageUri failed)
             progressDialog.dismiss();
+            Toast.makeText(this, "Failed to get image URI", Toast.LENGTH_SHORT).show();
         }
     }
+
+    private Uri getImageUri() {
+        Drawable drawable = imagePick.getDrawable();
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            Bitmap bitmap = bitmapDrawable.getBitmap();
+
+            // Define the desired image size in kilobytes
+            int maxSizeKB = 50; // Adjust this value as needed
+
+            // Compress the bitmap to the desired size
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            int compressQuality = 100;
+            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, outputStream);
+
+            // Ensure the compressed image is within the desired size
+            while (outputStream.toByteArray().length / 1024 > maxSizeKB && compressQuality > 10) {
+                compressQuality -= 10;
+                outputStream.reset();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, outputStream);
+            }
+
+            // Save the compressed bitmap to a file and get the file URI
+            try {
+                File cachePath = new File(getCacheDir(), "temp_image.jpg");
+                FileOutputStream fileOutputStream = new FileOutputStream(cachePath);
+                fileOutputStream.write(outputStream.toByteArray());
+                fileOutputStream.flush();
+                fileOutputStream.close();
+
+                // Get the file URI from the cache path
+                return Uri.fromFile(cachePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null; // Return null if the image URI couldn't be retrieved
+    }
+
+
 
     private void saveAnnouncementToDatabase(String announcementId, Announcement announcement) {
         getUploaderFullName(new UploaderFullNameCallback() {

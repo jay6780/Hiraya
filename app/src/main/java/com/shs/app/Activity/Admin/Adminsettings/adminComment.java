@@ -66,7 +66,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class adminComment extends AppCompatActivity {
-    ImageButton picture, sendBtn;
+    ImageButton picture, sendBtn,emojis;
     EditText commentEditText;
     RecyclerView commentsRecyclerView;
     private Uri selectedImageUri;
@@ -132,6 +132,7 @@ public class adminComment extends AppCompatActivity {
         sendBtn = findViewById(R.id.sendMessageButton);
         commentEditText = findViewById(R.id.messageEditText);
         commentsRecyclerView = findViewById(R.id.recycler);
+        emojis = findViewById(R.id.emoji);
 
         // Initialize Firebase references
         studentsRef = FirebaseDatabase.getInstance().getReference("Student");
@@ -179,6 +180,12 @@ public class adminComment extends AppCompatActivity {
             imageView.setVisibility(View.GONE);
         }
 
+        emojis.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -434,46 +441,51 @@ public class adminComment extends AppCompatActivity {
 
     private Uri compressImage(Uri imageUri) {
         try {
-            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            inputStream.close();
-
-            // Define the desired image size in kilobytes
-            long maxSizeBytes = 550 * 1024; // 200 KB (in bytes)
-
-            // Calculate the current file size of the bitmap
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
-            long currentSizeBytes = outputStream.toByteArray().length;
-            outputStream.close();
-
-            // Check if the current size is already smaller than the desired size
-            if (currentSizeBytes <= maxSizeBytes) {
-                return imageUri; // No need to compress, return the original image URI
+            // Use getImageUri function to get the Bitmap and compress it
+            Uri compressedImageUri = getImageUri(imageUri);
+            if (compressedImageUri != null) {
+                return compressedImageUri;
             }
-
-            // Calculate the desired compression quality
-            int compressQuality = (int) (maxSizeBytes * 100 / currentSizeBytes);
-
-            // Compress the bitmap with the desired quality
-            ByteArrayOutputStream compressedOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, compressedOutputStream);
-
-            // Save the compressed bitmap to a temporary file
-            File cachePath = new File(getCacheDir(), "temp_image.jpg");
-            FileOutputStream fileOutputStream = new FileOutputStream(cachePath);
-            fileOutputStream.write(compressedOutputStream.toByteArray());
-            fileOutputStream.flush();
-            fileOutputStream.close();
-
-            // Get the file URI from the cache path
-            return Uri.fromFile(cachePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null; // Return null if the image URI couldn't be retrieved
+        return null;
     }
 
+    private Uri getImageUri(Uri imageUri) throws IOException {
+        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        inputStream.close();
+
+        // Define the desired image size in kilobytes
+        int maxSizeKB = 50; // Adjust this value as needed
+
+        // Compress the bitmap to the desired size using the provided function
+        return compressBitmap(bitmap, maxSizeKB);
+    }
+
+    private Uri compressBitmap(Bitmap bitmap, int maxSizeKB) throws IOException {
+        // Compress the bitmap to the desired size
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        int compressQuality = 100;
+        bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, outputStream);
+
+        while (outputStream.toByteArray().length / 1024 > maxSizeKB && compressQuality > 10) {
+            compressQuality -= 10;
+            outputStream.reset();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, compressQuality, outputStream);
+        }
+
+        // Save the compressed bitmap to a file and get the file URI
+        File cachePath = new File(getCacheDir(), "temp_image.jpg");
+        FileOutputStream fileOutputStream = new FileOutputStream(cachePath);
+        fileOutputStream.write(outputStream.toByteArray());
+        fileOutputStream.flush();
+        fileOutputStream.close();
+
+        // Get the file URI from the cache path
+        return Uri.fromFile(cachePath);
+    }
 
 
     private void showImagePopup(String imageUrl) {

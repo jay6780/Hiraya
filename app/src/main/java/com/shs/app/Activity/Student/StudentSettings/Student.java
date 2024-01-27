@@ -131,6 +131,9 @@ public class Student extends AppCompatActivity {
         adapter = new AnnouncementAdapter2(this, announcementList);
         memberListView.setAdapter(adapter);
 
+        memberListView.setVerticalScrollBarEnabled(false);
+        memberListView.setHorizontalScrollBarEnabled(false);
+
 
         final List<Integer> images = new ArrayList<>();
         images.add(R.mipmap.page1);

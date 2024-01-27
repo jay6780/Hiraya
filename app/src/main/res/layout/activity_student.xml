@@ -20,7 +20,7 @@
     android:layout_below="@+id/banner"
     android:layout_width="match_parent"
     android:background="@color/maroon"
-    android:layout_height="3dp"/>
+    android:layout_height="2dp"/>
 
     <ListView
         android:id="@+id/memberListView"

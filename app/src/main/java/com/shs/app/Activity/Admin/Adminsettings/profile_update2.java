@@ -297,7 +297,7 @@ public class profile_update2 extends AppCompatActivity {
             Bitmap bitmap = bitmapDrawable.getBitmap();
 
             // Define the desired image size in kilobytes
-            int maxSizeKB = 200; // Adjust this value as needed
+            int maxSizeKB = 100; // Adjust this value as needed
 
             // Compress the bitmap to the desired size
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

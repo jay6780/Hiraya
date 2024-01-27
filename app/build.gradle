@@ -49,6 +49,7 @@ dependencies {
     implementation 'com.github.ISchwarz23:SortableTableView:2.8.1'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+    implementation "com.vanniktech:emoji-google-compat:0.18.0"
 
 
 }

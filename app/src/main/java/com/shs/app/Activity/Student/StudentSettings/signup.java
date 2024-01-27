@@ -40,10 +40,7 @@ public class signup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
         back = findViewById(R.id.back);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
+        getSupportActionBar().hide();
 
         changeStatusBarColor(getResources().getColor(R.color.beige));
             nameEditText = findViewById(R.id.name);

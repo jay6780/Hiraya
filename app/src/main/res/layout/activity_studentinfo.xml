@@ -63,7 +63,7 @@
             android:layout_below="@id/seperation"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"/>
+            style="@style/NoScrollbars"/>
     </RelativeLayout>
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

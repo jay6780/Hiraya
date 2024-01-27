@@ -1,15 +1,5 @@
 package com.shs.app.Activity.Admin.checkList;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
-import androidx.appcompat.widget.SearchView;
-import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -29,6 +19,16 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -51,7 +51,6 @@ import com.shs.app.Adapter.tableAdapter.SeparationLineTableDecoration;
 import com.shs.app.Class.Student.Students;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.DialogUtils.Dialog_task;
-import com.shs.app.DialogUtils.GenPhysics.genPhysicsDialog;
 import com.shs.app.DialogUtils.pr2.pr2Dialog;
 import com.shs.app.R;
 

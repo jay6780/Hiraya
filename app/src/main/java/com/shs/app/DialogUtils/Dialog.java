@@ -384,8 +384,8 @@ public class Dialog {
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(activity.getApplicationContext(), login.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-            activity.overridePendingTransition(0, 0);
             activity.startActivity(intent);
+            activity.overridePendingTransition(0, 0);
             activity.finish();
 
         });

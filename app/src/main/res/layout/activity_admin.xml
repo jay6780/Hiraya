@@ -43,8 +43,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/assessment_btn"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="135dp"
+                android:layout_height="135dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
@@ -82,8 +82,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/quizManagement"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="135dp"
+                android:layout_height="135dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
@@ -132,8 +132,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/studentInfo"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="135dp"
+                android:layout_height="135dp"
                 android:layout_marginRight="15dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
@@ -171,8 +171,8 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/checklist1"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
+                android:layout_width="135dp"
+                android:layout_height="135dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginBottom="15dp"
@@ -219,8 +219,8 @@
         android:orientation="horizontal">
         <androidx.cardview.widget.CardView
             android:id="@+id/Archive"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="135dp"
+            android:layout_height="135dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="15dp"

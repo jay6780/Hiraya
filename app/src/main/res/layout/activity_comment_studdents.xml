@@ -84,7 +84,7 @@
                 android:layout_width="match_parent"
                 android:layout_marginTop="5dp"
                 android:background="@color/maroon"
-                android:layout_height="3dp"/>
+                android:layout_height="2dp"/>
             <TextView
                 app:fontFamily="@font/century_gothic"
                 android:layout_width="match_parent"
@@ -116,15 +116,16 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white">
+            android:background="@drawable/border2">
 
             <ImageButton
                 android:id="@+id/buttonImage"
-                android:layout_width="60dp"
+                android:layout_width="35dp"
                 android:layout_height="60dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_baseline_image_24"
+                android:src="@mipmap/search"
                 android:scaleType="fitCenter"
+                android:layout_marginStart="2dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -132,9 +133,8 @@
                 android:id="@+id/messageEditText2"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toStartOf="@id/sendMessageButton"
+
+                app:layout_constraintEnd_toStartOf="@id/emoji"
                 app:layout_constraintStart_toEndOf="@id/buttonImage"
                 app:layout_constraintTop_toTopOf="parent">
 
@@ -149,14 +149,27 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <ImageButton
-                android:id="@+id/sendMessageButton"
-                android:layout_width="60dp"
+                android:id="@+id/emoji"
+                android:layout_width="35dp"
                 android:layout_height="60dp"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_baseline_send_24"
+                android:src="@mipmap/happy"
                 android:scaleType="fitCenter"
+                android:visibility="gone"
+                android:layout_marginEnd="50dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/messageEditText2"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/sendMessageButton"
+                android:layout_width="35dp"
+                android:layout_height="60dp"
+                android:background="@android:color/transparent"
+                android:src="@mipmap/nav"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="5dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
