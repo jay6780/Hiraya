@@ -10,6 +10,7 @@ android {
     defaultConfig {
         applicationId "com.shs.app"
         minSdk 26
+        //noinspection ExpiredTargetSdkVersion
         targetSdk 28
         versionCode 1
         versionName "1.0"
@@ -17,17 +18,36 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    buildTypes {
+
+    signingConfigs {
+        debug {
+            storeFile file("./Keystore/Hiraya.jks")
+            storePassword "123456"
+            keyAlias "Hiraya"
+            keyPassword "123456"
+        }
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            storeFile file("./Keystore/Hiraya.jks")
+            storePassword "123456"
+            keyAlias "Hiraya"
+            keyPassword "123456"
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+
+    buildTypes {
+        debug {
+            debuggable true
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), project.file('proguard-rules.pro')
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), project.file('proguard-rules.pro')
+        }
     }
-}
 
 dependencies {
 
@@ -49,7 +69,7 @@ dependencies {
     implementation 'com.github.ISchwarz23:SortableTableView:2.8.1'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
-    implementation "com.vanniktech:emoji-google-compat:0.18.0"
+}
 
 
 }
