@@ -13,7 +13,9 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,6 +35,7 @@ public class AdminRegister extends AppCompatActivity {
     private AppCompatButton registerButton;
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
+    Spinner selectSub;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +53,15 @@ public class AdminRegister extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         confirmPasswordEditText = findViewById(R.id.confirm_password);
         registerButton = findViewById(R.id.registered);
+        selectSub = findViewById(R.id.subjectTeacher);
         mAuth = FirebaseAuth.getInstance();
         mDatabase = FirebaseDatabase.getInstance().getReference("ADMIN");
+
+        String[] subjects = {"Subject teacher in?","General Physics2", "General Chemistry2", "Practical Research2", "Research Project MIL", "Physical Education"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, subjects);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        selectSub.setAdapter(adapter);
+        selectSub.setSelection(0);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,6 +93,7 @@ public class AdminRegister extends AppCompatActivity {
         final String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
         String confirmPassword = confirmPasswordEditText.getText().toString().trim();
+        final String teacher = selectSub.getSelectedItem().toString();
         // Validate the input fields
         if (TextUtils.isEmpty(name)) {
             nameEditText.setError("Please enter your full name");
@@ -137,7 +148,7 @@ public class AdminRegister extends AppCompatActivity {
                             sendEmailVerification(user);
 
                             // Save user details to Realtime Database
-                            saveUserDetailsToDatabase(user.getUid(), name, email, username);
+                            saveUserDetailsToDatabase(user.getUid(), name, email, username, teacher);
 
                             Toast.makeText(getApplicationContext(), "Registration successful. Please check your email for verification. "+email, Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(AdminRegister.this, login.class));
@@ -150,12 +161,14 @@ public class AdminRegister extends AppCompatActivity {
                 });
     }
 
-    private void saveUserDetailsToDatabase(String uid, String name, String email, String username) {
+    private void saveUserDetailsToDatabase(String uid, String name, String email, String username, String teacher) {
         DatabaseReference userRef = mDatabase.child(uid);
         userRef.child("name").setValue(name);
         userRef.child("email").setValue(email);
         userRef.child("username").setValue(username);
+        userRef.child("teacher").setValue(teacher);
     }
+
     private void sendEmailVerification(final FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {

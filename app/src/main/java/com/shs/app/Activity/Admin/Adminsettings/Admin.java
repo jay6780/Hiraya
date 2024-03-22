@@ -309,7 +309,13 @@ public class Admin extends AppCompatActivity {
                     String email = dataSnapshot.child("email").getValue(String.class);
                     String userName = dataSnapshot.child("username").getValue(String.class);
                     String phone = dataSnapshot.child("phone").getValue(String.class);
-                    phoneText.setText(String.valueOf(phone));
+
+
+                    if (phone != null) {
+                        phoneText.setText(phone);
+                    } else {
+                        phoneText.setText("NA");
+                    }
                     userEmail.setText(email);
                     fullnameText.setText(fullName);
                     usernameText.setText(userName);

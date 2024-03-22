@@ -4,17 +4,56 @@
     android:layout_width="match_parent"
     android:background="@color/beige"
     android:layout_height="match_parent">
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayoutInput">
+
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:layout_marginBottom="100dp"
+            android:layout_marginBottom="80dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/adminImg"
+                    android:layout_width="50dp"
+                    android:visibility="visible"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="50dp"
+                    android:src="@mipmap/bglogo"
+                    android:layout_marginTop="15dp" />
+
+
+
+                <TextView
+                    android:id="@+id/fullNameTextView"
+                    app:fontFamily="@font/century_gothic"
+                    android:layout_toRightOf="@+id/adminImg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/black"
+                    android:text="fullname"
+                    android:layout_marginTop="20dp"/>
+
+                <TextView
+                    android:id="@+id/subjectTeacher"
+                    app:fontFamily="@font/century_gothic"
+                    android:layout_width="wrap_content"
+                    android:layout_toRightOf="@+id/adminImg"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/black"
+                    android:layout_below="@id/fullNameTextView"
+                    android:text="fullname"/>
+            </RelativeLayout>
+
+
             <TextView
                 android:layout_marginTop="15dp"
                 android:id="@+id/titleTextView"
@@ -69,17 +108,6 @@
                 android:text="date"
                 android:layout_below="@id/timeTextView"
                 android:layout_marginTop="8dp"/>
-            <TextView
-                android:id="@+id/fullNameTextView"
-                app:fontFamily="@font/century_gothic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginStart="20dp"
-                android:text="fullname"
-                android:layout_below="@id/dateTextView"
-                android:layout_marginTop="8dp"/>
             <View
                 android:layout_width="match_parent"
                 android:layout_marginTop="5dp"
@@ -96,13 +124,22 @@
                 android:layout_below="@id/dateTextView"
                 android:layout_marginTop="20dp"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler"
+            <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+                android:id="@+id/swipe"
                 android:layout_width="match_parent"
-                android:layout_marginTop="20dp"
-                android:layout_height="wrap_content" />
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/nested">
+
+                <!-- RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:id="@+id/constraintLayoutInput"

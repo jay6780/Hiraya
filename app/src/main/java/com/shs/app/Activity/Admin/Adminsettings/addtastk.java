@@ -71,9 +71,10 @@ public class addtastk extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private ProgressDialog progressDialog;
     private StorageReference storageReference;
+    private String adminImageURL;
     private Uri imageUri;
     private ImageView imagePick,task,addQuiz;
-    TextView fullname;
+    TextView fullname,teacher;
     ImageView imageView2;
     private static final int FILE_SELECT_CODE = 0;
     private Uri fileUri;
@@ -129,6 +130,7 @@ public class addtastk extends AppCompatActivity {
         progressDialog.setMessage("Saving Announcement...");
         progressDialog.setCancelable(false);
         imagePick = findViewById(R.id.imagepick);
+        teacher = findViewById(R.id.teacher);
         addQuiz = findViewById(R.id.selectQuiz);
 
         String databaseReferenceName = getIntent().getStringExtra("databaseReferenceName");
@@ -156,13 +158,21 @@ public class addtastk extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         if (dataSnapshot.exists()) {
                             String fullName = dataSnapshot.child("name").getValue(String.class);
+                            String teach = dataSnapshot.child("teacher").getValue(String.class);
                             String fullNameText = fullName;
-                            fullname.setText(fullNameText); // Display full name
+                            String teacherSubject = teach;
+                            fullname.setText(fullNameText);
+                            if(teach !=null){
+                                teacher.setText("Subject teacher in: "+teacherSubject);
+                            }else{
+                                teacher.setText("N/A");
+                            }
 
                             // Load the user's profile image using Glide (circular)
                             String imageUrl = dataSnapshot.child("image").getValue(String.class);
                             if (imageUrl != null && !imageUrl.isEmpty()) {
-                                RequestOptions requestOptions = new RequestOptions().circleCrop();
+                                adminImageURL = imageUrl;
+                            RequestOptions requestOptions = new RequestOptions().circleCrop();
                                 Glide.with(addtastk.this)
                                         .load(imageUrl)
                                         .apply(requestOptions)
@@ -424,7 +434,14 @@ public class addtastk extends AppCompatActivity {
                 if (name != null) {
                     announcement.setName(name);
                 }
+                // Get the teacherSubject
+                String teacherSubject = teacher.getText().toString();
 
+                announcement.setTeacherSubject(teacherSubject);
+
+                announcement.setAdminImg(adminImageURL);
+
+                // Save the announcement to the database
                 databaseReference.child(announcementId).setValue(announcement).addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(Task<Void> task) {
@@ -441,6 +458,9 @@ public class addtastk extends AppCompatActivity {
             }
         });
     }
+
+
+
 
     private void getUploaderFullName(UploaderFullNameCallback callback) {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

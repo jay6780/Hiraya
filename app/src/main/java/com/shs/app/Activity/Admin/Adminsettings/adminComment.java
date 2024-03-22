@@ -16,6 +16,8 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.OpenableColumns;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -35,7 +37,11 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -49,6 +55,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
 import com.shs.app.Class.Student.Students;
 import com.shs.app.Adapter.CommentAdapter.CommentAdapter;
 import com.shs.app.Class.comment.Comment;
@@ -65,7 +72,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class adminComment extends AppCompatActivity {
+public class adminComment extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     ImageButton picture, sendBtn,emojis;
     EditText commentEditText;
     RecyclerView commentsRecyclerView;
@@ -78,6 +85,8 @@ public class adminComment extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
     private static final int FILE_SELECT_CODE = 0;
     private Uri fileUri;
+    private ImageView adminimg;
+    TextView teach;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -110,7 +119,7 @@ public class adminComment extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
+    SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -133,6 +142,8 @@ public class adminComment extends AppCompatActivity {
         commentEditText = findViewById(R.id.messageEditText);
         commentsRecyclerView = findViewById(R.id.recycler);
         emojis = findViewById(R.id.emoji);
+        adminimg = findViewById(R.id.adminImg);
+        teach = findViewById(R.id.subjectTeacher);
 
         // Initialize Firebase references
         studentsRef = FirebaseDatabase.getInstance().getReference("Student");
@@ -153,6 +164,12 @@ public class adminComment extends AppCompatActivity {
         String fullName = intent.getStringExtra("name");
         String imageUrl = intent.getStringExtra("imageUrl");
         String announcementId = intent.getStringExtra("announcementId");
+        String adminImg = intent.getStringExtra("adminImg");
+        String teacher = intent.getStringExtra("teacherSubject");
+
+        swipeRefreshLayout = findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(adminComment.this);
+
         commentsRef = FirebaseDatabase.getInstance().getReference("comments").child(announcementId);
         // Display announcement details in the CommentActivity layout
         TextView titleTextView = findViewById(R.id.titleTextView);
@@ -167,6 +184,20 @@ public class adminComment extends AppCompatActivity {
         timeTextView.setText(time);
         dateTextView.setText(date);
         fullNameTextView.setText("Upload by: "+fullName);
+        teach.setText(teacher);
+
+
+        RequestOptions requestOptions = new RequestOptions()
+                .placeholder(R.drawable.baseline_person_24)
+                .error(R.drawable.baseline_person_24)
+                .transform(new CircleCrop());
+
+        Glide.with(getApplicationContext())
+                .load(adminImg)
+                .apply(requestOptions)
+                .error(R.drawable.baseline_person_24)
+                .into(adminimg);
+
 
         // Load and display the image using Picasso
         if (imageUrl != null) {
@@ -603,5 +634,20 @@ public class adminComment extends AppCompatActivity {
         overridePendingTransition(0, 0);
         finish();
         super.onBackPressed();
+    }
+
+    @Override
+    public void onRefresh() {
+        commentsRecyclerView.setVisibility(View.GONE);
+        commentAdapter.notifyDataSetChanged();
+        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                commentsRecyclerView.setVisibility(View.VISIBLE);
+
+            }
+        }, 1500);
     }
 }

@@ -8,6 +8,7 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -18,6 +19,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -32,6 +35,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -61,7 +65,7 @@ import java.util.Date;
 import java.util.List;
 
 
-public class Student extends AppCompatActivity {
+public class Student extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     ImageView studentImg;
     TextView fullnameText, userEmail, usernameText, phoneText, birthdayText;
     Banner pagebanner;
@@ -73,6 +77,7 @@ public class Student extends AppCompatActivity {
     AnnouncementAdapter2 adapter;
     List<Announcement> announcementList;
     ListView memberListView;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -123,6 +128,10 @@ public class Student extends AppCompatActivity {
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
         birthdayText = headerView.findViewById(R.id.birthday);
+        //refresh
+        swipeRefreshLayout = findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(Student.this);
+
         retrieveStudentDetails();
 
 
@@ -247,9 +256,9 @@ public class Student extends AppCompatActivity {
                     return true;
                 }
                 if (item.getItemId() == R.id.Home) {
-                    Intent home = new Intent(getApplicationContext(),Student.class);
+                    Intent home = new Intent(getApplicationContext(), Student.class);
                     startActivity(home);
-                    overridePendingTransition(0,0);
+                    overridePendingTransition(0, 0);
                     finish();
 
                 }
@@ -322,4 +331,18 @@ public class Student extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRefresh() {
+        memberListView.setVisibility(View.GONE);
+        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
+        adapter.notifyDataSetChanged();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                memberListView.setVisibility(View.VISIBLE);
+
+            }
+        }, 1500);
+    }
 }

@@ -45,6 +45,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.shs.app.Activity.Admin.Adminsettings.Admin;
+import com.shs.app.Activity.Admin.Adminsettings.adminComment;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.Gen_Physics2;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.Mil_quizActivity;
 import com.shs.app.Activity.Student.StudentSettings.Quiz.PEquiz;
@@ -64,7 +65,7 @@ import java.util.regex.Pattern;
 public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
     private ViewHolder currentViewHolder;
     private static class ViewHolder {
-        TextView titleTextView;
+        TextView titleTextView,teacherSub;
         TextView contentTextView;
         TextView timeTextView,likeCountTextView,commentCounts;
         TextView dateTextView;
@@ -127,6 +128,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             viewHolder.fullNameTextView = convertView.findViewById(R.id.fullNameTextView);
             viewHolder.imageView = convertView.findViewById(R.id.imageView);
             viewHolder.commentBtn = convertView.findViewById(R.id.commentBtn);
+            viewHolder.teacherSub = convertView.findViewById(R.id.subjectName);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
@@ -145,6 +147,7 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
             viewHolder.titleTextView.setText(announcement.getTitle());
             viewHolder.likeCountTextView.setText(String.valueOf(announcement.getLikesCount()));
             viewHolder.timeTextView.setText(announcement.getTime());
+            viewHolder.teacherSub.setText(announcement.getTeacherSubject());
             viewHolder.dateTextView.setText(announcement.getDate());
             viewHolder.fullNameTextView.setText(announcement.getName());
 
@@ -224,13 +227,13 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                 viewHolder.imageView.setVisibility(View.GONE);
             }
 
-            if (announcement.getImage() != null) {
+            if (announcement.getAdminImg() != null) {
                 RequestOptions requestOptions = new RequestOptions()
                         .placeholder(R.drawable.baseline_person_24)
                         .transform(new CircleCrop()); // Transforming the image into a circle
 
                 Glide.with(getContext())
-                        .load(announcement.getImageUrl())
+                        .load(announcement.getAdminImg())
                         .apply(requestOptions)
                         .into(viewHolder.userImage);
             } else {
@@ -325,8 +328,10 @@ public class AnnouncementAdapter2 extends ArrayAdapter<Announcement> {
                     intent.putExtra("date", announcement.getDate());
                     intent.putExtra("name", announcement.getName());
                     intent.putExtra("imageUrl", announcement.getImageUrl());
+                    intent.putExtra("adminImg", announcement.getAdminImg());
+                    intent.putExtra("teacherSubject", announcement.getTeacherSubject());
                     getContext().startActivity(intent);
-                    ((Activity)getContext()).overridePendingTransition(0, 0); // Disable animation
+                    ((Activity) getContext()).overridePendingTransition(0, 0); // Disable animation
                     ((Activity) getContext()).finish();
                 }
             });

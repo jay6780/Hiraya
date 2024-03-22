@@ -127,19 +127,20 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="350dp"
-                app:fontFamily="@font/century_gothic"
-                android:layout_marginTop="20dp"
-                android:layout_height="wrap_content">
 
-            </com.google.android.material.textfield.TextInputLayout>
+            <Spinner
+                android:id="@+id/subjectTeacher"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"/>
+
         </LinearLayout>
 
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/registered"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             app:fontFamily="@font/century_gothic"
             android:layout_width="280dp"
             android:textStyle="bold"

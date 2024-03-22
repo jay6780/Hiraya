@@ -31,6 +31,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.shs.app.Activity.Admin.Adminsettings.Admin;
+import com.shs.app.Activity.Admin.Adminsettings.subjectTeacher;
 import com.shs.app.Activity.Student.StudentSettings.Student;
 import com.shs.app.Activity.Student.StudentSettings.signup;
 import com.shs.app.R;
@@ -191,9 +192,15 @@ public class login extends AppCompatActivity {
                                 progressDialog.dismiss();
 
                                 if (dataSnapshot.exists()) {
-                                    // User is an admin, navigate to AdminPageActivity
-                                    startActivity(new Intent(login.this, Admin.class));
-                                    finish();
+                                    if (dataSnapshot.hasChild("teacher")) {
+                                        startActivity(new Intent(getApplicationContext(),Admin.class));
+                                        overridePendingTransition(0, 0);
+                                        finish();
+                                    } else {
+                                        startActivity(new Intent(getApplicationContext(), subjectTeacher.class));
+                                        overridePendingTransition(0, 0);
+                                        finish();
+                                    }
                                 } else {
                                     // User is neither a student nor an admin
                                     Toast.makeText(login.this, "User not found", Toast.LENGTH_SHORT).show();
@@ -269,12 +276,15 @@ public class login extends AppCompatActivity {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             if (dataSnapshot.exists()) {
-                                                // User is an admin, navigate to AdminPageActivity
-                                                startActivity(new Intent(login.this, Admin.class));
-                                                finish();
-                                            } else {
-                                                // User is neither a student nor an admin
-                                                Toast.makeText(login.this, "User not found", Toast.LENGTH_SHORT).show();
+                                                if (dataSnapshot.hasChild("teacher")) {
+                                                    startActivity(new Intent(getApplicationContext(),Admin.class));
+                                                    overridePendingTransition(0, 0);
+                                                    finish();
+                                                } else {
+                                                    startActivity(new Intent(getApplicationContext(),subjectTeacher.class));
+                                                    overridePendingTransition(0, 0);
+                                                    finish();
+                                                }
                                             }
                                         }
 

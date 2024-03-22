@@ -4,105 +4,142 @@
     android:layout_width="match_parent"
     android:background="@color/beige"
     android:layout_height="match_parent">
-    <androidx.core.widget.NestedScrollView
+
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayoutInput">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_marginBottom="100dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-            <TextView
-                android:layout_marginTop="15dp"
-                android:id="@+id/titleTextView"
-                app:fontFamily="@font/century_gothic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:text="title"
-                android:textStyle="bold"
-                android:layout_marginStart="20dp"
-                android:textColor="@android:color/black"/>
+        android:orientation="vertical"
+        android:layout_marginBottom="80dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
             <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_below="@id/titleTextView"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
+                android:id="@+id/adminImg"
+                android:layout_width="50dp"
+                android:visibility="visible"
+                android:layout_marginStart="10dp"
+                android:layout_height="50dp"
                 android:src="@mipmap/bglogo"
-                android:scaleType="fitCenter" />
-            <TextView
-                android:id="@+id/contentTextView"
-                app:fontFamily="@font/century_gothic"
-                android:layout_width="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_height="wrap_content"
-                android:text="content"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_below="@id/imageView"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
-            <TextView
-                android:id="@+id/timeTextView"
-                app:fontFamily="@font/century_gothic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginStart="20dp"
-                android:text="time"
-                android:layout_below="@id/contentTextView"
-                android:layout_marginTop="8dp"/>
-            <TextView
-                android:id="@+id/dateTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                app:fontFamily="@font/century_gothic"
-                android:layout_marginStart="20dp"
-                android:text="date"
-                android:layout_below="@id/timeTextView"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="15dp" />
+
+
+
             <TextView
                 android:id="@+id/fullNameTextView"
                 app:fontFamily="@font/century_gothic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginStart="20dp"
-                android:text="fullname"
-                android:layout_below="@id/dateTextView"
-                android:layout_marginTop="8dp"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_marginTop="5dp"
-                android:background="@color/maroon"
-                android:layout_height="2dp"/>
-            <TextView
-                app:fontFamily="@font/century_gothic"
-                android:layout_width="match_parent"
+                android:layout_toRightOf="@+id/adminImg"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
                 android:layout_marginStart="5dp"
                 android:textColor="@color/black"
-                android:text="Comments"
-                android:layout_below="@id/dateTextView"
+                android:text="fullname"
                 android:layout_marginTop="20dp"/>
 
+            <TextView
+                android:id="@+id/subjectTeacher"
+                app:fontFamily="@font/century_gothic"
+                android:layout_width="wrap_content"
+                android:layout_toRightOf="@+id/adminImg"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                android:textColor="@color/black"
+                android:layout_below="@id/fullNameTextView"
+                android:text="fullname"/>
+        </RelativeLayout>
+
+
+        <TextView
+            android:layout_marginTop="15dp"
+            android:id="@+id/titleTextView"
+            app:fontFamily="@font/century_gothic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="title"
+            android:textStyle="bold"
+            android:layout_marginStart="20dp"
+            android:textColor="@android:color/black"/>
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_below="@id/titleTextView"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@mipmap/bglogo"
+            android:scaleType="fitCenter" />
+        <TextView
+            android:id="@+id/contentTextView"
+            app:fontFamily="@font/century_gothic"
+            android:layout_width="match_parent"
+            android:layout_marginStart="20dp"
+            android:layout_height="wrap_content"
+            android:text="content"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_below="@id/imageView"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/timeTextView"
+            app:fontFamily="@font/century_gothic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginStart="20dp"
+            android:text="time"
+            android:layout_below="@id/contentTextView"
+            android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            app:fontFamily="@font/century_gothic"
+            android:layout_marginStart="20dp"
+            android:text="date"
+            android:layout_below="@id/timeTextView"
+            android:layout_marginTop="8dp"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_marginTop="5dp"
+            android:background="@color/maroon"
+            android:layout_height="2dp"/>
+        <TextView
+            app:fontFamily="@font/century_gothic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:layout_marginStart="5dp"
+            android:textColor="@color/black"
+            android:text="Comments"
+            android:layout_below="@id/dateTextView"
+            android:layout_marginTop="20dp"/>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/nested">
+
+            <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler"
                 android:layout_width="match_parent"
-                android:layout_marginTop="20dp"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+                android:layout_height="match_parent" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
+
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:id="@+id/constraintLayoutInput"

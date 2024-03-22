@@ -8,6 +8,7 @@ import androidx.appcompat.graphics.drawable.DrawerArrowDrawable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.content.Intent;
@@ -15,6 +16,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -42,6 +45,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
 import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter;
 import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
@@ -53,7 +57,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class assestment_activity extends AppCompatActivity {
+public class assestment_activity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
     ListView memberListView;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -64,6 +68,8 @@ public class assestment_activity extends AppCompatActivity {
     DatabaseReference databaseReference;
     AnnouncementAdapter adapter;
     List<Announcement> announcementList;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -110,6 +116,8 @@ public class assestment_activity extends AppCompatActivity {
         adapter = new AnnouncementAdapter(this, announcementList);
         memberListView.setAdapter(adapter);
 
+        swipeRefreshLayout = findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(assestment_activity.this);
 
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,4 +330,18 @@ public class assestment_activity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onRefresh() {
+        memberListView.setVisibility(View.GONE);
+        adapter.notifyDataSetChanged();
+        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                memberListView.setVisibility(View.VISIBLE);
+
+            }
+        }, 1500);
+    }
 }
