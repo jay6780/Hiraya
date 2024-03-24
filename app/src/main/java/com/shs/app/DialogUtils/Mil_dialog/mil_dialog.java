@@ -54,10 +54,7 @@ public class mil_dialog {
                 deleteDataForStudent(student.getId());
             }
             dialog.dismiss();
-            Intent intent = new Intent(activity, mil_checkList.class);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(0,0);
-            activity.finish();
+            activity.onRefresh();
         });
         cancel.setOnClickListener(v -> {
             dialog.dismiss();
