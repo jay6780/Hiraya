@@ -11,10 +11,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -47,9 +51,11 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
 import com.shs.app.Activity.Student.StudentSettings.commentStuddents;
 import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter;
+import com.shs.app.Adapter.noInternet.NoInternetAdapter;
 import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.DialogUtils.Dialog_task;
+import com.shs.app.DialogUtils.noInternetDialog.Nointernet;
 import com.shs.app.R;
 
 import java.util.ArrayList;
@@ -63,7 +69,7 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
     ImageView studentImg;
-    TextView fullnameText,userEmail,usernameText,phoneText;
+    TextView fullnameText, userEmail, usernameText, phoneText;
 
     DatabaseReference databaseReference;
     AnnouncementAdapter adapter;
@@ -80,6 +86,7 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
     }
 
     FloatingActionButton uploadTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +125,7 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
 
         swipeRefreshLayout = findViewById(R.id.swipe);
         swipeRefreshLayout.setOnRefreshListener(assestment_activity.this);
-
+        fetchDataFromFirebase();
         studentImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,45 +165,6 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
         });
 
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Task");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                announcementList.clear();
-                for (DataSnapshot announcementSnapshot : snapshot.getChildren()) {
-                    Announcement announcement = announcementSnapshot.getValue(Announcement.class);
-                    if (announcement != null) {
-                        announcementList.add(announcement);
-                    }
-                }
-
-                // Sort announcementList from newest to oldest based on time and date
-                Collections.sort(announcementList, new Comparator<Announcement>() {
-                    @Override
-                    public int compare(Announcement announcement1, Announcement announcement2) {
-                        // Assuming time and date are in a format that allows lexicographical comparison
-                        String dateTime1 = announcement1.getDate() + " " + announcement1.getTime();
-                        String dateTime2 = announcement2.getDate() + " " + announcement2.getTime();
-
-                        // Reverse the order for newest to oldest
-                        return dateTime2.compareTo(dateTime1);
-                    }
-                });
-
-                adapter.notifyDataSetChanged();
-
-                if (announcementList.isEmpty()) {
-                    // Handle the case when the list is empty
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle onCancelled
-            }
-        });
-
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -222,7 +190,7 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
                 }
 
                 if (item.getItemId() == R.id.About) {
-                    Toast.makeText(getApplicationContext(),"About Us", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "About Us", Toast.LENGTH_SHORT).show();
                     Intent about = new Intent(getApplicationContext(), AboutUs.class);
                     startActivity(about);
                     overridePendingTransition(0, 0);
@@ -252,17 +220,57 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
         });
 
 
-
         uploadTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent upload = new Intent(getApplicationContext(), addtastk.class);
                 startActivity(upload);
-                overridePendingTransition(0,0);
+                overridePendingTransition(0, 0);
                 finish();
             }
         });
     }
+
+    private void fetchDataFromFirebase() {
+        databaseReference = FirebaseDatabase.getInstance().getReference("Task");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                announcementList.clear();
+                for (DataSnapshot announcementSnapshot : snapshot.getChildren()) {
+                    Announcement announcement = announcementSnapshot.getValue(Announcement.class);
+                    if (announcement != null) {
+                        announcementList.add(announcement);
+                    }
+                }
+
+                // Sort announcementList from newest to oldest based on time and date
+                Collections.sort(announcementList, new Comparator<Announcement>() {
+                    @Override
+                    public int compare(Announcement announcement1, Announcement announcement2) {
+                        // Assuming time and date are in a format that allows lexicographical comparison
+                        String dateTime1 = announcement1.getDate() + " " + announcement1.getTime();
+                        String dateTime2 = announcement2.getDate() + " " + announcement2.getTime();
+
+                        // Reverse the order for newest to oldest
+                        return dateTime2.compareTo(dateTime1);
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+
+                if (announcementList.isEmpty()) {
+                    memberListView.setAdapter(null);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                memberListView.setAdapter(null);
+            }
+        });
+    }
+
 
     private void changeStatusBarColor(int color) {
         Window window = getWindow();
@@ -275,6 +283,7 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
         dialog.checklist2(assestment_activity.this);
 
     }
+
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);
@@ -322,9 +331,9 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            Intent i = new Intent(getApplicationContext(),Admin.class);
+            Intent i = new Intent(getApplicationContext(), Admin.class);
             startActivity(i);
-            overridePendingTransition(0,0);
+            overridePendingTransition(0, 0);
             finish();
             super.onBackPressed();
         }
@@ -332,16 +341,36 @@ public class assestment_activity extends AppCompatActivity implements SwipeRefre
 
     @Override
     public void onRefresh() {
-        memberListView.setVisibility(View.GONE);
-        adapter.notifyDataSetChanged();
-        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
+
+        if (isConnected()) {
+            fetchDataFromFirebase();
+            Toast.makeText(getApplicationContext(),"Refresh success", Toast.LENGTH_SHORT).show();
+            memberListView.setAdapter(adapter);
+            memberListView.setVisibility(View.GONE);
+        } else {
+            announcementList.clear();
+            memberListView.setVisibility(View.GONE);
+            Nointernet nointernet = new Nointernet();
+            nointernet.fillDialog(assestment_activity.this);
+        }
+
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                Rect rect = new Rect();
+                swipeRefreshLayout.getDrawingRect(rect);
+                int centerY = rect.centerY();
+                int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
+                swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
                 swipeRefreshLayout.setRefreshing(false);
                 memberListView.setVisibility(View.VISIBLE);
-
             }
         }, 1500);
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

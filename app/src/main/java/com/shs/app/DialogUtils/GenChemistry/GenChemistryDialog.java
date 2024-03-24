@@ -5,8 +5,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -21,11 +25,14 @@ public class GenChemistryDialog {
 
     private general_chemistry_checklist activity;
     private List<Students> studentList;
+    private String[][] studentData;
 
-    public GenChemistryDialog(general_chemistry_checklist activity, List<Students> studentList) {
+    public GenChemistryDialog(general_chemistry_checklist activity, List<Students> studentList, String[][] studentData) {
         this.activity = activity;
         this.studentList = studentList;
+        this.studentData = studentData;
     }
+
 
     public void deleteDataForStudentDialog() {
         if (studentList == null) {
@@ -48,10 +55,7 @@ public class GenChemistryDialog {
                 deleteDataForStudent(student.getId());
             }
             dialog.dismiss();
-            Intent intent = new Intent(activity, general_chemistry_checklist.class);
-            activity.startActivity(intent);
-            activity.overridePendingTransition(0,0);
-            activity.finish();
+            activity.onRefresh();
         });
         cancel.setOnClickListener(v -> {
             dialog.dismiss();
@@ -68,5 +72,74 @@ public class GenChemistryDialog {
         writtenWorksRef.removeValue();
         gradeRef3.removeValue();
     }
+
+
+    public void editScores(String studentId, String studentName, String studentImage, int rowIndex) {
+        DialogPlus dialog = DialogPlus.newDialog(activity)
+                .setContentHolder(new ViewHolder(R.layout.dialog_edit_scores))
+                .setContentWidth(ViewGroup.LayoutParams.MATCH_PARENT)
+                .setContentHeight(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .setGravity(Gravity.BOTTOM)
+                .setCancelable(false)
+                .create();
+
+        // Set content view
+        View dialogView = dialog.getHolderView();
+        EditText writtenWorksEditText = dialogView.findViewById(R.id.editTextWrittenWorks);
+        EditText performanceTaskEditText = dialogView.findViewById(R.id.editTextPerformanceTask);
+        EditText quarterlyAssessmentEditText = dialogView.findViewById(R.id.editTextQuarterlyAssessment);
+        Button updatedBtn = dialogView.findViewById(R.id.update);
+        Button cancel = dialogView.findViewById(R.id.cancel);
+        TextView name = dialogView.findViewById(R.id.name);
+        ImageView avatar = dialogView.findViewById(R.id.avatar);
+        name.setText(studentName);
+
+        Glide.with(activity)
+                .load(studentImage)
+                .placeholder(R.drawable.baseline_person_24)
+                .error(R.drawable.baseline_person_24)
+                .circleCrop()
+                .into(avatar);
+
+        writtenWorksEditText.setText(studentData[rowIndex][1]);
+        performanceTaskEditText.setText(studentData[rowIndex][2]);
+        quarterlyAssessmentEditText.setText(studentData[rowIndex][3]);
+
+        updatedBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String writtenWorksScore = writtenWorksEditText.getText().toString();
+                String performanceTaskScore = performanceTaskEditText.getText().toString();
+                String quarterlyAssessmentScore = quarterlyAssessmentEditText.getText().toString();
+
+                DatabaseReference gradeRef = FirebaseDatabase.getInstance().getReference().child("Grade").child(studentId);
+                gradeRef.child("General_Chemistry2_performanceTask").setValue(performanceTaskScore);
+                DatabaseReference writtenWorksRef = FirebaseDatabase.getInstance().getReference().child("written_works").child(studentId);
+                writtenWorksRef.child("general_chemistry_written_works").setValue(writtenWorksScore);
+                DatabaseReference grade2Ref = FirebaseDatabase.getInstance().getReference().child("Grade2").child(studentId);
+                grade2Ref.child("General_Chemistry2_quarterly_assessment").setValue(quarterlyAssessmentScore);
+
+                // Update the studentData array
+                studentData[rowIndex][1] = writtenWorksScore;
+                studentData[rowIndex][2] = performanceTaskScore;
+                studentData[rowIndex][3] = quarterlyAssessmentScore;
+                Toast.makeText(activity, "Scores updated for " + studentName, Toast.LENGTH_SHORT).show();
+                activity.onRefresh();
+
+                // Dismiss dialog
+                dialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Dismiss dialog
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+}
 }
 

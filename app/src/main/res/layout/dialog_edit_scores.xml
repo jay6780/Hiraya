@@ -1,0 +1,32 @@
+<!-- dialog_edit_scores.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <include layout="@layout/namehead"/>
+
+    <EditText
+        android:id="@+id/editTextWrittenWorks"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Written Works Score"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/editTextPerformanceTask"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Performance Task Score"
+        android:inputType="numberDecimal" />
+
+    <EditText
+        android:id="@+id/editTextQuarterlyAssessment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Quarterly Assessment Score"
+        android:inputType="numberDecimal" />
+
+    <include layout="@layout/updatescore"/>
+
+</LinearLayout>

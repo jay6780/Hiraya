@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,8 +17,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -49,6 +53,7 @@ import com.shs.app.Adapter.tableAdapter.CustomTableDataAdapter;
 import com.shs.app.Adapter.tableAdapter.CustomTableHeaderAdapter;
 import com.shs.app.Adapter.tableAdapter.SeparationLineTableDecoration;
 import com.shs.app.Class.Student.Students;
+import com.shs.app.DialogUtils.GenChemistry.GenChemistryDialog;
 import com.shs.app.DialogUtils.GenPhysics.genPhysicsDialog;
 import com.shs.app.DialogUtils.Dialog;
 import com.shs.app.DialogUtils.Dialog_task;
@@ -61,7 +66,7 @@ import de.codecrafters.tableview.TableDataAdapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 
-public class general_physics2_checklist extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class general_physics2_checklist extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     ImageView studentImg;
     TextView fullnameText,userEmail,usernameText,phoneText;
@@ -82,6 +87,8 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
     private TableView<String[]> tableView;  // Note the type change to String[]
     private String[][] studentData;
     FloatingActionButton rotateBtn,delete;
+
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +119,9 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
         searchView = findViewById(R.id.search);
+
+        swipeRefreshLayout = findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(general_physics2_checklist.this);
 
         rotateBtn = findViewById(R.id.rotate);
         delete = findViewById(R.id.clear);
@@ -159,7 +169,8 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String studentId = snapshot.getKey();
                     String name = snapshot.child("name").getValue(String.class);
-                    Students student = new Students(studentId, null, null, name, null);
+                    String image = snapshot.child("image").getValue(String.class);
+                    Students student = new Students(studentId, null, image, name, null);
                     studentList.add(student);
                 }
 
@@ -170,11 +181,11 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
                     Students student = studentList.get(i);
                     studentData[i][0] = student.getName();
                     // Set default values for the other columns
-                    studentData[i][1] = "N/A";
+                    studentData[i][1] = "0";
                     retrievePerformanceTaskData(student.getId(), i);
                     retrievePerformanceTaskData2(student.getId(), i);
                     retrievePerformanceTaskData3(student.getId(), i);
-                    studentData[i][3] = "N/A";
+                    studentData[i][3] = "0";
                 }
 
                 // Create the adapter and decoration after populating studentData
@@ -241,7 +252,7 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
     }
 
     private void deleteDataForStudentDialog() {
-        genPhysicsDialog deleteDialog = new genPhysicsDialog(this, studentList);
+        genPhysicsDialog deleteDialog = new genPhysicsDialog(this, studentList,studentData);
         deleteDialog.deleteDataForStudentDialog();
 
     }
@@ -257,7 +268,7 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
                         studentData[rowIndex][3] = performanceTaskScore;
                     } else {
                         // Set the value to "N/A" if there is no grade
-                        studentData[rowIndex][3] = "N/A";
+                        studentData[rowIndex][3] = "0";
                     }
 
                     // Update the TableView with the modified studentData
@@ -288,7 +299,7 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
                         studentData[rowIndex][1] = performanceTaskScore;
                     } else {
                         // Set the value to "N/A" if there is no grade
-                        studentData[rowIndex][1] = "N/A";
+                        studentData[rowIndex][1] = "0";
                     }
 
                     // Update the TableView with the modified studentData
@@ -319,7 +330,7 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
                         studentData[rowIndex][2] = performanceTaskScore;
                     } else {
                         // Set the value to "N/A" if there is no grade
-                        studentData[rowIndex][2] = "N/A";
+                        studentData[rowIndex][2] = "0";
                     }
 
                     // Update the TableView with the modified studentData
@@ -337,6 +348,56 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
             }
         });
     }
+
+    private void refreshingData() {
+        tableView.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(true);
+        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
+        studentData = new String[0][4];
+        studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                studentList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String studentId = snapshot.getKey();
+                    String name = snapshot.child("name").getValue(String.class);
+                    String image = snapshot.child("image").getValue(String.class);
+                    Students student = new Students(studentId, null, image, name, null);
+                    studentList.add(student);
+                }
+                studentData = new String[studentList.size()][4];
+
+                for (int i = 0; i < studentList.size(); i++) {
+                    Students student = studentList.get(i);
+                    studentData[i][0] = student.getName();
+                    studentData[i][1] = "0";
+                    retrievePerformanceTaskData(student.getId(), i);
+                    retrievePerformanceTaskData2(student.getId(), i);
+                    retrievePerformanceTaskData3(student.getId(), i);
+                    studentData[i][3] = "0";
+                }
+
+                updateTableView();
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Rect rect = new Rect();
+                        swipeRefreshLayout.getDrawingRect(rect);
+                        int centerY = rect.centerY();
+                        int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
+                        swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
+                        swipeRefreshLayout.setRefreshing(false);
+                        tableView.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
 
     private void updateTableView() {
         // Create the adapter and decoration after populating studentData
@@ -361,9 +422,39 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
         tableView.setColumnWeight(2, 1);
         tableView.setColumnWeight(3, 1);
 
+        tableView.addDataLongClickListener((rowIndex, clickedData) -> {
+            // Get the corresponding student from the filtered list
+            String studentName = clickedData[0];
+            Students student = getStudentFromFilteredList(studentName);
+
+            if (student != null) {
+                String studentId = student.getId();
+                String studentImage = student.getImage();
+                showEditScoresDialog(studentId, studentName, studentImage, rowIndex);
+            } else {
+                Log.e("StudentNotFound", "Student not found in filtered list.");
+            }
+
+            return true;
+        });
         tableView.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(getResources().getColor(R.color.beige), getResources().getColor(R.color.beige)));
 
         tableView.setDataAdapter(customTableDataAdapter);
+    }
+
+    private void showEditScoresDialog(final String studentId, final String studentName, String studentImage, final int rowIndex) {
+        genPhysicsDialog deleteDialog = new genPhysicsDialog(this, studentList,studentData);
+        deleteDialog.editScores(studentId,studentName,studentImage,rowIndex);
+    }
+
+
+    private Students getStudentFromFilteredList(String studentName) {
+        for (Students student : studentList) {
+            if (student.getName().equals(studentName)) {
+                return student;
+            }
+        }
+        return null; // Return null if student is not found
     }
 
     private void retrieveStudentDetails() {
@@ -464,5 +555,10 @@ public class general_physics2_checklist extends AppCompatActivity implements Sea
 
         // Update the TableView with the modified studentData
         updateTableView();
+    }
+
+    @Override
+    public void onRefresh() {
+        refreshingData();
     }
 }

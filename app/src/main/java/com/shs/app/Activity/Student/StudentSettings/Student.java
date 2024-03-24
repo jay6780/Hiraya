@@ -13,11 +13,15 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -48,10 +52,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.ViewHolder;
+import com.shs.app.Activity.Admin.Adminsettings.assestment_activity;
 import com.shs.app.Adapter.AnnouncementAdapter.AnnouncementAdapter2;
 import com.shs.app.Adapter.imageAdapter.ImageAdapter;
 import com.shs.app.Class.Announce.Announcement;
 import com.shs.app.DialogUtils.Dialog;
+import com.shs.app.DialogUtils.noInternetDialog.Nointernet;
 import com.shs.app.R;
 import com.youth.banner.Banner;
 import com.youth.banner.indicator.CircleIndicator;
@@ -133,7 +139,7 @@ public class Student extends AppCompatActivity implements SwipeRefreshLayout.OnR
         swipeRefreshLayout.setOnRefreshListener(Student.this);
 
         retrieveStudentDetails();
-
+        fetchDataFromFirebase();
 
         memberListView = findViewById(R.id.memberListView);
         announcementList = new ArrayList<>();
@@ -169,43 +175,6 @@ public class Student extends AppCompatActivity implements SwipeRefreshLayout.OnR
 //        intents[1] = new Intent(this, python_student.class);
 
 
-        databaseReference = FirebaseDatabase.getInstance().getReference("Task");
-        databaseReference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                announcementList.clear();
-                for (DataSnapshot announcementSnapshot : snapshot.getChildren()) {
-                    Announcement announcement = announcementSnapshot.getValue(Announcement.class);
-                    if (announcement != null) {
-                        announcementList.add(announcement);
-                    }
-                }
-
-                // Sort announcementList from newest to oldest based on time and date
-                Collections.sort(announcementList, new Comparator<Announcement>() {
-                    @Override
-                    public int compare(Announcement announcement1, Announcement announcement2) {
-                        // Assuming time and date are in a format that allows lexicographical comparison
-                        String dateTime1 = announcement1.getDate() + " " + announcement1.getTime();
-                        String dateTime2 = announcement2.getDate() + " " + announcement2.getTime();
-
-                        // Reverse the order for newest to oldest
-                        return dateTime2.compareTo(dateTime1);
-                    }
-                });
-
-                adapter.notifyDataSetChanged();
-
-                if (announcementList.isEmpty()) {
-                    // Handle the case when the list is empty
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Handle onCancelled
-            }
-        });
 
 
         studentImg.setOnClickListener(new View.OnClickListener() {
@@ -333,16 +302,78 @@ public class Student extends AppCompatActivity implements SwipeRefreshLayout.OnR
 
     @Override
     public void onRefresh() {
-        memberListView.setVisibility(View.GONE);
-        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
-        adapter.notifyDataSetChanged();
+
+        if (isConnected()) {
+            fetchDataFromFirebase();
+            Toast.makeText(getApplicationContext(),"Refresh success", Toast.LENGTH_SHORT).show();
+            memberListView.setAdapter(adapter);
+            memberListView.setVisibility(View.GONE);
+        } else {
+            announcementList.clear();
+            memberListView.setVisibility(View.GONE);
+            Nointernet nointernet = new Nointernet();
+            nointernet.fillDialog(Student.this);
+        }
+
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
+                Rect rect = new Rect();
+                swipeRefreshLayout.getDrawingRect(rect);
+                int centerY = rect.centerY();
+                int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
+                swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
                 swipeRefreshLayout.setRefreshing(false);
                 memberListView.setVisibility(View.VISIBLE);
-
             }
         }, 1500);
+    }
+
+    private void fetchDataFromFirebase() {
+        databaseReference = FirebaseDatabase.getInstance().getReference("Task");
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                announcementList.clear();
+                for (DataSnapshot announcementSnapshot : snapshot.getChildren()) {
+                    Announcement announcement = announcementSnapshot.getValue(Announcement.class);
+                    if (announcement != null) {
+                        announcementList.add(announcement);
+                    }
+                }
+
+                // Sort announcementList from newest to oldest based on time and date
+                Collections.sort(announcementList, new Comparator<Announcement>() {
+                    @Override
+                    public int compare(Announcement announcement1, Announcement announcement2) {
+                        // Assuming time and date are in a format that allows lexicographical comparison
+                        String dateTime1 = announcement1.getDate() + " " + announcement1.getTime();
+                        String dateTime2 = announcement2.getDate() + " " + announcement2.getTime();
+
+                        // Reverse the order for newest to oldest
+                        return dateTime2.compareTo(dateTime1);
+                    }
+                });
+
+                adapter.notifyDataSetChanged();
+
+                if (announcementList.isEmpty()) {
+                    // Handle the case when the list is empty
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Handle onCancelled
+            }
+        });
+
+
+    }
+
+    private boolean isConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnected();
     }
 }

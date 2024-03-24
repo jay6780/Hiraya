@@ -9,6 +9,7 @@ import androidx.appcompat.widget.SearchView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,8 +17,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
@@ -62,7 +66,7 @@ import de.codecrafters.tableview.TableDataAdapter;
 import de.codecrafters.tableview.TableView;
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 
-public class pE_checklist extends AppCompatActivity implements SearchView.OnQueryTextListener {
+public class pE_checklist extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
 
     ImageView studentImg;
     TextView fullnameText,userEmail,usernameText,phoneText;
@@ -83,6 +87,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
     private String[][] studentData;
     FloatingActionButton rotateBtn,delete;
     SearchView searchView;
+    SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,7 +124,9 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         searchView.setOnQueryTextListener(this);
         // Initialize TableView
         tableView = findViewById(R.id.tableView);
-        tableView.setColumnCount(4);  // Set the number of columns based on your data (1 for names, 3 for assessments)
+        tableView.setColumnCount(4);
+        swipeRefreshLayout = findViewById(R.id.swipe);
+        swipeRefreshLayout.setOnRefreshListener(pE_checklist.this);
 
         FirebaseApp.initializeApp(this);
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -154,9 +161,11 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String studentId = snapshot.getKey();
                     String name = snapshot.child("name").getValue(String.class);
-                    Students student = new Students(studentId, null, null, name, null);
+                    String image = snapshot.child("image").getValue(String.class);
+                    Students student = new Students(studentId, null, image, name, null);
                     studentList.add(student);
                 }
+
 
                 // Convert studentList to a 2D array for the table data
                 studentData = new String[studentList.size()][4];  // Adjust columns accordingly
@@ -165,11 +174,11 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                     Students student = studentList.get(i);
                     studentData[i][0] = student.getName();
                     // Set default values for the other columns
-                    studentData[i][1] = "N/A";
+                    studentData[i][1] = "0";
                     retrievePerformanceTaskData(student.getId(), i);
                     retrievePerformanceTaskData2(student.getId(), i);
                     retrievePerformanceTaskData3(student.getId(), i);
-                    studentData[i][3] = "N/A";
+                    studentData[i][3] = "0";
                 }
 
                 // Create the adapter and decoration after populating studentData
@@ -180,6 +189,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                 // Handle database error
             }
         });
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -236,10 +246,60 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
     }
 
     private void deleteDataForStudentDialog() {
-        Pe_dialog deleteDialog = new Pe_dialog(this, studentList);
+        Pe_dialog deleteDialog = new Pe_dialog(this, studentList,studentData);
         deleteDialog.deleteDataForStudentDialog();
 
     }
+
+    private void refreshingData() {
+        tableView.setVisibility(View.GONE);
+        swipeRefreshLayout.setRefreshing(true);
+        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
+        studentData = new String[0][4];
+        studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                studentList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String studentId = snapshot.getKey();
+                    String name = snapshot.child("name").getValue(String.class);
+                    String image = snapshot.child("image").getValue(String.class);
+                    Students student = new Students(studentId, null, image, name, null);
+                    studentList.add(student);
+                }
+                studentData = new String[studentList.size()][4];
+
+                for (int i = 0; i < studentList.size(); i++) {
+                    Students student = studentList.get(i);
+                    studentData[i][0] = student.getName();
+                    studentData[i][1] = "0";
+                    retrievePerformanceTaskData(student.getId(), i);
+                    retrievePerformanceTaskData2(student.getId(), i);
+                    retrievePerformanceTaskData3(student.getId(), i);
+                    studentData[i][3] = "0";
+                }
+
+                updateTableView();
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Rect rect = new Rect();
+                        swipeRefreshLayout.getDrawingRect(rect);
+                        int centerY = rect.centerY();
+                        int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
+                        swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
+                        swipeRefreshLayout.setRefreshing(false);
+                        tableView.setVisibility(View.VISIBLE);
+                    }
+                }, 1500);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+    }
+
     private void retrievePerformanceTaskData3(String studentId, final int rowIndex) {
         DatabaseReference gradeRef = FirebaseDatabase.getInstance().getReference().child("Grade2").child(studentId).child("Physical_Education_quarterly_assessment");
         gradeRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -252,7 +312,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                         studentData[rowIndex][3] = performanceTaskScore;
                     } else {
                         // Set the value to "N/A" if there is no grade
-                        studentData[rowIndex][3] = "N/A";
+                        studentData[rowIndex][3] = "0";
                     }
 
                     // Update the TableView with the modified studentData
@@ -283,7 +343,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                         studentData[rowIndex][1] = performanceTaskScore;
                     } else {
                         // Set the value to "N/A" if there is no grade
-                        studentData[rowIndex][1] = "N/A";
+                        studentData[rowIndex][1] = "0";
                     }
 
                     // Update the TableView with the modified studentData
@@ -314,7 +374,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                         studentData[rowIndex][2] = performanceTaskScore;
                     } else {
                         // Set the value to "N/A" if there is no grade
-                        studentData[rowIndex][2] = "N/A";
+                        studentData[rowIndex][2] = "0";
                     }
 
                     // Update the TableView with the modified studentData
@@ -356,11 +416,39 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         tableView.setColumnWeight(2, 1);
         tableView.setColumnWeight(3, 1);
 
+        tableView.addDataLongClickListener((rowIndex, clickedData) -> {
+            // Get the corresponding student from the filtered list
+            String studentName = clickedData[0];
+            Students student = getStudentFromFilteredList(studentName);
+
+            if (student != null) {
+                String studentId = student.getId();
+                String studentImage = student.getImage();
+                showEditScoresDialog(studentId, studentName, studentImage, rowIndex);
+            } else {
+                Log.e("StudentNotFound", "Student not found in filtered list.");
+            }
+
+            return true;
+        });
         tableView.setDataRowBackgroundProvider(TableDataRowBackgroundProviders.alternatingRowColors(getResources().getColor(R.color.beige), getResources().getColor(R.color.beige)));
 
         tableView.setDataAdapter(customTableDataAdapter);
     }
 
+    private void showEditScoresDialog(String studentId, String studentName, String studentImage, int rowIndex) {
+        Pe_dialog deleteDialog = new Pe_dialog(this, studentList,studentData);
+        deleteDialog.editScores(studentId,studentName,studentImage,rowIndex);
+    }
+
+    private Students getStudentFromFilteredList(String studentName) {
+        for (Students student : studentList) {
+            if (student.getName().equals(studentName)) {
+                return student;
+            }
+        }
+        return null;
+    }
     private void retrieveStudentDetails() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         DatabaseReference studentRef = FirebaseDatabase.getInstance().getReference().child("ADMIN").child(userId);
@@ -461,4 +549,8 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         updateTableView();
     }
 
+    @Override
+    public void onRefresh() {
+        refreshingData();
+    }
 }

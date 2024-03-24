@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/swipe">
+
 
     <!-- Add the TableView with the desired attributes -->
     <de.codecrafters.tableview.TableView
@@ -11,5 +16,6 @@
         android:layout_height="match_parent"
         app:tableView_columnCount="4" />
 
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
 </RelativeLayout>
