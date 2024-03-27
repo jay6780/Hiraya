@@ -28,12 +28,14 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -72,12 +74,14 @@ import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders;
 
 public class general_chemistry_checklist extends AppCompatActivity implements SearchView.OnQueryTextListener, SwipeRefreshLayout.OnRefreshListener {
     ImageView studentImg;
-    TextView fullnameText, userEmail, usernameText, phoneText;
+    TextView fullnameText,userEmail,usernameText,phoneText;
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    private boolean isDialogShowing = false;
-
+    SearchView searchView;
+    private int maxLimit = 200;
+    private int dataRetrievalCount = 0;
+    private int totalDataRetrievalOperations = 3;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -86,14 +90,14 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
         return super.onOptionsItemSelected(item);
     }
 
-    SwipeRefreshLayout swipeRefreshLayout;
-
     private DatabaseReference studentRef;
     private List<Students> studentList;
     private TableView<String[]> tableView;  // Note the type change to String[]
     private String[][] studentData;
-    FloatingActionButton rotateBtn, delete;
-    SearchView searchView;
+    FloatingActionButton rotateBtn,delete;
+
+    SwipeRefreshLayout swipeRefreshLayout;
+    RelativeLayout loadingRel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,22 +130,22 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
 
         swipeRefreshLayout = findViewById(R.id.swipe);
         swipeRefreshLayout.setOnRefreshListener(general_chemistry_checklist.this);
+        swipeRefreshLayout.setColorSchemeColors(Color.TRANSPARENT);
+        swipeRefreshLayout.setProgressViewOffset( false, -200, -200 );
         rotateBtn = findViewById(R.id.rotate);
         delete = findViewById(R.id.clear);
-        retrieveStudentDetails();
-
+        loadingRel = findViewById(R.id.loading);
         searchView = findViewById(R.id.search);
         searchView.setOnQueryTextListener(this);
-
         // Initialize TableView
         tableView = findViewById(R.id.tableView);
         tableView.setColumnCount(4);  // Set the number of columns based on your data (1 for names, 3 for assessments)
 
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        studentRef = firebaseDatabase.getReference("Student");
+        hideRefresh();
+        retrieveStudentDetails();
+        firebaseData();
         studentList = new ArrayList<>();
-
 
         rotateBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,6 +258,58 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
         });
     }
 
+    private void firebaseData() {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        studentRef = firebaseDatabase.getReference("Student");
+        studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange (@NonNull DataSnapshot dataSnapshot) {
+                studentList.clear();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    String studentId = snapshot.getKey();
+                    String name = snapshot.child("name").getValue(String.class);
+                    String image = snapshot.child("image").getValue(String.class);
+                    Students student = new Students(studentId, null, image, name, null);
+                    studentList.add(student);
+                }
+
+                // Convert studentList to a 2D array for the table data
+                studentData = new String[studentList.size()][4];  // Adjust columns accordingly
+
+                for (int i = 0; i < studentList.size(); i++) {
+                    Students student = studentList.get(i);
+                    studentData[i][0] = student.getName();
+                    // Set default values for the other columns
+                    studentData[i][1] = "0";
+                    retrievePerformanceTaskData(student.getId(), i);
+                    retrievePerformanceTaskData2(student.getId(), i);
+                    retrievePerformanceTaskData3(student.getId(), i);
+                    studentData[i][3] = "0";
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database error
+            }
+        });
+    }
+
+    private void hideRefresh() {
+        RelativeLayout relativeLayout = findViewById(R.id.relative);
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume touch events on the RelativeLayout
+                return true;
+            }
+        });
+
+        swipeRefreshLayout.setEnabled(false);
+
+    }
+
     private void deleteDataForStudentDialog() {
         GenChemistryDialog deleteDialog = new GenChemistryDialog(this, studentList,studentData);
         deleteDialog.deleteDataForStudentDialog();
@@ -272,10 +328,8 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
                     } else {
                         studentData[rowIndex][3] = "0";
                     }
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
-                    // Handle the case where rowIndex is out of bounds
-                    // For example, you can log a message or take appropriate action
                     Log.e("ArrayIndexOutOfBounds", "Row index is out of bounds: " + rowIndex);
                 }
             }
@@ -285,6 +339,18 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
                 // Handle potential errors here
             }
         });
+    }
+
+    private synchronized void onDataRetrievalComplete() {
+        try {
+            dataRetrievalCount++;
+            if (dataRetrievalCount == totalDataRetrievalOperations) {
+                updateTableView();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void retrievePerformanceTaskData2(String studentId, final int rowIndex) {
@@ -302,8 +368,7 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
                         studentData[rowIndex][1] = "0";
                     }
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -334,7 +399,7 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
                     }
 
                     // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -410,52 +475,24 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
 
 
     private void refreshingData() {
+        dataRetrievalCount = 0;
+
         tableView.setVisibility(View.GONE);
+        loadingRel.setVisibility(View.VISIBLE);
+
         swipeRefreshLayout.setRefreshing(true);
-        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
-        studentData = new String[0][4];
-        studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseData();
+        updateTableView();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                studentList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String studentId = snapshot.getKey();
-                    String name = snapshot.child("name").getValue(String.class);
-                    String image = snapshot.child("image").getValue(String.class);
-                    Students student = new Students(studentId, null, image, name, null);
-                    studentList.add(student);
-                }
-                studentData = new String[studentList.size()][4];
-
-                for (int i = 0; i < studentList.size(); i++) {
-                    Students student = studentList.get(i);
-                    studentData[i][0] = student.getName();
-                    studentData[i][1] = "0";
-                    retrievePerformanceTaskData(student.getId(), i);
-                    retrievePerformanceTaskData2(student.getId(), i);
-                    retrievePerformanceTaskData3(student.getId(), i);
-                    studentData[i][3] = "0";
-                }
-
-                updateTableView();
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Rect rect = new Rect();
-                        swipeRefreshLayout.getDrawingRect(rect);
-                        int centerY = rect.centerY();
-                        int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
-                        swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
-                        swipeRefreshLayout.setRefreshing(false);
-                        tableView.setVisibility(View.VISIBLE);
-                    }
-                }, 1500);
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                loadingRel.setVisibility(View.GONE);
+                tableView.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "Refresh Success", Toast.LENGTH_SHORT).show();
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+        }, 1500);
     }
 
 
@@ -549,14 +586,15 @@ public class general_chemistry_checklist extends AppCompatActivity implements Se
         for (int i = 0; i < filteredList.size(); i++) {
             Students student = filteredList.get(i);
             studentData[i][0] = student.getName();
-            studentData[i][1] = "N/A";
+            studentData[i][1] = "0";
             retrievePerformanceTaskData(student.getId(), i);
             retrievePerformanceTaskData2(student.getId(), i);
             retrievePerformanceTaskData3(student.getId(), i);
-            studentData[i][3] = "N/A";
+            studentData[i][3] = "0";
         }
 
         updateTableView();
+        dataRetrievalCount = 0;
     }
 
     @Override

@@ -1,9 +1,11 @@
 package com.shs.app.DialogUtils.GenPhysics;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -11,6 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -92,52 +97,66 @@ public class genPhysicsDialog {
         ImageView avatar = dialogView.findViewById(R.id.avatar);
         name.setText(studentName);
 
-        Glide.with(activity)
-                .load(studentImage)
-                .placeholder(R.drawable.baseline_person_24)
-                .error(R.drawable.baseline_person_24)
-                .circleCrop()
-                .into(avatar);
-
-        writtenWorksEditText.setText(studentData[rowIndex][1]);
-        performanceTaskEditText.setText(studentData[rowIndex][2]);
-        quarterlyAssessmentEditText.setText(studentData[rowIndex][3]);
-
-        updatedBtn.setOnClickListener(new View.OnClickListener() {
+        activity.runOnUiThread(new Runnable() {
             @Override
-            public void onClick(View view) {
-                String writtenWorksScore = writtenWorksEditText.getText().toString();
-                String performanceTaskScore = performanceTaskEditText.getText().toString();
-                String quarterlyAssessmentScore = quarterlyAssessmentEditText.getText().toString();
+            public void run() {
+                Glide.with(activity)
+                        .load(studentImage)
+                        .placeholder(R.drawable.baseline_person_24)
+                        .error(R.drawable.baseline_person_24)
+                        .circleCrop()
+                        .override(Target.SIZE_ORIGINAL)
+                        .format(DecodeFormat.PREFER_RGB_565)
+                        .skipMemoryCache(true)
+                        .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                        .into(avatar);
 
-                DatabaseReference gradeRef = FirebaseDatabase.getInstance().getReference().child("Grade").child(studentId);
-                gradeRef.child("General_Physics2_performanceTask").setValue(performanceTaskScore);
-                DatabaseReference writtenWorksRef = FirebaseDatabase.getInstance().getReference().child("written_works").child(studentId);
-                writtenWorksRef.child("General_Physics2_written_works").setValue(writtenWorksScore);
-                DatabaseReference grade2Ref = FirebaseDatabase.getInstance().getReference().child("Grade2").child(studentId);
-                grade2Ref.child("General_Physics2_quarterly_assessment").setValue(quarterlyAssessmentScore);
+                writtenWorksEditText.setText(studentData[rowIndex][1]);
+                performanceTaskEditText.setText(studentData[rowIndex][2]);
+                quarterlyAssessmentEditText.setText(studentData[rowIndex][3]);
 
-                // Update the studentData array
-                studentData[rowIndex][1] = writtenWorksScore;
-                studentData[rowIndex][2] = performanceTaskScore;
-                studentData[rowIndex][3] = quarterlyAssessmentScore;
-                Toast.makeText(activity, "Scores updated for " + studentName, Toast.LENGTH_SHORT).show();
-                activity.onRefresh();
+                updatedBtn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        String writtenWorksScore = writtenWorksEditText.getText().toString();
+                        String performanceTaskScore = performanceTaskEditText.getText().toString();
+                        String quarterlyAssessmentScore = quarterlyAssessmentEditText.getText().toString();
 
-                // Dismiss dialog
-                dialog.dismiss();
+                        DatabaseReference gradeRef = FirebaseDatabase.getInstance().getReference().child("Grade").child(studentId);
+                        gradeRef.child("General_Physics2_performanceTask").setValue(performanceTaskScore);
+                        DatabaseReference writtenWorksRef = FirebaseDatabase.getInstance().getReference().child("written_works").child(studentId);
+                        writtenWorksRef.child("General_Physics2_written_works").setValue(writtenWorksScore);
+                        DatabaseReference grade2Ref = FirebaseDatabase.getInstance().getReference().child("Grade2").child(studentId);
+                        grade2Ref.child("General_Physics2_quarterly_assessment").setValue(quarterlyAssessmentScore);
+
+                        // Update the studentData array
+                        studentData[rowIndex][1] = writtenWorksScore;
+                        studentData[rowIndex][2] = performanceTaskScore;
+                        studentData[rowIndex][3] = quarterlyAssessmentScore;
+                        Toast.makeText(activity, "Scores updated for " + studentName, Toast.LENGTH_SHORT).show();
+                        activity.onRefresh();
+
+                        // Close keyboard if open
+                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                        // Dismiss dialog
+                        dialog.dismiss();
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
             }
         });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Dismiss dialog
-                dialog.dismiss();
-            }
-        });
-
-        dialog.show();
     }
 }
-

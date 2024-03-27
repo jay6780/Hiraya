@@ -11,21 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Written Works Score"
-        android:inputType="numberDecimal" />
+        android:inputType="text|number" />
 
     <EditText
         android:id="@+id/editTextPerformanceTask"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Performance Task Score"
-        android:inputType="numberDecimal" />
+        android:inputType="text|number"/>
 
     <EditText
         android:id="@+id/editTextQuarterlyAssessment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Quarterly Assessment Score"
-        android:inputType="numberDecimal" />
+        android:inputType="text|number"/>
 
     <include layout="@layout/updatescore"/>
 

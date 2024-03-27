@@ -15,8 +15,8 @@ public class CustomTableDataAdapter extends TableDataAdapter<String[]> {
 
     @Override
     public View getCellView(int rowIndex, int columnIndex, ViewGroup parentView) {
-        String[] rowData = getRowData(rowIndex);
-        String cellText = rowData[columnIndex];
+        String[] rowData = getRowData(rowIndex); // <-- This is likely causing the issue
+        String cellText = rowData[columnIndex];  // <-- This is likely causing the issue
 
         TextView textView = new TextView(getContext());
         textView.setText(cellText);

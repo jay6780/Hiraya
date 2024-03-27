@@ -1,9 +1,11 @@
 package com.shs.app.DialogUtils.Mil_dialog;
 
+import android.content.Context;
 import android.content.Intent;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -123,7 +125,8 @@ public class mil_dialog {
                 studentData[rowIndex][3] = quarterlyAssessmentScore;
                 Toast.makeText(activity, "Scores updated for " + studentName, Toast.LENGTH_SHORT).show();
                 activity.onRefresh();
-
+                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 // Dismiss dialog
                 dialog.dismiss();
             }
@@ -132,7 +135,8 @@ public class mil_dialog {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Dismiss dialog
+                InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 dialog.dismiss();
             }
         });

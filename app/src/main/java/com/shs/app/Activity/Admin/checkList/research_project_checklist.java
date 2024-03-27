@@ -27,10 +27,12 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +75,10 @@ public class research_project_checklist extends AppCompatActivity implements Sea
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    SearchView searchView;
+    private int maxLimit = 200;
+    private int dataRetrievalCount = 0;
+    private int totalDataRetrievalOperations = 3;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -86,8 +92,10 @@ public class research_project_checklist extends AppCompatActivity implements Sea
     private TableView<String[]> tableView;  // Note the type change to String[]
     private String[][] studentData;
     FloatingActionButton rotateBtn,delete;
-    SearchView searchView;
+
     SwipeRefreshLayout swipeRefreshLayout;
+    RelativeLayout loadingRel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,6 +124,7 @@ public class research_project_checklist extends AppCompatActivity implements Sea
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
+        loadingRel = findViewById(R.id.loading);
 
         rotateBtn = findViewById(R.id.rotate);
         delete = findViewById(R.id.clear);
@@ -133,8 +142,13 @@ public class research_project_checklist extends AppCompatActivity implements Sea
         tableView.setColumnCount(4);  // Set the number of columns based on your data (1 for names, 3 for assessments)
 
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        studentRef = firebaseDatabase.getReference("Student");
+        swipeRefreshLayout.setColorSchemeColors(Color.TRANSPARENT);
+        swipeRefreshLayout.setProgressViewOffset( false, -200, -200 );
+
+        FirebaseApp.initializeApp(this);
+        hideRefresh();
+        retrieveStudentDetails();
+        firebaseData();
         studentList = new ArrayList<>();
 
         rotateBtn.setOnClickListener(new View.OnClickListener() {
@@ -158,40 +172,6 @@ public class research_project_checklist extends AppCompatActivity implements Sea
         });
 
 
-        studentRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                studentList.clear();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String studentId = snapshot.getKey();
-                    String name = snapshot.child("name").getValue(String.class);
-                    String image = snapshot.child("image").getValue(String.class);
-                    Students student = new Students(studentId, null, image, name, null);
-                    studentList.add(student);
-                }
-
-                // Convert studentList to a 2D array for the table data
-                studentData = new String[studentList.size()][4];  // Adjust columns accordingly
-
-                for (int i = 0; i < studentList.size(); i++) {
-                    Students student = studentList.get(i);
-                    studentData[i][0] = student.getName();
-                    // Set default values for the other columns
-                    studentData[i][1] = "N/A";
-                    retrievePerformanceTaskData(student.getId(), i);
-                    retrievePerformanceTaskData2(student.getId(), i);
-                    retrievePerformanceTaskData3(student.getId(), i);
-                    studentData[i][3] = "N/A";
-                }
-
-                // Create the adapter and decoration after populating studentData
-
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle database error
-            }
-        });
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -247,15 +227,12 @@ public class research_project_checklist extends AppCompatActivity implements Sea
         });
     }
 
-
-    private void refreshingData() {
-        tableView.setVisibility(View.GONE);
-        swipeRefreshLayout.setRefreshing(true);
-        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
-        studentData = new String[0][4];
+    private void firebaseData() {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        studentRef = firebaseDatabase.getReference("Student");
         studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange (@NonNull DataSnapshot dataSnapshot) {
                 studentList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String studentId = snapshot.getKey();
@@ -264,38 +241,67 @@ public class research_project_checklist extends AppCompatActivity implements Sea
                     Students student = new Students(studentId, null, image, name, null);
                     studentList.add(student);
                 }
-                studentData = new String[studentList.size()][4];
+
+                // Convert studentList to a 2D array for the table data
+                studentData = new String[studentList.size()][4];  // Adjust columns accordingly
 
                 for (int i = 0; i < studentList.size(); i++) {
                     Students student = studentList.get(i);
                     studentData[i][0] = student.getName();
+                    // Set default values for the other columns
                     studentData[i][1] = "0";
                     retrievePerformanceTaskData(student.getId(), i);
                     retrievePerformanceTaskData2(student.getId(), i);
                     retrievePerformanceTaskData3(student.getId(), i);
                     studentData[i][3] = "0";
-                }
 
-                updateTableView();
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Rect rect = new Rect();
-                        swipeRefreshLayout.getDrawingRect(rect);
-                        int centerY = rect.centerY();
-                        int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
-                        swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
-                        swipeRefreshLayout.setRefreshing(false);
-                        tableView.setVisibility(View.VISIBLE);
-                    }
-                }, 1500);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database error
             }
         });
     }
+
+
+    private void hideRefresh() {
+        RelativeLayout relativeLayout = findViewById(R.id.relative);
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume touch events on the RelativeLayout
+                return true;
+            }
+        });
+
+        swipeRefreshLayout.setEnabled(false);
+
+    }
+
+
+    private void refreshingData() {
+        dataRetrievalCount = 0;
+
+        tableView.setVisibility(View.GONE);
+        loadingRel.setVisibility(View.VISIBLE);
+
+        swipeRefreshLayout.setRefreshing(true);
+        firebaseData();
+        updateTableView();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                loadingRel.setVisibility(View.GONE);
+                tableView.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "Refresh Success", Toast.LENGTH_SHORT).show();
+            }
+        }, 1500);
+    }
+
 
     private void deleteDataForStudentDialog() {
         research_project_dialog deleteDialog = new research_project_dialog(this, studentList,studentData);
@@ -317,8 +323,7 @@ public class research_project_checklist extends AppCompatActivity implements Sea
                         studentData[rowIndex][3] = "0";
                     }
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -347,9 +352,8 @@ public class research_project_checklist extends AppCompatActivity implements Sea
                         // Set the value to "N/A" if there is no grade
                         studentData[rowIndex][1] = "0";
                     }
+                    onDataRetrievalComplete();
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -379,8 +383,7 @@ public class research_project_checklist extends AppCompatActivity implements Sea
                         studentData[rowIndex][2] = "0";
                     }
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -393,6 +396,18 @@ public class research_project_checklist extends AppCompatActivity implements Sea
                 // Handle potential errors here
             }
         });
+    }
+
+    private synchronized void onDataRetrievalComplete() {
+        try {
+            dataRetrievalCount++;
+            if (dataRetrievalCount == totalDataRetrievalOperations) {
+                updateTableView();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void updateTableView() {
@@ -542,15 +557,15 @@ public class research_project_checklist extends AppCompatActivity implements Sea
         for (int i = 0; i < filteredList.size(); i++) {
             Students student = filteredList.get(i);
             studentData[i][0] = student.getName();
-            studentData[i][1] = "N/A";
+            studentData[i][1] = "0";
             retrievePerformanceTaskData(student.getId(), i);
             retrievePerformanceTaskData2(student.getId(), i);
             retrievePerformanceTaskData3(student.getId(), i);
-            studentData[i][3] = "N/A";
+            studentData[i][3] = "0";
         }
 
-        // Update the TableView with the modified studentData
         updateTableView();
+        dataRetrievalCount = 0;
     }
 
     @Override

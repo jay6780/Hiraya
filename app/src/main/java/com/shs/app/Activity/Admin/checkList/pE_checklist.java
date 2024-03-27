@@ -27,10 +27,12 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,6 +75,10 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    SearchView searchView;
+    private int maxLimit = 200;
+    private int dataRetrievalCount = 0;
+    private int totalDataRetrievalOperations = 3;
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (drawerToggle.onOptionsItemSelected(item)) {
@@ -86,8 +92,9 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
     private TableView<String[]> tableView;  // Note the type change to String[]
     private String[][] studentData;
     FloatingActionButton rotateBtn,delete;
-    SearchView searchView;
+
     SwipeRefreshLayout swipeRefreshLayout;
+    RelativeLayout loadingRel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +123,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         userEmail = headerView.findViewById(R.id.email);
         usernameText = headerView.findViewById(R.id.username);
         phoneText = headerView.findViewById(R.id.phone);
-
+        loadingRel = findViewById(R.id.loading);
         rotateBtn = findViewById(R.id.rotate);
         delete = findViewById(R.id.clear);
         retrieveStudentDetails();
@@ -127,10 +134,13 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         tableView.setColumnCount(4);
         swipeRefreshLayout = findViewById(R.id.swipe);
         swipeRefreshLayout.setOnRefreshListener(pE_checklist.this);
+        swipeRefreshLayout.setColorSchemeColors(Color.TRANSPARENT);
+        swipeRefreshLayout.setProgressViewOffset( false, -200, -200 );
 
         FirebaseApp.initializeApp(this);
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        studentRef = firebaseDatabase.getReference("Student");
+        hideRefresh();
+        retrieveStudentDetails();
+        firebaseData();
         studentList = new ArrayList<>();
 
         rotateBtn.setOnClickListener(new View.OnClickListener() {
@@ -245,20 +255,12 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         });
     }
 
-    private void deleteDataForStudentDialog() {
-        Pe_dialog deleteDialog = new Pe_dialog(this, studentList,studentData);
-        deleteDialog.deleteDataForStudentDialog();
-
-    }
-
-    private void refreshingData() {
-        tableView.setVisibility(View.GONE);
-        swipeRefreshLayout.setRefreshing(true);
-        Toast.makeText(getApplicationContext(),"Refresh Success",Toast.LENGTH_SHORT).show();
-        studentData = new String[0][4];
+    private void firebaseData() {
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        studentRef = firebaseDatabase.getReference("Student");
         studentRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange (@NonNull DataSnapshot dataSnapshot) {
                 studentList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     String studentId = snapshot.getKey();
@@ -267,38 +269,71 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                     Students student = new Students(studentId, null, image, name, null);
                     studentList.add(student);
                 }
-                studentData = new String[studentList.size()][4];
+
+                // Convert studentList to a 2D array for the table data
+                studentData = new String[studentList.size()][4];  // Adjust columns accordingly
 
                 for (int i = 0; i < studentList.size(); i++) {
                     Students student = studentList.get(i);
                     studentData[i][0] = student.getName();
+                    // Set default values for the other columns
                     studentData[i][1] = "0";
                     retrievePerformanceTaskData(student.getId(), i);
                     retrievePerformanceTaskData2(student.getId(), i);
                     retrievePerformanceTaskData3(student.getId(), i);
                     studentData[i][3] = "0";
-                }
 
-                updateTableView();
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        Rect rect = new Rect();
-                        swipeRefreshLayout.getDrawingRect(rect);
-                        int centerY = rect.centerY();
-                        int offset = centerY - (swipeRefreshLayout.getProgressCircleDiameter() / 2);
-                        swipeRefreshLayout.setProgressViewOffset(false, 0, offset);
-                        swipeRefreshLayout.setRefreshing(false);
-                        tableView.setVisibility(View.VISIBLE);
-                    }
-                }, 1500);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle database error
             }
         });
     }
+
+    private void hideRefresh() {
+        RelativeLayout relativeLayout = findViewById(R.id.relative);
+        relativeLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                // Consume touch events on the RelativeLayout
+                return true;
+            }
+        });
+
+        swipeRefreshLayout.setEnabled(false);
+
+    }
+
+    private void deleteDataForStudentDialog() {
+        Pe_dialog deleteDialog = new Pe_dialog(this, studentList,studentData);
+        deleteDialog.deleteDataForStudentDialog();
+
+    }
+
+    private void refreshingData() {
+        dataRetrievalCount = 0;
+
+        tableView.setVisibility(View.GONE);
+        loadingRel.setVisibility(View.VISIBLE);
+
+        swipeRefreshLayout.setRefreshing(true);
+        firebaseData();
+        updateTableView();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(false);
+                loadingRel.setVisibility(View.GONE);
+                tableView.setVisibility(View.VISIBLE);
+                Toast.makeText(getApplicationContext(), "Refresh Success", Toast.LENGTH_SHORT).show();
+            }
+        }, 1500);
+    }
+
 
     private void retrievePerformanceTaskData3(String studentId, final int rowIndex) {
         DatabaseReference gradeRef = FirebaseDatabase.getInstance().getReference().child("Grade2").child(studentId).child("Physical_Education_quarterly_assessment");
@@ -315,11 +350,9 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                         studentData[rowIndex][3] = "0";
                     }
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
-                    // Handle the case where rowIndex is out of bounds
-                    // For example, you can log a message or take appropriate action
+
                     Log.e("ArrayIndexOutOfBounds", "Row index is out of bounds: " + rowIndex);
                 }
             }
@@ -329,6 +362,18 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                 // Handle potential errors here
             }
         });
+    }
+
+    private synchronized void onDataRetrievalComplete() {
+        try {
+            dataRetrievalCount++;
+            if (dataRetrievalCount == totalDataRetrievalOperations) {
+                updateTableView();
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void retrievePerformanceTaskData2(String studentId, final int rowIndex) {
@@ -346,8 +391,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                         studentData[rowIndex][1] = "0";
                     }
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -377,8 +421,7 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
                         studentData[rowIndex][2] = "0";
                     }
 
-                    // Update the TableView with the modified studentData
-                    updateTableView();
+                    onDataRetrievalComplete();
                 } else {
                     // Handle the case where rowIndex is out of bounds
                     // For example, you can log a message or take appropriate action
@@ -538,15 +581,15 @@ public class pE_checklist extends AppCompatActivity implements SearchView.OnQuer
         for (int i = 0; i < filteredList.size(); i++) {
             Students student = filteredList.get(i);
             studentData[i][0] = student.getName();
-            studentData[i][1] = "N/A";
+            studentData[i][1] = "0";
             retrievePerformanceTaskData(student.getId(), i);
             retrievePerformanceTaskData2(student.getId(), i);
             retrievePerformanceTaskData3(student.getId(), i);
-            studentData[i][3] = "N/A";
+            studentData[i][3] = "0";
         }
 
-        // Update the TableView with the modified studentData
         updateTableView();
+        dataRetrievalCount = 0;
     }
 
     @Override
